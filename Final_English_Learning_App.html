@@ -446,9 +446,22 @@
             font-size: 1.5rem; opacity: 1; transition: opacity 0.5s ease;
             background: rgba(255,255,255,0.15); padding: 10px 20px;
             border-radius: 10px; margin-top: 15px; display: block;
-            font-style: italic;
+            font-style: italic; position: relative;
         }
         .word-example.hidden { opacity: 0; display: none; }
+
+        .speak-example-btn {
+            position: absolute; right: 10px; top: 50%;
+            transform: translateY(-50%);
+            background: #FFD700; color: #333;
+            border: none; border-radius: 15px; padding: 5px 10px;
+            font-size: 0.9rem; cursor: pointer; font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .speak-example-btn:hover {
+            background: #FFA500; transform: translateY(-50%) scale(1.1);
+        }
+        .speak-example-btn.hidden { display: none; }
 
         .word-example-chinese {
             font-size: 1.3rem; opacity: 1; transition: opacity 0.5s ease;
@@ -852,7 +865,10 @@
                 <div class="word-text">${word.english}</div>
                 <div class="pronunciation hidden" id="pronunciation">/${word.pronunciation}/</div>
                 <div class="word-chinese hidden" id="chinese-meaning">${word.chinese}</div>
-                <div class="word-example hidden" id="word-example">${word.example || ''}</div>
+                <div class="word-example hidden" id="word-example">
+                    ${word.example || ''}
+                    <button class="speak-example-btn hidden" id="speak-example-btn" onclick="speakExample('${word.example}')">🔊 例句</button>
+                </div>
                 <div class="word-example-chinese hidden" id="word-example-chinese">${word.exampleChinese || ''}</div>
             `;
 
@@ -880,6 +896,7 @@
             const emojiElement = document.getElementById('word-emoji');
             const exampleElement = document.getElementById('word-example');
             const exampleChineseElement = document.getElementById('word-example-chinese');
+            const speakExampleBtn = document.getElementById('speak-example-btn');
             showingChinese = !showingChinese;
 
             if (showingChinese) {
@@ -887,6 +904,7 @@
                 emojiElement.classList.remove('hidden'); // Show emoji (picture) when showing Chinese
                 exampleElement.classList.remove('hidden'); // Show English example
                 exampleChineseElement.classList.remove('hidden'); // Show Chinese example translation
+                if (speakExampleBtn) speakExampleBtn.classList.remove('hidden'); // Show speak example button
                 document.getElementById('toggle-chinese-btn').textContent = '隐藏中文';
                 // Read the Chinese meaning when showing it
                 const word = currentWords[currentWordIndex];
@@ -902,6 +920,7 @@
                 emojiElement.classList.add('hidden'); // Hide emoji when hiding Chinese
                 exampleElement.classList.add('hidden'); // Hide English example
                 exampleChineseElement.classList.add('hidden'); // Hide Chinese example translation
+                if (speakExampleBtn) speakExampleBtn.classList.add('hidden'); // Hide speak example button
                 document.getElementById('toggle-chinese-btn').textContent = '显示中文';
             }
         }
@@ -929,6 +948,25 @@
             utterance.lang = 'en-US';
             utterance.rate = 0.8;
             utterance.pitch = 1.1;
+            utterance.volume = 1.0;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function speakExample(exampleText) {
+            if (!exampleText) return;
+
+            // Check for speech synthesis support
+            if (!window.speechSynthesis) {
+                alert('您的浏览器不支持语音功能，请使用Chrome或Safari浏览器！');
+                return;
+            }
+
+            // Cancel any ongoing speech first
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(exampleText);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.8;
+            utterance.pitch = 1.0;
             utterance.volume = 1.0;
             window.speechSynthesis.speak(utterance);
         }
