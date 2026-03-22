@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英语学习小助手 - Grade 2 (Simple Version)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial Rounded MT Bold', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        header {
+            text-align: center; color: white; margin-bottom: 30px;
+            padding: 20px; background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px; backdrop-filter: blur(10px);
+        }
+        h1 { font-size: 3rem; margin-bottom: 10px; text-shadow: 3px 3px 6px rgba(0,0,0,0.3); }
+        .subtitle { font-size: 1.5rem; opacity: 0.9; }
+        .selection-screen {
+            background: white; border-radius: 20px; padding: 30px;
+            margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .selection-group { margin-bottom: 25px; }
+        .selection-group h2 { color: #667eea; font-size: 1.8rem; margin-bottom: 15px; }
+        .button-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px; margin-top: 15px;
+        }
+        .btn {
+            padding: 20px; font-size: 1.3rem; border: none; border-radius: 15px;
+            cursor: pointer; transition: all 0.3s ease; font-weight: bold;
+            color: white; text-transform: uppercase;
+        }
+        .btn:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+        .btn:active { transform: translateY(2px); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-grade1 { background: linear-gradient(45deg, #FF6B6B, #FFE66D); }
+        .btn-grade2 { background: linear-gradient(45deg, #4ECDC4, #44A08D); }
+        .btn-semester1 { background: linear-gradient(45deg, #667eea, #764ba2); }
+        .btn-semester2 { background: linear-gradient(45deg, #f093fb, #f5576c); }
+        .btn-unit1 { background: linear-gradient(45deg, #FF9800, #F57C00); }
+        .btn-unit2 { background: linear-gradient(45deg, #9C27B0, #673AB7); }
+        .btn-unit3 { background: linear-gradient(45deg, #2196F3, #21CBF3); }
+        .btn-unit4 { background: linear-gradient(45deg, #00BCD4, #009688); }
+        .btn-unit5 { background: linear-gradient(45deg, #4CAF50, #8BC34A); }
+        .btn-unit6 { background: linear-gradient(45deg, #FFC107, #FF9800); }
+        .btn-learn { background: linear-gradient(45deg, #4CAF50, #45a049); }
+        .btn-quiz { background: linear-gradient(45deg, #FF9800, #F57C00); }
+        .btn.selected { transform: scale(1.1); box-shadow: 0 0 20px rgba(255,255,255,0.5); }
+        .learning-mode, .quiz-mode {
+            background: white; border-radius: 20px; padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .flashcard {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px; padding: 60px 40px; margin: 30px 0;
+            color: white; min-height: 400px; display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+            position: relative; overflow: hidden;
+        }
+        .word-emoji { font-size: 6rem; margin-bottom: 20px; }
+        .word-text { font-size: 3.5rem; font-weight: bold; margin-bottom: 20px; text-shadow: 3px 3px 6px rgba(0,0,0,0.3); }
+        .pronunciation { font-size: 1.5rem; opacity: 0.8; margin: 10px 0; }
+        .word-chinese {
+            font-size: 2.5rem; opacity: 1; transition: opacity 0.5s ease;
+            background: rgba(255,255,255,0.2); padding: 15px 30px;
+            border-radius: 15px; margin-top: 20px; display: block;
+        }
+        .word-chinese.hidden { opacity: 0; display: none; }
+        .hidden { display: none !important; }
+        .mode-navigation {
+            display: flex; justify-content: center; gap: 20px; margin-top: 30px;
+        }
+        .nav-btn {
+            padding: 15px 30px; font-size: 1.2rem; border: none;
+            border-radius: 10px; cursor: pointer; transition: all 0.3s ease;
+            background: #667eea; color: white;
+        }
+        .nav-btn:hover { background: #764ba2; transform: translateY(-3px); }
+        .progress-bar {
+            width: 100%; height: 30px; background: #e0e0e0;
+            border-radius: 15px; overflow: hidden; margin: 20px 0;
+        }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, #4CAF50, #45a049);
+            width: 0%; transition: width 0.5s ease;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: bold;
+        }
+        .quiz-options {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px; margin: 30px 0;
+        }
+        .quiz-option {
+            padding: 30px; font-size: 1.5rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white; border: none; border-radius: 15px; cursor: pointer;
+            transition: all 0.3s ease; font-weight: bold;
+        }
+        .quiz-option:hover { transform: scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+        .quiz-option.correct { background: linear-gradient(135deg, #4CAF50, #45a049); animation: correct 0.5s ease; }
+        .quiz-option.incorrect { background: linear-gradient(135deg, #f44336, #da190b); animation: incorrect 0.5s ease; }
+
+        @keyframes correct {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes incorrect {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        .score-display { text-align: center; font-size: 2rem; color: #667eea; margin: 20px 0; }
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .word-text { font-size: 2.5rem; }
+            .word-chinese { font-size: 1.8rem; }
+            .button-grid { grid-template-columns: 1fr 1fr; }
+            .quiz-options { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌟 英语学习小助手 🌟</h1>
+            <p class="subtitle">让学习英语变得有趣又简单！</p>
+        </header>
+
+        <!-- Selection Screen -->
+        <div class="selection-screen" id="selection-screen">
+            <div class="selection-group">
+                <h2>请选择年级</h2>
+                <div class="button-grid">
+                    <button class="btn btn-grade1" onclick="selectGrade('grade1')">1年级</button>
+                    <button class="btn btn-grade2" onclick="selectGrade('grade2')">2年级</button>
+                </div>
+            </div>
+
+            <div class="selection-group">
+                <h2>请选择学期</h2>
+                <div class="button-grid">
+                    <button class="btn btn-semester1" disabled onclick="selectSemester('上学期')">上学期</button>
+                    <button class="btn btn-semester2" disabled onclick="selectSemester('下学期')">下学期</button>
+                </div>
+            </div>
+
+            <div class="selection-group">
+                <h2>请选择单元</h2>
+                <div class="button-grid">
+                    <button class="btn btn-unit1" disabled onclick="selectUnit('unit1')">Unit 1</button>
+                    <button class="btn btn-unit2" disabled onclick="selectUnit('unit2')">Unit 2</button>
+                    <button class="btn btn-unit3" disabled onclick="selectUnit('unit3')">Unit 3</button>
+                    <button class="btn btn-unit4" disabled onclick="selectUnit('unit4')">Unit 4</button>
+                    <button class="btn btn-unit5" disabled onclick="selectUnit('unit5')">Unit 5</button>
+                    <button class="btn btn-unit6" disabled onclick="selectUnit('unit6')">Unit 6</button>
+                </div>
+            </div>
+
+            <div class="selection-group">
+                <h2>选择学习模式</h2>
+                <div class="button-grid">
+                    <button class="btn btn-learn" onclick="startLearning()">📚 学习模式</button>
+                    <button class="btn btn-quiz" onclick="startQuiz()">🎯 测验模式</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Mode -->
+        <div class="learning-mode hidden" id="learning-mode">
+            <div class="flashcard" id="flashcard">
+                <p style="font-size: 1.5rem; color: #666;">请选择年级、学期和单元后开始学习</p>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="learning-progress">0%</div>
+            </div>
+
+            <div class="mode-navigation">
+                <button class="nav-btn" id="prev-btn" onclick="prevWord()">⬅️ 上一个</button>
+                <button class="nav-btn" id="toggle-chinese-btn" onclick="toggleChinese()">显示中文</button>
+                <button class="nav-btn" id="pronounce-btn" onclick="pronounceWord()">🔊 发音</button>
+                <button class="nav-btn" id="next-btn" onclick="nextWord()">下一个 ➡️</button>
+            </div>
+
+            <div class="mode-navigation">
+                <button class="nav-btn" onclick="backToSelection()">🏠 返回选择</button>
+            </div>
+        </div>
+
+        <!-- Quiz Mode -->
+        <div class="quiz-mode hidden" id="quiz-mode">
+            <div class="quiz-question">
+                <h2 id="quiz-question-text">测验问题</h2>
+                <div class="word-emoji" id="quiz-emoji">📝</div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="quiz-progress">第 1 / 8 题</div>
+            </div>
+
+            <div class="quiz-options" id="quiz-options">
+                <p style="grid-column: 1/-1; text-align: center; color: #666;">请选择答案</p>
+            </div>
+
+            <div class="mode-navigation">
+                <button class="nav-btn" onclick="backToSelection()">🏠 返回选择</button>
+            </div>
+
+            <div class="score-display" id="score-display">
+                得分: 0
+            </div>
+        </div>
+    </div>
+
+    <script src="js/vocabulary_simple.js"></script>
+    <script>
+        let currentGrade = null;
+        let currentSemester = null;
+        let currentUnit = null;
+        let currentWords = [];
+        let currentWordIndex = 0;
+        let showingChinese = false;
+        let showingPhonetic = false;
+        let quizQuestions = [];
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+
+        function selectGrade(grade) {
+            currentGrade = grade;
+            document.querySelectorAll('.btn-grade1, .btn-grade2').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            enableSemesterButtons();
+            console.log('Selected grade:', grade);
+        }
+
+        function selectSemester(semester) {
+            currentSemester = semester;
+            document.querySelectorAll('.btn-semester1, .btn-semester2').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            enableUnitButtons();
+            console.log('Selected semester:', semester);
+        }
+
+        function selectUnit(unit) {
+            currentUnit = unit;
+            document.querySelectorAll('.btn-unit1, .btn-unit2, .btn-unit3, .btn-unit4, .btn-unit5, .btn-unit6').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            currentWords = getCurrentWords(currentGrade, currentSemester, currentUnit);
+            console.log('Selected unit:', unit, 'Word count:', currentWords.length);
+        }
+
+        function enableSemesterButtons() {
+            document.querySelectorAll('.btn-semester1, .btn-semester2').forEach(btn => {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            });
+        }
+
+        function enableUnitButtons() {
+            document.querySelectorAll('.btn-unit1, .btn-unit2, .btn-unit3, .btn-unit4, .btn-unit5, .btn-unit6').forEach(btn => {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            });
+        }
+
+        function startLearning() {
+            if (!currentGrade || !currentSemester || !currentUnit) {
+                alert('请先选择年级、学期和单元！');
+                return;
+            }
+
+            if (currentWords.length === 0) {
+                alert('当前单元没有单词！');
+                return;
+            }
+
+            document.getElementById('selection-screen').classList.add('hidden');
+            document.getElementById('learning-mode').classList.remove('hidden');
+            document.getElementById('quiz-mode').classList.add('hidden');
+            currentWordIndex = 0;
+            showingChinese = false;
+            showingPhonetic = false;
+            displayWord();
+        }
+
+        function displayWord() {
+            if (currentWordIndex >= currentWords.length) {
+                currentWordIndex = 0;
+            }
+
+            const word = currentWords[currentWordIndex];
+            const flashcard = document.getElementById('flashcard');
+
+            flashcard.innerHTML = `
+                <div class="word-emoji hidden" id="word-emoji">${word.emoji}</div>
+                <div class="word-text">${word.english}</div>
+                <div class="pronunciation hidden" id="pronunciation">/${word.pronunciation}/</div>
+                <div class="word-chinese" id="chinese-meaning">${word.chinese}</div>
+            `;
+
+            // Reset states
+            showingChinese = false;
+            showingPhonetic = false;
+            document.getElementById('toggle-chinese-btn').textContent = '显示中文';
+            document.getElementById('pronounce-btn').textContent = '🔊 发音';
+
+            // Ensure Chinese is hidden on new word
+            document.getElementById('chinese-meaning').classList.add('hidden');
+
+            updateLearningProgress();
+        }
+
+        function toggleChinese() {
+            const chineseElement = document.getElementById('chinese-meaning');
+            showingChinese = !showingChinese;
+
+            if (showingChinese) {
+                chineseElement.classList.remove('hidden');
+                document.getElementById('toggle-chinese-btn').textContent = '隐藏中文';
+            } else {
+                chineseElement.classList.add('hidden');
+                document.getElementById('toggle-chinese-btn').textContent = '显示中文';
+            }
+        }
+
+        function pronounceWord() {
+            const word = currentWords[currentWordIndex];
+            if (!showingPhonetic) {
+                document.getElementById('pronunciation').classList.remove('hidden');
+                document.getElementById('word-emoji').classList.remove('hidden');
+                document.getElementById('pronounce-btn').textContent = '🔊 再次发音';
+                showingPhonetic = true;
+            }
+
+            // Use browser text-to-speech
+            if (window.speechSynthesis) {
+                const utterance = new SpeechSynthesisUtterance(word.english);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                utterance.pitch = 1.1;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert('您的浏览器不支持语音功能，请使用Chrome或Safari浏览器！');
+            }
+        }
+
+        function nextWord() {
+            currentWordIndex++;
+            showingChinese = false;
+            showingPhonetic = false;
+            displayWord();
+        }
+
+        function prevWord() {
+            currentWordIndex = Math.max(0, currentWordIndex - 1);
+            showingChinese = false;
+            showingPhonetic = false;
+            displayWord();
+        }
+
+        function updateLearningProgress() {
+            const progress = ((currentWordIndex + 1) / currentWords.length) * 100;
+            document.getElementById('learning-progress').style.width = progress + '%';
+            document.getElementById('learning-progress').textContent = `${Math.round(progress)}%`;
+        }
+
+        function startQuiz() {
+            if (!currentGrade || !currentSemester || !currentUnit) {
+                alert('请先选择年级、学期和单元！');
+                return;
+            }
+
+            if (currentWords.length === 0) {
+                alert('当前单元没有单词！');
+                return;
+            }
+
+            // Generate 16 questions: 2 per word (English→Chinese and Chinese→English)
+            quizQuestions = generateComprehensiveQuiz(currentWords);
+            currentQuizIndex = 0;
+            quizScore = 0;
+
+            document.getElementById('selection-screen').classList.add('hidden');
+            document.getElementById('learning-mode').classList.add('hidden');
+            document.getElementById('quiz-mode').classList.remove('hidden');
+
+            displayQuizQuestion();
+        }
+
+        function generateComprehensiveQuiz(words) {
+            const questions = [];
+            const selectedWords = [...words].sort(() => Math.random() - 0.5).slice(0, Math.min(8, words.length));
+
+            selectedWords.forEach(word => {
+                // Add Chinese to English question (看中文猜英文)
+                questions.push({
+                    word: word,
+                    isChineseToEnglish: true,
+                    questionText: `What's the English word for "${word.chinese}"?`,
+                    correctAnswer: word.english,
+                    options: generateOptionsForWord(word, 'english')
+                });
+
+                // Add English to Chinese question (看英文猜中文)
+                questions.push({
+                    word: word,
+                    isChineseToEnglish: false,
+                    questionText: `What's the Chinese meaning of "${word.english}"?`,
+                    correctAnswer: word.chinese,
+                    options: generateOptionsForWord(word, 'chinese')
+                });
+            });
+
+            // Shuffle the questions randomly
+            return questions.sort(() => Math.random() - 0.5);
+        }
+
+        function generateOptionsForWord(targetWord, answerType) {
+            const allWords = getCurrentWords(currentGrade, currentSemester, currentUnit);
+            const options = [];
+
+            // Add the correct answer first
+            const correctText = answerType === 'english' ? targetWord.english : targetWord.chinese;
+            options.push({
+                text: correctText,
+                correct: true
+            });
+
+            // Create wrong options from different words only
+            const wrongOptions = [];
+            const availableWords = allWords.filter(word => {
+                // Make sure we're getting completely different words
+                return word.english !== targetWord.english && word.chinese !== targetWord.chinese;
+            });
+
+            // Take up to 3 wrong words
+            const selectedWrongWords = [...availableWords].sort(() => Math.random() - 0.5).slice(0, 3);
+
+            selectedWrongWords.forEach(word => {
+                const wrongText = answerType === 'english' ? word.english : word.chinese;
+                // Double-check we're not getting the correct answer
+                if (wrongText !== correctText) {
+                    wrongOptions.push({
+                        text: wrongText,
+                        correct: false
+                    });
+                }
+            });
+
+            // If we don't have enough wrong options, fill with generic options
+            while (wrongOptions.length < 3) {
+                const fallbackText = answerType === 'english' ? '???' : '？？？';
+                wrongOptions.push({
+                    text: fallbackText,
+                    correct: false
+                });
+            }
+
+            options.push(...wrongOptions);
+            return options.sort(() => Math.random() - 0.5);
+        }
+
+        function displayQuizQuestion() {
+            if (currentQuizIndex >= quizQuestions.length) {
+                finishQuiz();
+                return;
+            }
+
+            const question = quizQuestions[currentQuizIndex];
+            const isChineseToEnglish = Math.random() > 0.5;
+            let questionText = '';
+            let options = [];
+
+            if (isChineseToEnglish) {
+                questionText = `What's the English word for "${question.chinese}"?`;
+                options = generateQuizOptions(question, 'english');
+            } else {
+                questionText = `What's the Chinese meaning of "${question.english}"?`;
+                options = generateQuizOptions(question, 'chinese');
+            }
+
+            document.getElementById('quiz-question-text').textContent = questionText;
+            document.getElementById('quiz-emoji').textContent = '❓'; // Hide actual emoji until answer
+
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'quiz-option';
+                button.textContent = option.text;
+                button.onclick = () => checkAnswer(option, button, question, isChineseToEnglish);
+                optionsContainer.appendChild(button);
+            });
+
+            updateQuizProgress();
+        }
+
+        function generateQuizOptions(correctAnswer, type) {
+            const allWords = getCurrentWords(currentGrade, currentSemester, currentUnit);
+            const options = [{text: type === 'english' ? correctAnswer.english : correctAnswer.chinese, correct: true}];
+
+            // Add wrong options - ensure they're different from correct answer
+            const wrongWords = allWords.filter(word => {
+                const wrongText = type === 'english' ? word.english : word.chinese;
+                const correctText = type === 'english' ? correctAnswer.english : correctAnswer.chinese;
+                return wrongText !== correctText;
+            });
+
+            const shuffledWrong = [...wrongWords].sort(() => Math.random() - 0.5).slice(0, 3);
+            shuffledWrong.forEach(word => {
+                options.push({
+                    text: type === 'english' ? word.english : word.chinese,
+                    correct: false
+                });
+            });
+
+            return options.sort(() => Math.random() - 0.5);
+        }
+
+        function checkAnswer(selectedOption, buttonElement, question, isChineseToEnglish) {
+            // Disable all buttons during feedback
+            document.querySelectorAll('.quiz-option').forEach(btn => {
+                btn.disabled = true;
+            });
+
+            // Show the actual emoji for the word
+            document.getElementById('quiz-emoji').textContent = question.emoji;
+
+            // Create and play sound effect
+            playSound(selectedOption.correct);
+
+            if (selectedOption.correct) {
+                buttonElement.classList.add('correct');
+                quizScore++;
+                updateScoreDisplay();
+
+                // Auto-proceed after 1.5 seconds for correct answers
+                setTimeout(() => {
+                    document.querySelectorAll('.quiz-option').forEach(btn => {
+                        btn.disabled = false;
+                    });
+                    currentQuizIndex++;
+                    displayQuizQuestion();
+                }, 1500);
+            } else {
+                buttonElement.classList.add('incorrect');
+
+                // Find and highlight the CORRECT answer
+                document.querySelectorAll('.quiz-option').forEach(btn => {
+                    const correctText = isChineseToEnglish ? question.english : question.chinese;
+                    if (btn.textContent === correctText) {
+                        btn.classList.add('correct');
+                    }
+                });
+
+                // Add "I Remembered" button
+                const rememberBtn = document.createElement('button');
+                rememberBtn.textContent = '💡 我记住了';
+                rememberBtn.className = 'nav-btn';
+                rememberBtn.style.marginTop = '20px';
+                rememberBtn.onclick = function() {
+                    // Remove the button
+                    this.remove();
+                    // Enable all buttons and proceed
+                    document.querySelectorAll('.quiz-option').forEach(btn => {
+                        btn.disabled = false;
+                    });
+                    currentQuizIndex++;
+                    displayQuizQuestion();
+                };
+
+                const quizContainer = document.getElementById('quiz-mode');
+                quizContainer.appendChild(rememberBtn);
+            }
+        }
+
+        function playSound(isCorrect) {
+            // Create audio context for sound effects
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+            if (isCorrect) {
+                // Success sound (ascending tones)
+                const frequencies = [523.25, 659.25, 783.99]; // C5, E5, G5
+                frequencies.forEach((freq, index) => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+
+                    oscillator.frequency.value = freq;
+                    oscillator.type = 'sine';
+
+                    const startTime = audioContext.currentTime + index * 0.1;
+                    const endTime = startTime + 0.2;
+
+                    gainNode.gain.setValueAtTime(0.3, startTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, endTime);
+
+                    oscillator.start(startTime);
+                    oscillator.stop(endTime);
+                });
+            } else {
+                // Error sound (descending tone)
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.frequency.value = 400;
+                oscillator.type = 'sine';
+
+                const startTime = audioContext.currentTime;
+                const endTime = startTime + 0.5;
+
+                gainNode.gain.setValueAtTime(0.3, startTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, endTime);
+
+                oscillator.start(startTime);
+                oscillator.stop(endTime);
+
+                // Add a second lower tone for more impact
+                const oscillator2 = audioContext.createOscillator();
+                const gainNode2 = audioContext.createGain();
+                oscillator2.connect(gainNode2);
+                gainNode2.connect(audioContext.destination);
+
+                oscillator2.frequency.value = 300;
+                oscillator2.type = 'sine';
+
+                const startTime2 = audioContext.currentTime + 0.1;
+                const endTime2 = startTime2 + 0.4;
+
+                gainNode2.gain.setValueAtTime(0.3, startTime2);
+                gainNode2.gain.exponentialRampToValueAtTime(0.01, endTime2);
+
+                oscillator2.start(startTime2);
+                oscillator2.stop(endTime2);
+            }
+        }
+
+        function updateQuizProgress() {
+            const progress = ((currentQuizIndex + 1) / quizQuestions.length) * 100;
+            document.getElementById('quiz-progress').style.width = progress + '%';
+            document.getElementById('quiz-progress').textContent = `第 ${currentQuizIndex + 1} / ${quizQuestions.length} 题`;
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('score-display').textContent = `得分: ${quizScore}`;
+        }
+
+        function finishQuiz() {
+            const percentage = Math.round((quizScore / quizQuestions.length) * 100);
+            let message = `测验完成！你答对了 ${quizScore} / ${quizQuestions.length} 题 (${percentage}%)`;
+
+            if (percentage >= 90) {
+                message += '\n太棒了！你是英语小达人！🎉';
+            } else if (percentage >= 70) {
+                message += '\n做得很好！继续加油！👏';
+            } else if (percentage >= 50) {
+                message += '\n不错！多练习会更好！💪';
+            } else {
+                message += '\n没关系，多练习就会进步！📚';
+            }
+
+            alert(message);
+            backToSelection();
+        }
+
+        function backToSelection() {
+            document.getElementById('selection-screen').classList.remove('hidden');
+            document.getElementById('learning-mode').classList.add('hidden');
+            document.getElementById('quiz-mode').classList.add('hidden');
+            currentWords = [];
+        }
+    </script>
+</body>
+</html>

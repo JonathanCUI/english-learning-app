@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英语学习小助手 - Grade 2</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌟 英语学习小助手 🌟</h1>
+            <p class="subtitle">让学习英语变得有趣又简单！</p>
+        </header>
+
+        <!-- Selection Screen -->
+        <div class="selection-screen" id="selection-screen">
+            <div class="selection-group">
+                <h2>请选择年级</h2>
+                <div class="button-grid">
+                    <button class="btn btn-grade1">1年级</button>
+                    <button class="btn btn-grade2">2年级</button>
+                </div>
+            </div>
+
+            <div class="selection-group">
+                <h2>请选择学期</h2>
+                <div class="button-grid">
+                    <button class="btn btn-semester1" disabled style="opacity: 0.5;">上学期</button>
+                    <button class="btn btn-semester2" disabled style="opacity: 0.5;">下学期</button>
+                </div>
+            </div>
+
+            <div class="selection-group">
+                <h2>请选择单元</h2>
+                <div class="button-grid">
+                    <button class="btn btn-unit1" disabled style="opacity: 0.5;">Unit 1</button>
+                    <button class="btn btn-unit2" disabled style="opacity: 0.5;">Unit 2</button>
+                    <button class="btn btn-unit3" disabled style="opacity: 0.5;">Unit 3</button>
+                    <button class="btn btn-unit4" disabled style="opacity: 0.5;">Unit 4</button>
+                    <button class="btn btn-unit5" disabled style="opacity: 0.5;">Unit 5</button>
+                    <button class="btn btn-unit6" disabled style="opacity: 0.5;">Unit 6</button>
+                </div>
+            </div>
+
+            <div class="selection-group">
+                <h2>选择学习模式</h2>
+                <div class="button-grid">
+                    <button class="btn btn-learn">📚 学习模式</button>
+                    <button class="btn btn-quiz">🎯 测验模式</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Mode -->
+        <div class="learning-mode hidden" id="learning-mode">
+            <div class="flashcard" id="flashcard">
+                <p style="font-size: 1.5rem; color: #666;">请选择年级和单元后开始学习</p>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="learning-progress">0%</div>
+            </div>
+
+            <div class="mode-navigation">
+                <button class="nav-btn" id="prev-btn">⬅️ 上一个</button>
+                <button class="nav-btn" id="toggle-chinese-btn">显示中文</button>
+                <button class="nav-btn" id="pronounce-btn">🔊 发音</button>
+                <button class="nav-btn" id="next-btn">下一个 ➡️</button>
+            </div>
+
+            <div class="mode-navigation">
+                <button class="nav-btn" id="back-btn">🏠 返回选择</button>
+            </div>
+        </div>
+
+        <!-- Quiz Mode -->
+        <div class="quiz-mode hidden" id="quiz-mode">
+            <div class="quiz-question">
+                <h2 id="quiz-question-text">测验问题</h2>
+                <div class="word-emoji" id="quiz-emoji">📝</div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="quiz-progress">第 1 / 8 题</div>
+            </div>
+
+            <div class="quiz-options" id="quiz-options">
+                <p style="grid-column: 1/-1; text-align: center; color: #666;">请选择答案</p>
+            </div>
+
+            <div class="mode-navigation">
+                <button class="nav-btn" id="back-btn">🏠 返回选择</button>
+            </div>
+
+            <div class="score-display" id="score-display">
+                得分: 0
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="js/vocabulary.js"></script>
+    <script src="js/quiz.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

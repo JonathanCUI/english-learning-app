@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Quiz Functionality</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .quiz-option { padding: 15px; margin: 10px; font-size: 18px; cursor: pointer; }
+        .correct { background: #4CAF50; color: white; }
+        .incorrect { background: #f44336; color: white; }
+        #result { margin-top: 20px; font-size: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Quiz Debug Test</h1>
+    <div id="quiz-container">
+        <h2 id="question">What's the English word for "学校"?</h2>
+        <button class="quiz-option" onclick="checkAnswer(this, 'school')">school</button>
+        <button class="quiz-option" onclick="checkAnswer(this, 'teacher')">teacher</button>
+        <button class="quiz-option" onclick="checkAnswer(this, 'book')">book</button>
+        <button class="quiz-option" onclick="checkAnswer(this, 'desk')">desk</button>
+    </div>
+    <div id="result"></div>
+
+    <script>
+        function checkAnswer(button, answer) {
+            console.log('Clicked:', answer);
+            const correctAnswer = 'school';
+
+            if (answer === correctAnswer) {
+                console.log('Correct!');
+                button.classList.add('correct');
+                button.textContent = '✅ ' + answer + ' (Correct!)';
+                document.getElementById('result').innerHTML = '🎉 Great job! You got it right!';
+                document.getElementById('result').style.color = '#4CAF50';
+
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.classList.remove('correct');
+                    button.textContent = answer;
+                    document.getElementById('result').innerHTML = '';
+                }, 2000);
+            } else {
+                console.log('Incorrect!');
+                button.classList.add('incorrect');
+                button.textContent = '❌ ' + answer;
+                document.getElementById('result').innerHTML = '💡 Not quite. The correct answer is: <strong>school</strong>';
+                document.getElementById('result').style.color = '#f44336';
+
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    button.classList.remove('incorrect');
+                    button.textContent = answer;
+                    document.getElementById('result').innerHTML = '';
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>
