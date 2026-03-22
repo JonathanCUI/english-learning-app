@@ -442,26 +442,28 @@
         }
         .word-chinese.hidden { opacity: 0; display: none; }
 
+        .word-example-container {
+            display: flex; align-items: center; gap: 10px; margin-top: 15px;
+        }
+        .word-example-container.hidden { display: none; }
+
         .word-example {
             font-size: 1.5rem; opacity: 1; transition: opacity 0.5s ease;
             background: rgba(255,255,255,0.15); padding: 10px 20px;
-            border-radius: 10px; margin-top: 15px; display: block;
-            font-style: italic; position: relative;
+            border-radius: 10px; display: block; flex: 1;
+            font-style: italic;
         }
         .word-example.hidden { opacity: 0; display: none; }
 
         .speak-example-btn {
-            position: absolute; right: 10px; top: 50%;
-            transform: translateY(-50%);
             background: #FFD700; color: #333;
-            border: none; border-radius: 15px; padding: 5px 10px;
+            border: none; border-radius: 15px; padding: 8px 15px;
             font-size: 0.9rem; cursor: pointer; font-weight: bold;
-            transition: all 0.3s ease;
+            transition: all 0.3s ease; white-space: nowrap;
         }
         .speak-example-btn:hover {
-            background: #FFA500; transform: translateY(-50%) scale(1.1);
+            background: #FFA500; transform: scale(1.1);
         }
-        .speak-example-btn.hidden { display: none; }
 
         .word-example-chinese {
             font-size: 1.3rem; opacity: 1; transition: opacity 0.5s ease;
@@ -865,9 +867,9 @@
                 <div class="word-text">${word.english}</div>
                 <div class="pronunciation hidden" id="pronunciation">/${word.pronunciation}/</div>
                 <div class="word-chinese hidden" id="chinese-meaning">${word.chinese}</div>
-                <div class="word-example hidden" id="word-example">
-                    ${word.example || ''}
-                    <button class="speak-example-btn hidden" id="speak-example-btn" onclick="speakExample('${word.example}')">🔊 例句</button>
+                <div class="word-example-container hidden" id="word-example-container">
+                    <div class="word-example" id="word-example">${word.example || ''}</div>
+                    <button class="speak-example-btn" id="speak-example-btn" onclick="speakExample('${word.example}')">🔊 例句</button>
                 </div>
                 <div class="word-example-chinese hidden" id="word-example-chinese">${word.exampleChinese || ''}</div>
             `;
@@ -894,17 +896,15 @@
         function toggleChinese() {
             const chineseElement = document.getElementById('chinese-meaning');
             const emojiElement = document.getElementById('word-emoji');
-            const exampleElement = document.getElementById('word-example');
+            const exampleContainer = document.getElementById('word-example-container');
             const exampleChineseElement = document.getElementById('word-example-chinese');
-            const speakExampleBtn = document.getElementById('speak-example-btn');
             showingChinese = !showingChinese;
 
             if (showingChinese) {
                 chineseElement.classList.remove('hidden');
                 emojiElement.classList.remove('hidden'); // Show emoji (picture) when showing Chinese
-                exampleElement.classList.remove('hidden'); // Show English example
+                exampleContainer.classList.remove('hidden'); // Show example container
                 exampleChineseElement.classList.remove('hidden'); // Show Chinese example translation
-                if (speakExampleBtn) speakExampleBtn.classList.remove('hidden'); // Show speak example button
                 document.getElementById('toggle-chinese-btn').textContent = '隐藏中文';
                 // Read the Chinese meaning when showing it
                 const word = currentWords[currentWordIndex];
@@ -918,9 +918,8 @@
             } else {
                 chineseElement.classList.add('hidden');
                 emojiElement.classList.add('hidden'); // Hide emoji when hiding Chinese
-                exampleElement.classList.add('hidden'); // Hide English example
+                exampleContainer.classList.add('hidden'); // Hide example container
                 exampleChineseElement.classList.add('hidden'); // Hide Chinese example translation
-                if (speakExampleBtn) speakExampleBtn.classList.add('hidden'); // Hide speak example button
                 document.getElementById('toggle-chinese-btn').textContent = '显示中文';
             }
         }
