@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Vocabulary Examples</title>
+    <script>
+        // Load vocabulary data from Final_English_Learning_App.html
+        function testVocabularyExamples() {
+            const script = document.createElement('script');
+            script.src = 'Final_English_Learning_App.html';
+            script.onload = function() {
+                console.log('Testing vocabulary examples...');
+
+                let totalWords = 0;
+                let wordsWithExamples = 0;
+
+                // Test all grades and units
+                for (const grade in VOCABULARY) {
+                    for (const semester in VOCABULARY[grade]) {
+                        for (const unit in VOCABULARY[grade][semester]) {
+                            const words = VOCABULARY[grade][semester][unit];
+
+                            words.forEach(word => {
+                                totalWords++;
+
+                                // Check if example exists
+                                if (word.example && word.exampleChinese) {
+                                    wordsWithExamples++;
+                                    console.log(`✅ ${word.english}: "${word.example}" / "${word.exampleChinese}"`);
+                                } else {
+                                    console.warn(`❌ ${word.english}: Missing examples`);
+                                }
+                            });
+                        }
+                    }
+                }
+
+                console.log(`\nTest Results:`);
+                console.log(`Total words: ${totalWords}`);
+                console.log(`Words with examples: ${wordsWithExamples}`);
+                console.log(`Coverage: ${Math.round((wordsWithExamples/totalWords)*100)}%`);
+
+                if (wordsWithExamples === totalWords) {
+                    console.log('🎉 All words have examples! Test PASSED!');
+                } else {
+                    console.log('⚠️  Some words are missing examples.');
+                }
+            };
+            document.head.appendChild(script);
+        }
+
+        // Run test when page loads
+        window.onload = testVocabularyExamples;
+    </script>
+</head>
+<body>
+    <h1>Testing Vocabulary Examples</h1>
+    <p>Check console for test results...</p>
+    <div id="results"></div>
+</body>
+</html>
