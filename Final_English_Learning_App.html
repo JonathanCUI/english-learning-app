@@ -420,8 +420,9 @@
         .btn-unit6 { background: linear-gradient(45deg, #FFC107, #FF9800); }
         .btn-learn { background: linear-gradient(45deg, #4CAF50, #45a049); }
         .btn-quiz { background: linear-gradient(45deg, #FF9800, #F57C00); }
+        .btn-spelling { background: linear-gradient(45deg, #667eea, #764ba2); }
         .btn.selected { transform: scale(1.1); box-shadow: 0 0 20px rgba(255,255,255,0.5); }
-        .learning-mode, .quiz-mode {
+        .learning-mode, .quiz-mode, .spelling-mode {
             background: white; border-radius: 20px; padding: 40px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
@@ -580,6 +581,59 @@
         .shop-item button:hover { background: #FFA500; transform: translateY(-2px); }
         .shop-item.bought button { background: #ccc; cursor: not-allowed; }
 
+        /* Spelling mode styles */
+        .spelling-input-area {
+            margin: 30px 0; text-align: center;
+        }
+        .spelling-input-area input {
+            padding: 15px; font-size: 1.5rem; border: 3px solid #667eea;
+            border-radius: 10px; margin-right: 10px; width: 300px;
+        }
+        .spelling-input-area input:focus {
+            outline: none; border-color: #764ba2;
+        }
+        .submit-btn {
+            padding: 15px 30px; font-size: 1.2rem; border: none;
+            border-radius: 10px; cursor: pointer; background: #4CAF50;
+            color: white; transition: all 0.3s ease; font-weight: bold;
+        }
+        .submit-btn:hover { background: #45a049; transform: scale(1.05); }
+        .hint-btn {
+            padding: 15px 30px; font-size: 1.2rem; border: none;
+            border-radius: 10px; cursor: pointer; background: #FF9800;
+            color: white; transition: all 0.3s ease; font-weight: bold;
+        }
+        .hint-btn:hover { background: #F57C00; transform: scale(1.05); }
+        .skip-btn {
+            padding: 15px 30px; font-size: 1.2rem; border: none;
+            border-radius: 10px; cursor: pointer; background: #f44336;
+            color: white; transition: all 0.3s ease; font-weight: bold;
+        }
+        .skip-btn:hover { background: #da190b; transform: scale(1.05); }
+        .spelling-feedback {
+            min-height: 60px; margin: 20px 0; padding: 20px;
+            border-radius: 10px; text-align: center; font-size: 1.3rem;
+            font-weight: bold;
+        }
+        .spelling-feedback.correct {
+            background: #d4edda; color: #155724; border: 2px solid #4CAF50;
+        }
+        .spelling-feedback.incorrect {
+            background: #f8d7da; color: #721c24; border: 2px solid #f44336;
+        }
+        .spelling-word-info {
+            margin: 20px 0; text-align: center;
+        }
+        .spelling-word-info p {
+            margin: 10px 0; font-size: 1.3rem; color: #666;
+        }
+        .spelling-word-info p.hint {
+            color: #FF9800; font-weight: bold;
+        }
+        .hidden-hint {
+            display: none;
+        }
+
         /* New shop overlay styles */
         .shop-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -723,6 +777,7 @@
                 <div class="button-grid">
                     <button class="btn btn-learn" onclick="startLearning()">📚 学习模式</button>
                     <button class="btn btn-quiz" onclick="startQuiz()">🎯 测验模式</button>
+                    <button class="btn btn-spelling" onclick="startSpelling()">🔤 拼写练习</button>
                 </div>
             </div>
         </div>
@@ -774,6 +829,43 @@
                 得分: 0
             </div>
         </div>
+
+        <!-- Spelling Mode -->
+        <div class="spelling-mode hidden" id="spelling-mode">
+            <div class="spelling-question">
+                <h2 id="spelling-question-text">请拼写以下单词</h2>
+                <div class="word-emoji" id="spelling-emoji">🔤</div>
+                <div class="spelling-word-info">
+                    <p id="spelling-word-chinese"></p>
+                    <p id="spelling-word-pronunciation"></p>
+                    <p id="spelling-word-hint"></p>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="spelling-progress">第 1 / 8 题</div>
+            </div>
+
+            <div class="spelling-input-area">
+                <input type="text" id="spelling-answer-input" placeholder="请输入英文单词" maxlength="20">
+                <button class="submit-btn" onclick="checkSpellingAnswer()">提交答案</button>
+                <button class="hint-btn" onclick="showSpellingHint()">💡 提示</button>
+                <button class="skip-btn" onclick="skipSpellingWord()">跳过</button>
+            </div>
+
+            <div class="spelling-feedback" id="spelling-feedback">
+                <!-- Feedback will be displayed here -->
+            </div>
+
+            <div class="mode-navigation">
+                <button class="nav-btn" onclick="backToSelection()">🏠 返回选择</button>
+                <button class="nav-btn" onclick="openShop()">🏪 金币商店</button>
+            </div>
+
+            <div class="score-display" id="spelling-score-display">
+                正确: 0
+            </div>
+        </div>
     </div>
 
     <script>
@@ -789,6 +881,9 @@
         let quizScore = 0;
         let totalCoins = 0;
         let purchasedItems = JSON.parse(localStorage.getItem('purchasedItems')) || [];
+        let spellingWords = [];
+        let currentSpellingIndex = 0;
+        let spellingScore = 0;
 
         function selectGrade(grade) {
             currentGrade = grade;
@@ -1010,6 +1105,137 @@
             document.getElementById('quiz-mode').classList.remove('hidden');
 
             displayQuizQuestion();
+        }
+
+        function startSpelling() {
+            if (!currentGrade || !currentSemester || !currentUnit) {
+                alert('请先选择年级、学期和单元！');
+                return;
+            }
+
+            if (currentWords.length === 0) {
+                alert('当前单元没有单词！');
+                return;
+            }
+
+            spellingWords = [...currentWords].sort(() => Math.random() - 0.5).slice(0, Math.min(8, currentWords.length));
+            currentSpellingIndex = 0;
+            spellingScore = 0;
+
+            document.getElementById('selection-screen').classList.add('hidden');
+            document.getElementById('learning-mode').classList.add('hidden');
+            document.getElementById('quiz-mode').classList.add('hidden');
+            document.getElementById('spelling-mode').classList.remove('hidden');
+
+            displaySpellingQuestion();
+        }
+
+        function generateSpellingWords(words) {
+            return [...words].sort(() => Math.random() - 0.5).slice(0, Math.min(8, words.length));
+        }
+
+        function displaySpellingQuestion() {
+            if (currentSpellingIndex >= spellingWords.length) {
+                finishSpelling();
+                return;
+            }
+
+            const word = spellingWords[currentSpellingIndex];
+            const feedback = document.getElementById('spelling-feedback');
+            feedback.textContent = '';
+            feedback.className = 'spelling-feedback';
+
+            document.getElementById('spelling-word-chinese').textContent = `中文意思: ${word.chinese}`;
+            document.getElementById('spelling-word-pronunciation').textContent = `发音: /${word.pronunciation}/`;
+            document.getElementById('spelling-word-hint').innerHTML = `提示: ${word.emoji}  <span class="hidden-hint" id="hidden-hint">${word.english}</span>`;
+
+            const hintElement = document.getElementById('hidden-hint');
+            hintElement.style.display = 'none';
+
+            document.getElementById('spelling-answer-input').value = '';
+            document.getElementById('spelling-answer-input').placeholder = '请输入英文单词';
+            document.getElementById('spelling-answer-input').focus();
+
+            updateSpellingProgress();
+        }
+
+        function checkSpellingAnswer() {
+            const userAnswer = document.getElementById('spelling-answer-input').value.trim().toLowerCase();
+            const word = spellingWords[currentSpellingIndex];
+            const correctAnswer = word.english.toLowerCase();
+
+            const feedback = document.getElementById('spelling-feedback');
+
+            if (userAnswer === correctAnswer) {
+                feedback.textContent = `✅ 正确！"${word.english}" 拼写正确！`;
+                feedback.className = 'spelling-feedback correct';
+                playSound(true);
+                spellingScore++;
+                totalCoins++;
+                updateCoinDisplay();
+            } else {
+                feedback.textContent = `❌ 不正确。你输入的是: "${userAnswer}"，正确答案是: "${word.english}"`;
+                feedback.className = 'spelling-feedback incorrect';
+                playSound(false);
+            }
+
+            setTimeout(() => {
+                currentSpellingIndex++;
+                displaySpellingQuestion();
+            }, 2000);
+        }
+
+        function showSpellingHint() {
+            const hintElement = document.getElementById('hidden-hint');
+            const questionElement = document.getElementById('spelling-word-hint');
+
+            if (hintElement.style.display === 'none') {
+                hintElement.style.display = 'inline';
+                hintElement.style.color = '#FF9800';
+                hintElement.style.fontWeight = 'bold';
+                questionElement.innerHTML = `提示: ${hintElement.innerHTML}`;
+                questionElement.className = 'hint';
+            }
+        }
+
+        function skipSpellingWord() {
+            if (currentSpellingIndex < spellingWords.length - 1) {
+                currentSpellingIndex++;
+                displaySpellingQuestion();
+            } else {
+                finishSpelling();
+            }
+        }
+
+        function updateSpellingProgress() {
+            const progress = ((currentSpellingIndex + 1) / spellingWords.length) * 100;
+            document.getElementById('spelling-progress').style.width = progress + '%';
+            document.getElementById('spelling-progress').textContent = `第 ${currentSpellingIndex + 1} / ${spellingWords.length} 题`;
+            document.getElementById('spelling-score-display').textContent = `正确: ${spellingScore}`;
+        }
+
+        function finishSpelling() {
+            const percentage = Math.round((spellingScore / spellingWords.length) * 100);
+            let message = `拼写练习完成！你答对了 ${spellingScore} / ${spellingWords.length} 题 (${percentage}%)`;
+
+            if (percentage >= 90) {
+                message += '\n太棒了！你是拼写小达人！🎉';
+                totalCoins += 3; // Bonus 3 coins for good score
+                message += `\n获得奖励：3金币！`;
+                updateCoinDisplay();
+                alert(message);
+            } else if (percentage >= 70) {
+                message += '\n做得很好！继续加油！👏';
+            } else if (percentage >= 50) {
+                message += '\n不错！多练习会更好！💪';
+            } else {
+                message += '\n没关系，多练习就会进步！📚';
+            }
+
+            if (!(percentage >= 90)) {
+                alert(message);
+            }
+            backToSelection();
         }
 
         function generateComprehensiveQuiz(words) {
@@ -1247,7 +1473,9 @@
             document.getElementById('selection-screen').classList.remove('hidden');
             document.getElementById('learning-mode').classList.add('hidden');
             document.getElementById('quiz-mode').classList.add('hidden');
+            document.getElementById('spelling-mode').classList.add('hidden');
             currentWords = [];
+            spellingWords = [];
         }
 
         // Shop functionality
