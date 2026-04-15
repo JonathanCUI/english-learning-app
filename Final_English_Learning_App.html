@@ -1118,7 +1118,8 @@
                 return;
             }
 
-            spellingWords = [...currentWords].sort(() => Math.random() - 0.5).slice(0, Math.min(8, currentWords.length));
+            // Use all words from current unit to match learning mode exactly
+            spellingWords = [...currentWords].sort(() => Math.random() - 0.5);
             currentSpellingIndex = 0;
             spellingScore = 0;
 
@@ -1240,7 +1241,8 @@
 
         function generateComprehensiveQuiz(words) {
             const questions = [];
-            const selectedWords = [...words].sort(() => Math.random() - 0.5).slice(0, Math.min(8, words.length));
+            // Use all words from current unit to match learning mode exactly
+            const selectedWords = [...words].sort(() => Math.random() - 0.5);
 
             selectedWords.forEach(word => {
                 questions.push({
