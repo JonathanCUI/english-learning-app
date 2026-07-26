@@ -374,6 +374,128 @@
             if (!VOCABULARY[grade] || !VOCABULARY[grade][semester]) return [];
             return VOCABULARY[grade][semester][unit] || [];
         }
+
+        // Initialize voice selection - prefer offline/local English voices to avoid GFW blocking
+        function initVoices() {
+            const voices = window.speechSynthesis.getVoices();
+            if (voices.length === 0) return;
+
+            // Priority: local en-US > local en-GB > local en-* > any en-*
+            const localEnUS = voices.find(v => v.lang === 'en-US' && v.localService);
+            const localEnGB = voices.find(v => v.lang === 'en-GB' && v.localService);
+            const localEn = voices.find(v => v.lang.startsWith('en') && v.localService);
+            const anyEnUS = voices.find(v => v.lang === 'en-US');
+            const anyEn = voices.find(v => v.lang.startsWith('en'));
+
+            selectedVoice = localEnUS || localEnGB || localEn || anyEnUS || anyEn || null;
+            if (selectedVoice) {
+                console.log('Selected English voice:', selectedVoice.name, selectedVoice.lang, 'local:', selectedVoice.localService);
+            }
+        }
+        if (window.speechSynthesis) {
+            window.speechSynthesis.onvoiceschanged = initVoices;
+            initVoices(); // Also try immediate init (some browsers cache voices)
+        }
+
+        // Show brief status message on the pronounce button
+        function showPronounceStatus(msg) {
+            const btn = document.getElementById('pronounce-btn');
+            if (!btn) return;
+            const original = btn.textContent;
+            btn.textContent = msg;
+            btn.style.opacity = '0.7';
+            setTimeout(() => {
+                btn.textContent = original;
+                btn.style.opacity = '1';
+            }, 2000);
+        }
+
+        // Show brief status on speak-example button
+        function showExampleStatus(msg) {
+            const btn = document.getElementById('speak-example-btn');
+            if (!btn) return;
+            const original = btn.innerHTML;
+            btn.innerHTML = msg;
+            btn.style.opacity = '0.7';
+            setTimeout(() => {
+                btn.innerHTML = original;
+                btn.style.opacity = '1';
+            }, 2000);
+        }
+
+        // Play audio via Baidu TTS API (free, works in China)
+        function playBaiduTTS(text, isChinese = false) {
+            return new Promise((resolve, reject) => {
+                const cacheKey = text + (isChinese ? '_zh' : '_en');
+                if (audioCache.has(cacheKey)) {
+                    const audio = new Audio(URL.createObjectURL(audioCache.get(cacheKey)));
+                    audio.onended = () => resolve();
+                    audio.onerror = () => reject(new Error('Audio playback failed'));
+                    audio.play().catch(reject);
+                    return;
+                }
+
+                const lang = isChinese ? 'zh' : 'en';
+                const url = `https://fanyi.baidu.com/gettts?lan=${lang}&text=${encodeURIComponent(text)}&spd=3&source=web`;
+
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Baidu TTS fetch failed');
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        audioCache.set(cacheKey, blob);
+                        const audio = new Audio(URL.createObjectURL(blob));
+                        audio.onended = () => resolve();
+                        audio.onerror = () => reject(new Error('Audio playback failed'));
+                        audio.play().catch(reject);
+                    })
+                    .catch(reject);
+            });
+        }
+
+        // Try SpeechSynthesis with selected voice, returns Promise
+        function trySpeechSynthesis(text, lang = 'en-US') {
+            return new Promise((resolve, reject) => {
+                if (!window.speechSynthesis) {
+                    reject(new Error('SpeechSynthesis not supported'));
+                    return;
+                }
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang;
+                utterance.rate = 0.8;
+                utterance.pitch = lang === 'en-US' ? 1.1 : 1.0;
+                utterance.volume = 1.0;
+                if (selectedVoice && lang.startsWith('en')) {
+                    utterance.voice = selectedVoice;
+                }
+
+                let hasEnded = false;
+                utterance.onerror = (e) => {
+                    if (!hasEnded) {
+                        hasEnded = true;
+                        reject(new Error(e.error || 'SpeechSynthesis error'));
+                    }
+                };
+
+                // Timeout: if no sound in 5 seconds, consider it failed (GFW blocking)
+                const timeout = setTimeout(() => {
+                    if (!hasEnded) {
+                        hasEnded = true;
+                        window.speechSynthesis.cancel();
+                        reject(new Error('SpeechSynthesis timeout'));
+                    }
+                }, 5000);
+
+                utterance.onend = () => {
+                    clearTimeout(timeout);
+                    if (!hasEnded) { hasEnded = true; resolve(); }
+                };
+
+                window.speechSynthesis.speak(utterance);
+            });
+        }
     </script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -581,16 +703,57 @@
         .shop-item button:hover { background: #FFA500; transform: translateY(-2px); }
         .shop-item.bought button { background: #ccc; cursor: not-allowed; }
 
-        /* Spelling mode styles */
-        .spelling-input-area {
-            margin: 30px 0; text-align: center;
+        /* Spelling choice mode styles */
+        .spelling-question {
+            text-align: center;
         }
-        .spelling-input-area input {
-            padding: 15px; font-size: 1.5rem; border: 3px solid #667eea;
-            border-radius: 10px; margin-right: 10px; width: 300px;
+        .spelling-question h2 {
+            color: #4f46a5; font-size: 2rem; margin-bottom: 8px;
         }
-        .spelling-input-area input:focus {
-            outline: none; border-color: #764ba2;
+        .spelling-instruction {
+            color: #777; font-size: 1rem; margin: 0 0 12px;
+        }
+        .spelling-options {
+            display: grid; grid-template-columns: repeat(2, minmax(220px, 1fr));
+            gap: 16px; margin: 28px 0 18px;
+        }
+        .spelling-option {
+            min-height: 86px; padding: 16px 22px; border: 3px solid #ddd8ff;
+            border-radius: 18px; background: #f8f7ff; color: #34305f;
+            display: flex; align-items: center; gap: 16px; cursor: pointer;
+            font-size: 1.65rem; font-weight: bold; letter-spacing: 0.04em;
+            box-shadow: 0 5px 0 #ddd8ff; transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+        }
+        .spelling-option:hover:not(:disabled), .spelling-option:focus-visible {
+            transform: translateY(-3px); border-color: #7c71e8;
+            box-shadow: 0 8px 18px rgba(102, 126, 234, 0.2); outline: none;
+        }
+        .spelling-option:active:not(:disabled) {
+            transform: translateY(2px); box-shadow: 0 2px 0 #ddd8ff;
+        }
+        .spelling-option:disabled { cursor: default; }
+        .spelling-option.correct {
+            color: #155724; background: #e4f7e8; border-color: #4CAF50;
+            box-shadow: 0 5px 0 #319a37; animation: correct 0.5s ease;
+        }
+        .spelling-option.incorrect {
+            color: #721c24; background: #ffe8ea; border-color: #f44336;
+            box-shadow: 0 5px 0 #ca2925; animation: incorrect 0.5s ease;
+        }
+        .spelling-option-label {
+            width: 38px; height: 38px; border-radius: 50%; flex: 0 0 38px;
+            display: inline-flex; align-items: center; justify-content: center;
+            background: #667eea; color: white; font-size: 1.05rem; letter-spacing: 0;
+        }
+        .spelling-option.correct .spelling-option-label { background: #4CAF50; }
+        .spelling-option.incorrect .spelling-option-label { background: #f44336; }
+        .spelling-option-word { flex: 1; text-align: center; }
+        .spelling-actions {
+            display: flex; justify-content: center; gap: 12px; margin-bottom: 8px;
+        }
+        .spelling-progress-label {
+            text-align: center; color: #667eea; font-size: 1.05rem;
+            font-weight: bold; margin: 12px 0 -10px;
         }
         .submit-btn {
             padding: 15px 30px; font-size: 1.2rem; border: none;
@@ -615,6 +778,14 @@
             border-radius: 10px; text-align: center; font-size: 1.3rem;
             font-weight: bold;
         }
+        .spelling-feedback:empty {
+            min-height: 0; margin: 8px 0; padding: 0;
+        }
+        .answer-review-status {
+            min-height: 28px; margin: 8px 0; text-align: center;
+            color: #667eea; font-size: 1rem; font-weight: bold;
+        }
+        .answer-review-status:empty { min-height: 0; margin: 0; }
         .spelling-feedback.correct {
             background: #d4edda; color: #155724; border: 2px solid #4CAF50;
         }
@@ -629,9 +800,6 @@
         }
         .spelling-word-info p.hint {
             color: #FF9800; font-weight: bold;
-        }
-        .hidden-hint {
-            display: none;
         }
 
         /* New shop overlay styles */
@@ -702,12 +870,175 @@
         }
         .shop-item-card.purchased .price { background: rgba(255,255,255,0.3); }
         .shop-item-card.unaffordable .price { background: rgba(255,255,255,0.1); }
+        /* Error book styles */
+        .error-book-mode {
+            background: white; border-radius: 20px; padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .error-book-header {
+            text-align: center; margin-bottom: 30px;
+        }
+        .error-book-header h2 {
+            font-size: 2rem; color: #f44336; margin-bottom: 10px;
+        }
+        .error-book-stats {
+            display: flex; justify-content: center; gap: 30px; margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .error-stat {
+            background: #fff3f3; border: 2px solid #f44336;
+            border-radius: 15px; padding: 15px 25px; text-align: center;
+        }
+        .error-stat .count { font-size: 2rem; font-weight: bold; color: #f44336; }
+        .error-stat .label { font-size: 0.9rem; color: #666; }
+        .error-grade-section {
+            margin-bottom: 25px;
+        }
+        .error-grade-title {
+            font-size: 1.5rem; font-weight: bold; color: #667eea;
+            padding: 10px 15px; background: #f0f0ff; border-radius: 10px;
+            margin-bottom: 15px; cursor: pointer; user-select: none;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .error-grade-title:hover { background: #e0e0ff; }
+        .error-semester-section {
+            margin-left: 20px; margin-bottom: 15px;
+        }
+        .error-semester-title {
+            font-size: 1.2rem; font-weight: bold; color: #764ba2;
+            padding: 8px 12px; margin-bottom: 10px; cursor: pointer; user-select: none;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .error-unit-card {
+            background: #fafafa; border: 2px solid #e0e0e0;
+            border-radius: 12px; padding: 15px; margin: 10px 0 10px 30px;
+            transition: all 0.3s ease;
+        }
+        .error-unit-card:hover { border-color: #f44336; }
+        .error-unit-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 12px; flex-wrap: wrap; gap: 10px;
+        }
+        .error-unit-name {
+            font-size: 1.1rem; font-weight: bold; color: #333;
+        }
+        .error-unit-count {
+            background: #f44336; color: white; padding: 3px 12px;
+            border-radius: 15px; font-size: 0.9rem;
+        }
+        .error-unit-actions {
+            display: flex; gap: 8px; flex-wrap: wrap;
+        }
+        .btn-practice-errors {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white; border: none; padding: 8px 18px;
+            border-radius: 20px; cursor: pointer; font-weight: bold;
+            transition: all 0.3s ease; font-size: 0.9rem;
+        }
+        .btn-practice-errors:hover { transform: scale(1.05); }
+        .btn-clear-errors {
+            background: #ccc; color: #333; border: none; padding: 8px 18px;
+            border-radius: 20px; cursor: pointer; font-weight: bold;
+            transition: all 0.3s ease; font-size: 0.9rem;
+        }
+        .btn-clear-errors:hover { background: #f44336; color: white; }
+        .error-word-list {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 10px;
+        }
+        .error-word-item {
+            background: white; border: 1px solid #e0e0e0; border-radius: 10px;
+            padding: 10px 15px; display: flex; align-items: center; gap: 12px;
+        }
+        .error-word-emoji { font-size: 1.8rem; }
+        .error-word-info { flex: 1; min-width: 0; }
+        .error-word-english {
+            font-weight: bold; color: #333; font-size: 1rem;
+        }
+        .error-word-chinese {
+            color: #666; font-size: 0.85rem;
+        }
+        .error-word-wrong {
+            color: #f44336; font-size: 0.8rem;
+            text-decoration: line-through; margin-top: 2px;
+        }
+        .error-word-mode {
+            font-size: 0.75rem; color: #999; margin-top: 2px;
+        }
+        .error-empty {
+            text-align: center; padding: 60px 20px; color: #999;
+        }
+        .error-empty .icon { font-size: 4rem; margin-bottom: 20px; }
+        .error-empty p { font-size: 1.2rem; }
+        .btn-error-book {
+            background: linear-gradient(45deg, #f44336, #e91e63);
+            color: white; border: none; padding: 18px 35px;
+            border-radius: 25px; cursor: pointer; font-weight: bold;
+            font-size: 1.2rem; transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(244,67,54,0.3);
+        }
+        .btn-error-book:hover {
+            transform: translateY(-3px); box-shadow: 0 6px 20px rgba(244,67,54,0.4);
+        }
+        .btn-clear-all-errors {
+            background: #f44336; color: white; border: none;
+            padding: 10px 25px; border-radius: 20px; cursor: pointer;
+            font-weight: bold; transition: all 0.3s ease;
+        }
+        .btn-clear-all-errors:hover { background: #d32f2f; }
+
+        /* Error practice mode styles */
+        .error-practice-mode {
+            background: white; border-radius: 20px; padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .error-practice-header {
+            text-align: center; margin-bottom: 20px;
+        }
+        .error-practice-header h2 {
+            font-size: 1.8rem; color: #f44336;
+        }
+        .error-practice-card {
+            background: linear-gradient(135deg, #fff3f3 0%, #ffe0e0 100%);
+            border-radius: 20px; padding: 40px; margin: 30px 0;
+            text-align: center; border: 3px solid #f44336;
+        }
+        .error-practice-emoji { font-size: 5rem; margin-bottom: 15px; }
+        .error-practice-chinese { font-size: 2rem; color: #333; margin-bottom: 10px; }
+        .error-practice-pronunciation { font-size: 1.2rem; color: #666; margin-bottom: 20px; }
+        .error-practice-instruction {
+            color: #777; font-size: 1rem; margin: 8px 0 0;
+        }
+        .error-practice-actions {
+            display: flex; justify-content: center; gap: 12px; margin: 8px 0;
+        }
+        .error-practice-feedback {
+            min-height: 60px; margin: 20px 0; padding: 20px;
+            border-radius: 10px; text-align: center; font-size: 1.3rem;
+            font-weight: bold;
+        }
+        .error-practice-feedback.correct {
+            background: #d4edda; color: #155724; border: 2px solid #4CAF50;
+        }
+        .error-practice-feedback.incorrect {
+            background: #f8d7da; color: #721c24; border: 2px solid #f44336;
+        }
+        .error-practice-feedback:empty {
+            min-height: 0; margin: 8px 0; padding: 0;
+        }
+        .error-practice-remaining {
+            text-align: center; font-size: 1.1rem; color: #666; margin: 10px 0;
+        }
+
         @media (max-width: 768px) {
             h1 { font-size: 2rem; }
             .word-text { font-size: 2.5rem; }
             .word-chinese { font-size: 1.8rem; }
             .button-grid { grid-template-columns: 1fr 1fr; }
             .quiz-options { grid-template-columns: 1fr; }
+            .spelling-options { grid-template-columns: 1fr; }
+            .spelling-option { min-height: 72px; font-size: 1.35rem; padding: 12px 16px; }
+            .error-word-list { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -778,6 +1109,7 @@
                     <button class="btn btn-learn" onclick="startLearning()">📚 学习模式</button>
                     <button class="btn btn-quiz" onclick="startQuiz()">🎯 测验模式</button>
                     <button class="btn btn-spelling" onclick="startSpelling()">🔤 拼写练习</button>
+                    <button class="btn btn-error-book" onclick="openErrorBook()">📕 错题本</button>
                 </div>
             </div>
         </div>
@@ -795,7 +1127,7 @@
             <div class="mode-navigation">
                 <button class="nav-btn" id="prev-btn" onclick="prevWord();">⬅️ 上一个</button>
                 <button class="nav-btn" id="toggle-chinese-btn" onclick="toggleChinese();">显示中文</button>
-                <button class="nav-btn" id="pronounce-btn" onclick="console.log('Button clicked'); pronounceWord();">🔊 发音</button>
+                <button class="nav-btn" id="pronounce-btn" onclick="pronounceWord();">🔊 发音</button>
                 <button class="nav-btn" id="next-btn" onclick="nextWord();">下一个 ➡️</button>
             </div>
 
@@ -819,6 +1151,7 @@
             <div class="quiz-options" id="quiz-options">
                 <p style="grid-column: 1/-1; text-align: center; color: #666;">请选择答案</p>
             </div>
+            <div class="answer-review-status" id="quiz-review-status" aria-live="polite"></div>
 
             <div class="mode-navigation">
                 <button class="nav-btn" onclick="backToSelection()">🏠 返回选择</button>
@@ -833,29 +1166,31 @@
         <!-- Spelling Mode -->
         <div class="spelling-mode hidden" id="spelling-mode">
             <div class="spelling-question">
-                <h2 id="spelling-question-text">请拼写以下单词</h2>
+                <h2 id="spelling-question-text">选出正确的单词拼写</h2>
+                <p class="spelling-instruction">仔细看，每个选项都只差一点点</p>
                 <div class="word-emoji" id="spelling-emoji">🔤</div>
                 <div class="spelling-word-info">
                     <p id="spelling-word-chinese"></p>
                     <p id="spelling-word-pronunciation"></p>
-                    <p id="spelling-word-hint"></p>
                 </div>
             </div>
 
-            <div class="progress-bar">
-                <div class="progress-fill" id="spelling-progress">第 1 / 8 题</div>
+            <div class="spelling-progress-label" id="spelling-progress-label">第 1 / 8 题</div>
+            <div class="progress-bar" aria-hidden="true">
+                <div class="progress-fill" id="spelling-progress"></div>
             </div>
 
-            <div class="spelling-input-area">
-                <input type="text" id="spelling-answer-input" placeholder="请输入英文单词" maxlength="20">
-                <button class="submit-btn" onclick="checkSpellingAnswer()">提交答案</button>
-                <button class="hint-btn" onclick="showSpellingHint()">💡 提示</button>
-                <button class="skip-btn" onclick="skipSpellingWord()">跳过</button>
+            <div class="spelling-options" id="spelling-options" role="group" aria-labelledby="spelling-question-text"></div>
+
+            <div class="spelling-actions">
+                <button class="hint-btn" id="spelling-pronounce-btn" onclick="pronounceSpellingWord()">🔊 听发音</button>
+                <button class="skip-btn" id="spelling-skip-btn" onclick="skipSpellingWord()">跳过</button>
             </div>
 
-            <div class="spelling-feedback" id="spelling-feedback">
+            <div class="spelling-feedback" id="spelling-feedback" aria-live="polite">
                 <!-- Feedback will be displayed here -->
             </div>
+            <div class="answer-review-status" id="spelling-review-status" aria-live="polite"></div>
 
             <div class="mode-navigation">
                 <button class="nav-btn" onclick="backToSelection()">🏠 返回选择</button>
@@ -864,6 +1199,49 @@
 
             <div class="score-display" id="spelling-score-display">
                 正确: 0
+            </div>
+        </div>
+
+        <!-- Error Book Mode -->
+        <div class="error-book-mode hidden" id="error-book-mode">
+            <div class="error-book-header">
+                <h2>📕 错题本</h2>
+                <p style="color: #666; font-size: 1.1rem;">记录测验和拼写练习中的错题，按单元分类整理</p>
+                <div class="error-book-stats" id="error-book-stats"></div>
+            </div>
+            <div id="error-book-content"></div>
+            <div class="mode-navigation">
+                <button class="nav-btn" onclick="backToSelection()">🏠 返回选择</button>
+                <button class="btn-clear-all-errors" onclick="clearAllErrors()">🗑️ 清空所有错题</button>
+            </div>
+        </div>
+
+        <!-- Error Practice Mode -->
+        <div class="error-practice-mode hidden" id="error-practice-mode">
+            <div class="error-practice-header">
+                <h2 id="error-practice-title">📝 错题拼写选择</h2>
+                <p id="error-practice-unit-label" style="color: #666;"></p>
+                <p class="error-practice-instruction">从相似拼写中选出正确答案</p>
+            </div>
+            <div class="error-practice-card">
+                <div class="error-practice-emoji" id="error-practice-emoji">📝</div>
+                <div class="error-practice-chinese" id="error-practice-chinese"></div>
+                <div class="error-practice-pronunciation" id="error-practice-pronunciation"></div>
+            </div>
+            <div class="spelling-progress-label" id="error-practice-progress-label">0 / 0</div>
+            <div class="progress-bar" aria-hidden="true">
+                <div class="progress-fill" id="error-practice-progress" style="width: 0%;"></div>
+            </div>
+            <div class="spelling-options" id="error-practice-options" role="group" aria-labelledby="error-practice-title"></div>
+            <div class="error-practice-actions">
+                <button class="hint-btn" id="error-practice-pronounce-btn" onclick="pronounceErrorPracticeWord()">🔊 听发音</button>
+                <button class="skip-btn" id="error-practice-skip-btn" onclick="skipErrorPracticeWord()">跳过</button>
+            </div>
+            <div class="error-practice-feedback" id="error-practice-feedback" aria-live="polite"></div>
+            <div class="answer-review-status" id="error-practice-review-status" aria-live="polite"></div>
+            <div class="error-practice-remaining" id="error-practice-remaining"></div>
+            <div class="mode-navigation">
+                <button class="nav-btn" onclick="backToErrorBook()">📕 返回错题本</button>
             </div>
         </div>
     </div>
@@ -879,11 +1257,77 @@
         let quizQuestions = [];
         let currentQuizIndex = 0;
         let quizScore = 0;
+        let quizAnswerLocked = false;
+        let quizAdvanceTimer = null;
         let totalCoins = 0;
         let purchasedItems = JSON.parse(localStorage.getItem('purchasedItems')) || [];
         let spellingWords = [];
         let currentSpellingIndex = 0;
         let spellingScore = 0;
+        let currentSpellingOptions = [];
+        let spellingAnswerLocked = false;
+        let spellingAdvanceTimer = null;
+
+        // Error book globals
+        let errorBook = JSON.parse(localStorage.getItem('errorBook')) || {};
+        let errorPracticeWords = [];
+        let errorPracticeIndex = 0;
+        let errorPracticeScore = 0;
+        let errorPracticeGrade = null;
+        let errorPracticeSemester = null;
+        let errorPracticeUnit = null;
+        let currentErrorPracticeOptions = [];
+        let errorPracticeAnswerLocked = false;
+        let errorPracticeAdvanceTimer = null;
+
+        // Pronunciation system globals
+        let selectedVoice = null;
+        const audioCache = new Map();
+        let isPronouncing = false;
+        let answerReviewGeneration = 0;
+
+        function waitForReview(milliseconds) {
+            return new Promise(resolve => setTimeout(resolve, milliseconds));
+        }
+
+        async function speakReviewPart(text, lang, isChinese, generation) {
+            if (!text || generation !== answerReviewGeneration) return false;
+            try {
+                await trySpeechSynthesis(text, lang);
+                return generation === answerReviewGeneration;
+            } catch (speechError) {
+                if (generation !== answerReviewGeneration) return false;
+                try {
+                    await playBaiduTTS(text, isChinese);
+                    return generation === answerReviewGeneration;
+                } catch (ttsError) {
+                    console.log('Answer review pronunciation failed:', ttsError.message);
+                    return false;
+                }
+            }
+        }
+
+        // Read the learned pair in a fixed order after every completed question.
+        async function speakAnswerReview(word, statusElementId) {
+            if (!word) return false;
+            const generation = ++answerReviewGeneration;
+            const statusElement = document.getElementById(statusElementId);
+            const setStatus = text => {
+                if (statusElement && generation === answerReviewGeneration) statusElement.textContent = text;
+            };
+
+            setStatus(`🔊 英文：${word.english}`);
+            await speakReviewPart(word.english, 'en-US', false, generation);
+            if (generation !== answerReviewGeneration) return false;
+
+            await waitForReview(180);
+            setStatus(`🔊 中文：${word.chinese}`);
+            await speakReviewPart(word.chinese, 'zh-CN', true, generation);
+            if (generation !== answerReviewGeneration) return false;
+
+            setStatus(`✅ ${word.english}：${word.chinese}`);
+            return true;
+        }
 
         function selectGrade(grade) {
             currentGrade = grade;
@@ -956,6 +1400,7 @@
 
             const word = currentWords[currentWordIndex];
             const flashcard = document.getElementById('flashcard');
+            const escapedExample = (word.example || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
             flashcard.innerHTML = `
                 <div class="word-emoji hidden" id="word-emoji">${word.emoji}</div>
@@ -964,7 +1409,7 @@
                 <div class="word-chinese hidden" id="chinese-meaning">${word.chinese}</div>
                 <div class="word-example-container hidden" id="word-example-container">
                     <div class="word-example" id="word-example">${word.example || ''}</div>
-                    <button class="speak-example-btn" id="speak-example-btn" onclick="speakExample('${word.example}')">🔊 例句</button>
+                    <button class="speak-example-btn" id="speak-example-btn" onclick="speakExample('${escapedExample}')">🔊 例句</button>
                 </div>
                 <div class="word-example-chinese hidden" id="word-example-chinese">${word.exampleChinese || ''}</div>
             `;
@@ -977,11 +1422,9 @@
 
             // Re-attach event listeners to ensure they work
             document.getElementById('pronounce-btn').onclick = function() {
-                console.log('Pronounce button clicked (re-attached)');
                 pronounceWord();
             };
             document.getElementById('toggle-chinese-btn').onclick = function() {
-                console.log('Toggle Chinese button clicked (re-attached)');
                 toggleChinese();
             };
 
@@ -1019,50 +1462,218 @@
             }
         }
 
-        function pronounceWord() {
+        async function pronounceWord() {
+            if (isPronouncing) return; // Prevent rapid repeated clicks
+            isPronouncing = true;
+
             const word = currentWords[currentWordIndex];
             const emojiElement = document.getElementById('word-emoji');
 
             if (!showingPhonetic) {
                 document.getElementById('pronunciation').classList.remove('hidden');
-                // Keep emoji hidden when pronouncing - only show on Chinese toggle
                 document.getElementById('pronounce-btn').textContent = '🔊 再次发音';
                 showingPhonetic = true;
             }
 
-            // Check for speech synthesis support
-            if (!window.speechSynthesis) {
-                alert('您的浏览器不支持语音功能，请使用Chrome或Safari浏览器！');
-                return;
+            // Multi-layer fallback: Layer 1 → SpeechSynthesis, Layer 2 → Baidu TTS, Layer 3 → Phonetic map
+            let success = false;
+
+            // Layer 1: Try SpeechSynthesis with cached English voice
+            try {
+                showPronounceStatus('🔊 发音中...');
+                await trySpeechSynthesis(word.english, 'en-US');
+                success = true;
+            } catch(e) {
+                console.log('SpeechSynthesis failed, trying Baidu TTS:', e.message);
             }
 
-            // Cancel any ongoing speech first
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(word.english);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.8;
-            utterance.pitch = 1.1;
-            utterance.volume = 1.0;
-            window.speechSynthesis.speak(utterance);
+            // Layer 2: Try Baidu TTS API (free, works in China)
+            if (!success) {
+                try {
+                    await playBaiduTTS(word.english, false);
+                    success = true;
+                } catch(e) {
+                    console.log('Baidu TTS failed, using phonetic fallback:', e.message);
+                }
+            }
+
+            // Layer 3: Improved Chinese phonetic map
+            if (!success) {
+                speakChinesePhonetic(word.english);
+                showPronounceStatus('📢 谐音发音');
+            }
+
+            document.getElementById('pronounce-btn').style.opacity = '1';
+            document.getElementById('pronounce-btn').textContent = '🔊 再次发音';
+            isPronouncing = false;
         }
 
-        function speakExample(exampleText) {
-            if (!exampleText) return;
+        function speakChinesePhonetic(englishWord) {
+            // Chinese phonetic pronunciation map - covers ALL vocabulary words
+            const phoneticMap = {
+                // Grade 1 上学期 Unit 1
+                'hello': '哈喽', 'nice': '奈斯', 'meet': '米特', 'you': '优', "let's": '莱茨',
+                'play': '普雷', 'i': '艾', 'am': '爱慕', 'too': '吐', 'photo': '福头',
+                'how': '好', 'say': '塞',
+                // Grade 1 上学期 Unit 2
+                'one': '万', 'two': '吐', 'three': '斯瑞', 'four': '佛', 'five': '法伊夫',
+                'six': '西克斯', 'seven': '塞文', 'balloon': '巴伦', 'thank': '桑克', 'please': '普利兹',
+                'number': '南伯',
+                // Grade 1 上学期 Unit 3
+                'my': '麦', 'family': '伐咪利', 'mum': '妈妈', 'dad': '爸爸', 'grandpa': '格兰帕',
+                'grandma': '格兰马', 'sister': '西斯特', 'and': '安德', 'brother': '布拉德',
+                'this': '迪斯', 'is': '伊兹', 'love': '拉夫', 'me': '米',
+                // Grade 1 上学期 Unit 4
+                'what': '沃特', 'open': '欧本', 'door': '多尔', 'classroom': '克拉斯鲁姆',
+                'blackboard': '布莱克波德', 'window': '温斗', 'desk': '德斯克', 'chair': '切尔',
+                'it': '伊特', 'big': '比格', 'that': '戴特', 'teacher': '提彻', 'a': '额',
+                'very': '歪瑞', 'old': '欧德', 'school': '斯库尔', 'look': '卢克',
+                // Grade 1 上学期 Unit 5
+                'schoolbag': '斯库尔拜格', 'pencil case': '彭搜 凯斯', 'pencil': '彭搜',
+                'book': '布克', 'bye': '拜', 'here you are': '黑尔 优 阿', 'read': '瑞德',
+                'together': '特盖德',
+                // Grade 1 上学期 Unit 6
+                'red': '瑞德', 'green': '格林', 'blue': '布鲁', 'black': '布莱克',
+                'white': '外特', 'yellow': '耶楼', 'colour': '卡勒', 'so': '搜', 'many': '梅尼',
+                'happy': '海皮', 'chinese new year': '拆尼斯 纽 伊尔', 'stop': '斯托普',
+                'go': '勾', 'slow': '斯楼',
+                // Grade 1 下学期 Unit 1
+                'pet': '派特', 'bird': '伯德', 'dog': '道格', 'cat': '凯特', 'fish': '费什',
+                'rabbit': '瑞比特', 'friend': '福润德',
+                // Grade 1 下学期 Unit 2
+                'animal': '安尼莫', 'they': '贼', 'welcome': '威尔克姆', 'zoo': '祖',
+                'tiger': '泰格', 'bear': '贝尔', 'monkey': '芒基', 'panda': '潘达',
+                'cute': '克尤特', 'picture': '皮克彻', 'which': '威奇', 'from': '弗若姆',
+                // Grade 1 下学期 Unit 3
+                'face': '费斯', 'eye': '艾', 'ear': '伊尔', 'nose': '诺兹', 'mouth': '毛斯',
+                'we': '威', 'twin': '特温', 'have': '海夫', 'small': '斯莫尔',
+                'same': '塞姆', 'know': '诺', 'now': '闹', 'long': '朗', 'hair': '海尔',
+                'short': '肖特', 'different': '迪弗润特', 'touch': '塔奇', 'your': '尤尔',
+                // Grade 1 下学期 Unit 4
+                'body': '巴迪', 'come on': '卡姆 昂', 'boy': '博伊', 'girl': '格尔',
+                'rock': '若克', 'move': '穆夫', 'head': '海德', 'hand': '汉德',
+                'arm': '阿姆', 'leg': '莱格', 'foot': '福特', 'feet': '菲特',
+                'robot': '罗波特', 'cool': '库尔', 'monster': '芒斯特', 'aunt': '安特',
+                'her': '赫', 'part': '帕特', 'toy': '托伊', 'his': '希兹',
+                'name': '内姆', 'he': '希', 'swim': '斯威姆', 'fast': '法斯特',
+                'she': '希', 'run': '软', 'strong': '斯壮', 'basketball': '巴斯基特波尔',
+                'well': '威尔',
+                // Grade 1 下学期 Unit 5
+                'home': '后姆', 'bed': '拜德', 'table': '忒波', 'sofa': '搜法',
+                'room': '鲁姆', 'sit down': '西特 当', 'next': '奈克斯特', 'day': '得',
+                'clean': '克林', 'tidy': '泰迪', 'ok': '欧剋', 'amazing': '额梅兹因',
+                'snow': '斯诺', 'house': '豪斯', 'tall': '托尔', 'live': '利夫',
+                // Grade 1 下学期 Unit 6
+                'time': '泰姆', 'tell': '泰尔', 'mr': '米斯特', 'wolf': '乌尔夫',
+                'eight': '诶特', 'nine': '奈恩', 'ten': '腾', 'eleven': '伊莱文',
+                'twelve': '特威尔夫', 'birthday': '波斯得', 'lunch': '兰奇',
+                'not': '诺特', 'yet': '耶特', 'busy': '比兹', 'clock': '克洛克',
+                // Grade 2 上学期 Unit 1
+                'feeling': '费林', 'sad': '赛德', 'angry': '安格里', 'tired': '泰尔德',
+                'hungry': '杭格里', 'fun': '方', 'show': '秀', 'turn': '特恩',
+                'apple': '艾坡', "o'clock": '额克洛克', 'want': '旺特', 'for': '佛',
+                'dinner': '迪讷',
+                // Grade 2 上学期 Unit 2
+                'yummy': '亚米', 'food': '福德', 'eat': '伊特', 'banana': '波南那',
+                'rice': '瑞斯', 'noodle': '努斗', 'milk': '米尔克', 'bread': '布莱德',
+                'like': '莱克', 'but': '巴特', 'good': '古德', 'us': '阿斯',
+                'cake': '剋克', 'sweet': '斯威特', 'ice cream': '艾斯 克林',
+                // Grade 2 上学期 Unit 3
+                'weather': '外泽', 'windy': '温迪', 'sonwy': '斯诺伊', 'rainy': '瑞尼',
+                'sunny': '桑尼', 'worry': '瓦瑞', 'wait': '威特', 'later': '雷特',
+                'egg': '埃格', 'other': '阿泽',
+                // Grade 2 上学期 Unit 4
+                'season': '西森', 'spring': '斯普林', 'summer': '萨默', 'autumn': '奥腾',
+                'winter': '温特', 'year': '伊尔', 'lots of': '罗茨 额夫', 'make': '梅克',
+                'some': '萨姆', 'hat': '海特',
+                // Grade 2 上学期 Unit 5
+                'clothes': '克楼兹', 'shirt': '舍特', 'skirt': '斯科特',
+                'coat': '扣特', 'shoe': '舒', 'put': '普特', 'them': '泽姆',
+                'sun': '桑', 'put on': '普特 昂', 'sit': '西特', 'jump': '江普',
+                'favourite': '费沃瑞特',
+                // Grade 2 上学期 Unit 6
+                'holiday': '霍利得', 'paper-cut': '佩帕 卡特', 'up': '阿普',
+                'put up': '普特 阿普', 'lucky': '拉基', 'kite': '凯特', 'card': '卡德',
+                // Grade 2 下学期 Unit 1
+                'by': '拜', 'bus': '巴斯', 'car': '卡', 'train': '春恩',
+                'plane': '普雷恩', 'farm': '法姆', 'chinese': '拆尼斯', 'new': '纽',
+                'see': '西',
+                // Grade 2 下学期 Unit 2
+                'job': '乔布', 'driver': '拽沃', 'farmer': '法默', 'worker': '沃克',
+                'doctor': '道克特', 'nurse': '讷斯', 'our': '奥尔', 'pen': '彭',
+                'queen': '奎恩',
+                // Grade 2 下学期 Unit 3
+                'cow': '考', 'chicken': '奇肯', 'sheep': '希普', 'flower': '弗劳尔',
+                'grass': '格拉斯', 'child': '柴尔德', 'children': '丘准',
+                'feed': '费德', 'help': '海尔普', 'look at': '卢克 艾特',
+                'painting': '喷庭', 'yes': '耶斯',
+                // Grade 2 下学期 Unit 4
+                'class': '克拉斯', 'in class': '因 克拉斯', 'english': '英格利什',
+                'maths': '麦斯', 'all': '奥尔', 'music': '缪兹克', 'pe': '皮 伊',
+                'art': '阿特', 'great': '格瑞特', 'can': '肯', 'umbrella': '安布瑞拉',
+                'van': '万', 'student': '斯丢登特',
+                // Grade 2 下学期 Unit 5
+                'sing': '星', 'dance': '丹斯', 'draw': '卓', 'football': '福特波尔',
+                'play football': '普雷 福特波尔', 'kick': '剋克', 'box': '博克斯',
+                'paper': '佩帕',
+                // Grade 2 下学期 Unit 6
+                'week': '威克', 'monday': '曼得', 'tuesday': '特优兹得',
+                'wednesday': '温兹得', 'thursday': '瑟兹得', 'friday': '弗莱得',
+                'every day': '艾沃瑞 得', 'saturday': '赛特得', 'sunday': '桑得',
+                'sorry': '索瑞'
+            };
 
-            // Check for speech synthesis support
-            if (!window.speechSynthesis) {
-                alert('您的浏览器不支持语音功能，请使用Chrome或Safari浏览器！');
-                return;
+            const key = englishWord.toLowerCase();
+            const chinesePhonetic = phoneticMap[key];
+            if (chinesePhonetic) {
+                // Show brief status instead of alert
+                showPronounceStatus(`📢 ${englishWord} → ${chinesePhonetic}`);
+                // Also try to speak the Chinese phonetic version
+                if (window.speechSynthesis) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(chinesePhonetic);
+                    utterance.lang = 'zh-CN';
+                    utterance.rate = 0.9;
+                    window.speechSynthesis.speak(utterance);
+                }
+            } else {
+                // Last resort: show pronunciation symbol
+                showPronounceStatus('暂时无法发音');
+            }
+        }
+
+        async function speakExample(exampleText) {
+            if (!exampleText) return;
+            if (isPronouncing) return; // Prevent rapid repeated clicks
+
+            isPronouncing = true;
+            let success = false;
+
+            // Layer 1: Try SpeechSynthesis with cached English voice
+            try {
+                showExampleStatus('🔊 发音中...');
+                await trySpeechSynthesis(exampleText, 'en-US');
+                success = true;
+            } catch(e) {
+                console.log('Example SpeechSynthesis failed, trying Baidu TTS:', e.message);
             }
 
-            // Cancel any ongoing speech first
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(exampleText);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.8;
-            utterance.pitch = 1.0;
-            utterance.volume = 1.0;
-            window.speechSynthesis.speak(utterance);
+            // Layer 2: Try Baidu TTS API
+            if (!success) {
+                try {
+                    await playBaiduTTS(exampleText, false);
+                    success = true;
+                } catch(e) {
+                    console.log('Example Baidu TTS failed:', e.message);
+                }
+            }
+
+            // Layer 3: Chinese phonetic fallback
+            if (!success) {
+                showExampleStatus('📢 无法发音');
+            }
+
+            isPronouncing = false;
         }
 
         function nextWord() {
@@ -1099,6 +1710,10 @@
             quizQuestions = generateComprehensiveQuiz(currentWords);
             currentQuizIndex = 0;
             quizScore = 0;
+            quizAnswerLocked = false;
+            clearTimeout(quizAdvanceTimer);
+            answerReviewGeneration++;
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
 
             document.getElementById('selection-screen').classList.add('hidden');
             document.getElementById('learning-mode').classList.add('hidden');
@@ -1122,6 +1737,10 @@
             spellingWords = [...currentWords].sort(() => Math.random() - 0.5);
             currentSpellingIndex = 0;
             spellingScore = 0;
+            spellingAnswerLocked = false;
+            clearTimeout(spellingAdvanceTimer);
+            answerReviewGeneration++;
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
 
             document.getElementById('selection-screen').classList.add('hidden');
             document.getElementById('learning-mode').classList.add('hidden');
@@ -1131,8 +1750,70 @@
             displaySpellingQuestion();
         }
 
-        function generateSpellingWords(words) {
-            return [...words].sort(() => Math.random() - 0.5).slice(0, Math.min(8, words.length));
+        function shuffleSpellingItems(items) {
+            const shuffled = [...items];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function preserveLetterCase(source, replacement) {
+            return source === source.toUpperCase() ? replacement.toUpperCase() : replacement;
+        }
+
+        // Generate near-miss spellings with one small change so every option looks plausible.
+        function generateSpellingOptions(correctWord, optionCount = 4) {
+            const correct = correctWord.trim();
+            const normalizedCorrect = correct.toLowerCase();
+            const candidates = new Set();
+            const similarLetters = {
+                a: ['e', 'o'], b: ['d', 'p'], c: ['k', 's'], d: ['b', 't'],
+                e: ['a', 'i'], f: ['v'], g: ['j', 'q'], h: ['n'],
+                i: ['e', 'y'], j: ['g'], k: ['c'], l: ['i'], m: ['n'],
+                n: ['m', 'h'], o: ['a', 'u'], p: ['b', 'q'], q: ['g', 'p'],
+                r: ['n'], s: ['c', 'z'], t: ['d', 'f'], u: ['o'],
+                v: ['f', 'w'], w: ['v'], x: ['s'], y: ['i'], z: ['s']
+            };
+
+            function addCandidate(candidate) {
+                const cleaned = candidate.trim().replace(/\s{2,}/g, ' ');
+                if (cleaned && cleaned.toLowerCase() !== normalizedCorrect) {
+                    candidates.add(cleaned);
+                }
+            }
+
+            const letterCount = (correct.match(/[a-z]/gi) || []).length;
+            for (let i = 0; i < correct.length; i++) {
+                const char = correct[i];
+                if (!/[a-z]/i.test(char)) continue;
+
+                if (letterCount > 2) {
+                    addCandidate(correct.slice(0, i) + correct.slice(i + 1));
+                }
+
+                addCandidate(correct.slice(0, i + 1) + char + correct.slice(i + 1));
+
+                const nextChar = correct[i + 1];
+                if (nextChar && /[a-z]/i.test(nextChar) && char.toLowerCase() !== nextChar.toLowerCase()) {
+                    addCandidate(correct.slice(0, i) + nextChar + char + correct.slice(i + 2));
+                }
+
+                (similarLetters[char.toLowerCase()] || []).forEach(replacement => {
+                    addCandidate(correct.slice(0, i) + preserveLetterCase(char, replacement) + correct.slice(i + 1));
+                });
+            }
+
+            if (correct.includes(' ')) addCandidate(correct.replace(' ', ''));
+            if (correct.includes("'")) addCandidate(correct.replace("'", ''));
+
+            ['a', 'e', 'i', 'o', 'u', 'l'].forEach(letter => {
+                if (correct.length === 1) addCandidate(preserveLetterCase(correct, letter));
+            });
+
+            const distractors = shuffleSpellingItems([...candidates]).slice(0, optionCount - 1);
+            return shuffleSpellingItems([correct, ...distractors]);
         }
 
         function displaySpellingQuestion() {
@@ -1145,61 +1826,104 @@
             const feedback = document.getElementById('spelling-feedback');
             feedback.textContent = '';
             feedback.className = 'spelling-feedback';
+            spellingAnswerLocked = false;
+            document.getElementById('spelling-review-status').textContent = '';
 
             document.getElementById('spelling-word-chinese').textContent = `中文意思: ${word.chinese}`;
             document.getElementById('spelling-word-pronunciation').textContent = `发音: /${word.pronunciation}/`;
-            document.getElementById('spelling-word-hint').innerHTML = `提示: ${word.emoji}  <span class="hidden-hint" id="hidden-hint">${word.english}</span>`;
+            document.getElementById('spelling-emoji').textContent = word.emoji || '🔤';
 
-            const hintElement = document.getElementById('hidden-hint');
-            hintElement.style.display = 'none';
+            currentSpellingOptions = generateSpellingOptions(word.english);
+            const optionsContainer = document.getElementById('spelling-options');
+            optionsContainer.innerHTML = '';
+            const optionLabels = ['A', 'B', 'C', 'D'];
 
-            document.getElementById('spelling-answer-input').value = '';
-            document.getElementById('spelling-answer-input').placeholder = '请输入英文单词';
-            document.getElementById('spelling-answer-input').focus();
+            currentSpellingOptions.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'spelling-option';
+                button.dataset.answer = option;
+                button.setAttribute('aria-label', `选项 ${optionLabels[index]}，${option}`);
+
+                const label = document.createElement('span');
+                label.className = 'spelling-option-label';
+                label.textContent = optionLabels[index];
+
+                const wordText = document.createElement('span');
+                wordText.className = 'spelling-option-word';
+                wordText.textContent = option;
+
+                button.append(label, wordText);
+                button.onclick = () => checkSpellingAnswer(option, button);
+                optionsContainer.appendChild(button);
+            });
+
+            document.getElementById('spelling-skip-btn').disabled = false;
+            document.getElementById('spelling-pronounce-btn').disabled = false;
 
             updateSpellingProgress();
         }
 
-        function checkSpellingAnswer() {
-            const userAnswer = document.getElementById('spelling-answer-input').value.trim().toLowerCase();
+        function checkSpellingAnswer(selectedAnswer, selectedButton) {
+            if (spellingAnswerLocked) return;
+            spellingAnswerLocked = true;
+
             const word = spellingWords[currentSpellingIndex];
             const correctAnswer = word.english.toLowerCase();
-
             const feedback = document.getElementById('spelling-feedback');
+            const isCorrect = selectedAnswer.toLowerCase() === correctAnswer;
 
-            if (userAnswer === correctAnswer) {
+            document.querySelectorAll('#spelling-options .spelling-option').forEach(button => {
+                button.disabled = true;
+                if (button.dataset.answer.toLowerCase() === correctAnswer) {
+                    button.classList.add('correct');
+                    button.querySelector('.spelling-option-label').textContent = '✓';
+                }
+            });
+            document.getElementById('spelling-skip-btn').disabled = true;
+            document.getElementById('spelling-pronounce-btn').disabled = true;
+
+            if (isCorrect) {
                 feedback.textContent = `✅ 正确！"${word.english}" 拼写正确！`;
                 feedback.className = 'spelling-feedback correct';
                 playSound(true);
                 spellingScore++;
+                document.getElementById('spelling-score-display').textContent = `正确: ${spellingScore}`;
                 totalCoins++;
                 updateCoinDisplay();
             } else {
-                feedback.textContent = `❌ 不正确。你输入的是: "${userAnswer}"，正确答案是: "${word.english}"`;
+                selectedButton.classList.add('incorrect');
+                selectedButton.querySelector('.spelling-option-label').textContent = '×';
+                feedback.textContent = `再仔细看看：你选了“${selectedAnswer}”，正确拼写是“${word.english}”。`;
                 feedback.className = 'spelling-feedback incorrect';
                 playSound(false);
+                // Save to error book
+                saveToErrorBook(currentGrade, currentSemester, currentUnit, 'spelling', word, selectedAnswer);
             }
 
-            setTimeout(() => {
-                currentSpellingIndex++;
-                displaySpellingQuestion();
-            }, 2000);
+            const answeredIndex = currentSpellingIndex;
+            speakAnswerReview(word, 'spelling-review-status').finally(() => {
+                if (!spellingAnswerLocked || currentSpellingIndex !== answeredIndex || document.getElementById('spelling-mode').classList.contains('hidden')) return;
+                spellingAdvanceTimer = setTimeout(() => {
+                    currentSpellingIndex++;
+                    displaySpellingQuestion();
+                }, 400);
+            });
         }
 
-        function showSpellingHint() {
-            const hintElement = document.getElementById('hidden-hint');
-            const questionElement = document.getElementById('spelling-word-hint');
-
-            if (hintElement.style.display === 'none') {
-                hintElement.style.display = 'inline';
-                hintElement.style.color = '#FF9800';
-                hintElement.style.fontWeight = 'bold';
-                questionElement.innerHTML = `提示: ${hintElement.innerHTML}`;
-                questionElement.className = 'hint';
+        async function pronounceSpellingWord() {
+            if (spellingAnswerLocked) return;
+            const word = spellingWords[currentSpellingIndex];
+            if (!word) return;
+            try {
+                await trySpeechSynthesis(word.english, 'en-US');
+            } catch (error) {
+                alert('暂时无法播放发音，请根据音标选择。');
             }
         }
 
         function skipSpellingWord() {
+            if (spellingAnswerLocked) return;
             if (currentSpellingIndex < spellingWords.length - 1) {
                 currentSpellingIndex++;
                 displaySpellingQuestion();
@@ -1211,7 +1935,7 @@
         function updateSpellingProgress() {
             const progress = ((currentSpellingIndex + 1) / spellingWords.length) * 100;
             document.getElementById('spelling-progress').style.width = progress + '%';
-            document.getElementById('spelling-progress').textContent = `第 ${currentSpellingIndex + 1} / ${spellingWords.length} 题`;
+            document.getElementById('spelling-progress-label').textContent = `第 ${currentSpellingIndex + 1} / ${spellingWords.length} 题`;
             document.getElementById('spelling-score-display').textContent = `正确: ${spellingScore}`;
         }
 
@@ -1312,6 +2036,9 @@
 
             const question = quizQuestions[currentQuizIndex];
             const isChineseToEnglish = question.isChineseToEnglish;
+            quizAnswerLocked = false;
+            document.querySelectorAll('.quiz-remember-btn').forEach(button => button.remove());
+            document.getElementById('quiz-review-status').textContent = '';
 
             document.getElementById('quiz-question-text').textContent = question.questionText;
             document.getElementById('quiz-emoji').textContent = '❓';
@@ -1331,6 +2058,9 @@
         }
 
         function checkAnswer(selectedOption, buttonElement, question) {
+            if (quizAnswerLocked) return;
+            quizAnswerLocked = true;
+
             document.querySelectorAll('.quiz-option').forEach(btn => {
                 btn.disabled = true;
             });
@@ -1345,15 +2075,19 @@
                 updateScoreDisplay();
                 updateCoinDisplay();
 
-                setTimeout(() => {
-                    document.querySelectorAll('.quiz-option').forEach(btn => {
-                        btn.disabled = false;
-                    });
-                    currentQuizIndex++;
-                    displayQuizQuestion();
-                }, 1500);
+                const answeredIndex = currentQuizIndex;
+                speakAnswerReview(question.word, 'quiz-review-status').finally(() => {
+                    if (!quizAnswerLocked || currentQuizIndex !== answeredIndex || document.getElementById('quiz-mode').classList.contains('hidden')) return;
+                    quizAdvanceTimer = setTimeout(() => {
+                        currentQuizIndex++;
+                        displayQuizQuestion();
+                    }, 400);
+                });
             } else {
                 buttonElement.classList.add('incorrect');
+
+                // Save to error book
+                saveToErrorBook(currentGrade, currentSemester, currentUnit, 'quiz', question.word, selectedOption.text);
 
                 document.querySelectorAll('.quiz-option').forEach(btn => {
                     if (btn.textContent === question.correctAnswer) {
@@ -1362,20 +2096,26 @@
                 });
 
                 const rememberBtn = document.createElement('button');
-                rememberBtn.textContent = '💡 我记住了';
-                rememberBtn.className = 'nav-btn';
+                rememberBtn.textContent = '🔊 正在复习…';
+                rememberBtn.className = 'nav-btn quiz-remember-btn';
                 rememberBtn.style.marginTop = '20px';
+                rememberBtn.disabled = true;
                 rememberBtn.onclick = function() {
                     this.remove();
-                    document.querySelectorAll('.quiz-option').forEach(btn => {
-                        btn.disabled = false;
-                    });
+                    quizAnswerLocked = false;
                     currentQuizIndex++;
                     displayQuizQuestion();
                 };
 
                 const quizContainer = document.getElementById('quiz-mode');
                 quizContainer.appendChild(rememberBtn);
+
+                const answeredIndex = currentQuizIndex;
+                speakAnswerReview(question.word, 'quiz-review-status').finally(() => {
+                    if (currentQuizIndex !== answeredIndex || document.getElementById('quiz-mode').classList.contains('hidden')) return;
+                    rememberBtn.disabled = false;
+                    rememberBtn.textContent = '💡 我记住了';
+                });
             }
         }
 
@@ -1471,12 +2211,442 @@
             }
         }
 
+        // ============ Error Book Functions ============
+
+        function saveToErrorBook(grade, semester, unit, mode, word, wrongAnswer) {
+            if (!errorBook[grade]) errorBook[grade] = {};
+            if (!errorBook[grade][semester]) errorBook[grade][semester] = {};
+            if (!errorBook[grade][semester][unit]) errorBook[grade][semester][unit] = { quiz: [], spelling: [] };
+
+            const entry = {
+                word: word,
+                wrongAnswer: wrongAnswer,
+                timestamp: Date.now()
+            };
+
+            // Don't add duplicate entries for the same word in the same mode
+            const existing = errorBook[grade][semester][unit][mode];
+            const isDuplicate = existing.some(e => e.word.english === word.english);
+            if (!isDuplicate) {
+                existing.push(entry);
+                localStorage.setItem('errorBook', JSON.stringify(errorBook));
+            }
+        }
+
+        function openErrorBook() {
+            document.getElementById('selection-screen').classList.add('hidden');
+            document.getElementById('learning-mode').classList.add('hidden');
+            document.getElementById('quiz-mode').classList.add('hidden');
+            document.getElementById('spelling-mode').classList.add('hidden');
+            document.getElementById('error-practice-mode').classList.add('hidden');
+            document.getElementById('error-book-mode').classList.remove('hidden');
+            renderErrorBook();
+        }
+
+        function renderErrorBook() {
+            // Reload from localStorage
+            errorBook = JSON.parse(localStorage.getItem('errorBook')) || {};
+
+            const content = document.getElementById('error-book-content');
+            const statsDiv = document.getElementById('error-book-stats');
+
+            // Count stats
+            let totalQuiz = 0, totalSpelling = 0;
+            const gradeNames = { grade1: '1年级', grade2: '2年级' };
+            const semesterNames = { '上学期': '上学期', '下学期': '下学期' };
+            const unitNames = { unit1: 'Unit 1', unit2: 'Unit 2', unit3: 'Unit 3', unit4: 'Unit 4', unit5: 'Unit 5', unit6: 'Unit 6' };
+
+            const grades = Object.keys(errorBook);
+            if (grades.length === 0) {
+                statsDiv.innerHTML = '';
+                content.innerHTML = `
+                    <div class="error-empty">
+                        <div class="icon">🎉</div>
+                        <p>太棒了！错题本还是空的，没有错题记录。</p>
+                        <p style="font-size: 0.9rem; color: #bbb; margin-top: 10px;">完成测验或拼写练习后，错题会自动记录在这里。</p>
+                    </div>`;
+                return;
+            }
+
+            // Count all errors
+            grades.forEach(grade => {
+                const semesters = Object.keys(errorBook[grade] || {});
+                semesters.forEach(sem => {
+                    const units = Object.keys(errorBook[grade][sem] || {});
+                    units.forEach(unit => {
+                        totalQuiz += (errorBook[grade][sem][unit].quiz || []).length;
+                        totalSpelling += (errorBook[grade][sem][unit].spelling || []).length;
+                    });
+                });
+            });
+
+            statsDiv.innerHTML = `
+                <div class="error-stat"><div class="count">${totalQuiz + totalSpelling}</div><div class="label">总错题数</div></div>
+                <div class="error-stat"><div class="count">${totalQuiz}</div><div class="label">测验错题</div></div>
+                <div class="error-stat"><div class="count">${totalSpelling}</div><div class="label">拼写错题</div></div>
+            `;
+
+            let html = '';
+
+            grades.forEach(grade => {
+                const gradeName = gradeNames[grade] || grade;
+                html += `<div class="error-grade-section">`;
+                html += `<div class="error-grade-title" onclick="toggleSection(this)">📘 ${gradeName} <span>▼</span></div>`;
+                html += `<div class="error-grade-content">`;
+
+                const semesters = Object.keys(errorBook[grade] || {});
+                semesters.forEach(sem => {
+                    html += `<div class="error-semester-section">`;
+                    html += `<div class="error-semester-title" onclick="toggleSection(this)">📅 ${sem} <span>▼</span></div>`;
+                    html += `<div class="error-semester-content">`;
+
+                    const units = Object.keys(errorBook[grade][sem] || {});
+                    units.forEach(unit => {
+                        const unitData = errorBook[grade][sem][unit];
+                        const quizErrors = unitData.quiz || [];
+                        const spellingErrors = unitData.spelling || [];
+                        const totalErrors = quizErrors.length + spellingErrors.length;
+
+                        html += `<div class="error-unit-card">`;
+                        html += `<div class="error-unit-header">`;
+                        html += `<span class="error-unit-name">📗 ${unitNames[unit] || unit}</span>`;
+                        html += `<span class="error-unit-count">${totalErrors} 道错题</span>`;
+                        html += `<div class="error-unit-actions">`;
+                        html += `<button class="btn-practice-errors" onclick="event.stopPropagation(); practiceUnitErrors('${grade}', '${sem}', '${unit}')">🔁 练习错题</button>`;
+                        html += `<button class="btn-clear-errors" onclick="event.stopPropagation(); clearUnitErrors('${grade}', '${sem}', '${unit}')">清空</button>`;
+                        html += `</div></div>`;
+
+                        // List quiz errors
+                        if (quizErrors.length > 0) {
+                            html += `<div style="margin-bottom: 8px; font-size: 0.85rem; color: #FF9800; font-weight: bold;">🎯 测验错题:</div>`;
+                            html += `<div class="error-word-list">`;
+                            quizErrors.forEach(err => {
+                                html += `<div class="error-word-item">`;
+                                html += `<span class="error-word-emoji">${err.word.emoji || '📝'}</span>`;
+                                html += `<div class="error-word-info">`;
+                                html += `<div class="error-word-english">${err.word.english}</div>`;
+                                html += `<div class="error-word-chinese">${err.word.chinese}</div>`;
+                                html += `<div class="error-word-wrong">选错: ${err.wrongAnswer}</div>`;
+                                html += `<div class="error-word-mode">测验模式</div>`;
+                                html += `</div></div>`;
+                            });
+                            html += `</div>`;
+                        }
+
+                        // List spelling errors
+                        if (spellingErrors.length > 0) {
+                            html += `<div style="margin: 8px 0; font-size: 0.85rem; color: #667eea; font-weight: bold;">🔤 拼写错题:</div>`;
+                            html += `<div class="error-word-list">`;
+                            spellingErrors.forEach(err => {
+                                html += `<div class="error-word-item">`;
+                                html += `<span class="error-word-emoji">${err.word.emoji || '📝'}</span>`;
+                                html += `<div class="error-word-info">`;
+                                html += `<div class="error-word-english">${err.word.english}</div>`;
+                                html += `<div class="error-word-chinese">${err.word.chinese}</div>`;
+                                html += `<div class="error-word-wrong">拼错: ${err.wrongAnswer}</div>`;
+                                html += `<div class="error-word-mode">拼写模式</div>`;
+                                html += `</div></div>`;
+                            });
+                            html += `</div>`;
+                        }
+
+                        html += `</div>`; // error-unit-card
+                    });
+
+                    html += `</div></div>`; // error-semester
+                });
+
+                html += `</div></div>`; // error-grade
+            });
+
+            content.innerHTML = html;
+        }
+
+        function toggleSection(element) {
+            const content = element.nextElementSibling;
+            const arrow = element.querySelector('span');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                if (arrow) arrow.textContent = '▼';
+            } else {
+                content.style.display = 'none';
+                if (arrow) arrow.textContent = '▶';
+            }
+        }
+
+        function practiceUnitErrors(grade, semester, unit) {
+            const unitData = errorBook[grade]?.[semester]?.[unit];
+            if (!unitData) return;
+
+            // Collect all unique words from both quiz and spelling errors
+            const seenWords = new Set();
+            errorPracticeWords = [];
+
+            (unitData.quiz || []).forEach(err => {
+                if (!seenWords.has(err.word.english)) {
+                    seenWords.add(err.word.english);
+                    errorPracticeWords.push({ ...err, mode: 'quiz' });
+                }
+            });
+            (unitData.spelling || []).forEach(err => {
+                if (!seenWords.has(err.word.english)) {
+                    seenWords.add(err.word.english);
+                    errorPracticeWords.push({ ...err, mode: 'spelling' });
+                }
+            });
+
+            // Shuffle
+            errorPracticeWords.sort(() => Math.random() - 0.5);
+            errorPracticeIndex = 0;
+            errorPracticeScore = 0;
+            errorPracticeGrade = grade;
+            errorPracticeSemester = semester;
+            errorPracticeUnit = unit;
+            errorPracticeAnswerLocked = false;
+            clearTimeout(errorPracticeAdvanceTimer);
+            answerReviewGeneration++;
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+
+            document.getElementById('error-book-mode').classList.add('hidden');
+            document.getElementById('error-practice-mode').classList.remove('hidden');
+
+            const unitNames = { unit1: 'Unit 1', unit2: 'Unit 2', unit3: 'Unit 3', unit4: 'Unit 4', unit5: 'Unit 5', unit6: 'Unit 6' };
+            document.getElementById('error-practice-unit-label').textContent = `${unitNames[unit] || unit} - ${errorPracticeWords.length} 道错题`;
+
+            displayErrorPracticeQuestion();
+        }
+
+        function displayErrorPracticeQuestion() {
+            if (errorPracticeIndex >= errorPracticeWords.length) {
+                finishErrorPractice();
+                return;
+            }
+
+            const entry = errorPracticeWords[errorPracticeIndex];
+            const word = entry.word;
+            const feedback = document.getElementById('error-practice-feedback');
+            feedback.textContent = '';
+            feedback.className = 'error-practice-feedback';
+            errorPracticeAnswerLocked = false;
+            document.getElementById('error-practice-review-status').textContent = '';
+
+            document.getElementById('error-practice-emoji').textContent = word.emoji || '📝';
+            document.getElementById('error-practice-chinese').textContent = `中文: ${word.chinese}`;
+            document.getElementById('error-practice-pronunciation').textContent = `发音: /${word.pronunciation}/`;
+
+            currentErrorPracticeOptions = generateSpellingOptions(word.english);
+            const optionsContainer = document.getElementById('error-practice-options');
+            optionsContainer.innerHTML = '';
+            const optionLabels = ['A', 'B', 'C', 'D'];
+
+            currentErrorPracticeOptions.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'spelling-option error-practice-option';
+                button.dataset.answer = option;
+                button.setAttribute('aria-label', `选项 ${optionLabels[index]}，${option}`);
+
+                const label = document.createElement('span');
+                label.className = 'spelling-option-label';
+                label.textContent = optionLabels[index];
+
+                const wordText = document.createElement('span');
+                wordText.className = 'spelling-option-word';
+                wordText.textContent = option;
+
+                button.append(label, wordText);
+                button.onclick = () => checkErrorPracticeAnswer(option, button);
+                optionsContainer.appendChild(button);
+            });
+
+            document.getElementById('error-practice-skip-btn').disabled = false;
+            document.getElementById('error-practice-pronounce-btn').disabled = false;
+
+            updateErrorPracticeProgress();
+        }
+
+        function checkErrorPracticeAnswer(selectedAnswer, selectedButton) {
+            if (errorPracticeAnswerLocked) return;
+            errorPracticeAnswerLocked = true;
+
+            const entry = errorPracticeWords[errorPracticeIndex];
+            const correctAnswer = entry.word.english.toLowerCase();
+            const feedback = document.getElementById('error-practice-feedback');
+            const isCorrect = selectedAnswer.toLowerCase() === correctAnswer;
+
+            document.querySelectorAll('#error-practice-options .error-practice-option').forEach(button => {
+                button.disabled = true;
+                if (button.dataset.answer.toLowerCase() === correctAnswer) {
+                    button.classList.add('correct');
+                    button.querySelector('.spelling-option-label').textContent = '✓';
+                }
+            });
+            document.getElementById('error-practice-skip-btn').disabled = true;
+            document.getElementById('error-practice-pronounce-btn').disabled = true;
+
+            if (isCorrect) {
+                feedback.textContent = `✅ 正确！"${entry.word.english}" 拼写正确！`;
+                feedback.className = 'error-practice-feedback correct';
+                playSound(true);
+                errorPracticeScore++;
+
+                // Remove from error book
+                removeFromErrorBook(errorPracticeGrade, errorPracticeSemester, errorPracticeUnit, entry.mode, entry.word);
+            } else {
+                selectedButton.classList.add('incorrect');
+                selectedButton.querySelector('.spelling-option-label').textContent = '×';
+                feedback.textContent = `再仔细看看：你选了“${selectedAnswer}”，正确拼写是“${entry.word.english}”。`;
+                feedback.className = 'error-practice-feedback incorrect';
+                playSound(false);
+                // Update wrong answer in error book
+                updateWrongAnswerInErrorBook(errorPracticeGrade, errorPracticeSemester, errorPracticeUnit, entry.mode, entry.word, selectedAnswer);
+            }
+
+            updateErrorPracticeProgress();
+            const answeredIndex = errorPracticeIndex;
+            speakAnswerReview(entry.word, 'error-practice-review-status').finally(() => {
+                if (!errorPracticeAnswerLocked || errorPracticeIndex !== answeredIndex || document.getElementById('error-practice-mode').classList.contains('hidden')) return;
+                errorPracticeAdvanceTimer = setTimeout(() => {
+                    errorPracticeIndex++;
+                    displayErrorPracticeQuestion();
+                }, 400);
+            });
+        }
+
+        async function pronounceErrorPracticeWord() {
+            if (errorPracticeAnswerLocked) return;
+            const entry = errorPracticeWords[errorPracticeIndex];
+            if (!entry) return;
+            try {
+                await trySpeechSynthesis(entry.word.english, 'en-US');
+            } catch (error) {
+                alert('暂时无法播放发音，请根据音标选择。');
+            }
+        }
+
+        function skipErrorPracticeWord() {
+            if (errorPracticeAnswerLocked) return;
+            if (errorPracticeIndex < errorPracticeWords.length - 1) {
+                errorPracticeIndex++;
+                displayErrorPracticeQuestion();
+            } else {
+                finishErrorPractice();
+            }
+        }
+
+        function updateErrorPracticeProgress() {
+            const total = errorPracticeWords.length;
+            const current = errorPracticeIndex + 1;
+            const progress = (current / total) * 100;
+            document.getElementById('error-practice-progress').style.width = progress + '%';
+            document.getElementById('error-practice-progress-label').textContent = `${current} / ${total}`;
+            document.getElementById('error-practice-remaining').textContent = `✅ 已答对: ${errorPracticeScore}  |  📝 剩余: ${total - current + 1}`;
+        }
+
+        function finishErrorPractice() {
+            const total = errorPracticeWords.length;
+            const percentage = total > 0 ? Math.round((errorPracticeScore / total) * 100) : 0;
+            let message = `错题练习完成！你答对了 ${errorPracticeScore} / ${total} 题 (${percentage}%)`;
+
+            if (percentage >= 90 && total > 0) {
+                message += '\n太棒了！错题都快被你消灭了！🎉';
+            } else if (percentage >= 70) {
+                message += '\n做得很好！继续加油！👏';
+            } else {
+                message += '\n继续练习，你一定会进步的！💪';
+            }
+
+            alert(message);
+            backToErrorBook();
+        }
+
+        function removeFromErrorBook(grade, semester, unit, mode, word) {
+            const entries = errorBook[grade]?.[semester]?.[unit]?.[mode];
+            if (!entries) return;
+            const idx = entries.findIndex(e => e.word.english === word.english);
+            if (idx >= 0) {
+                entries.splice(idx, 1);
+            }
+            // Clean up empty containers
+            if (entries.length === 0) {
+                delete errorBook[grade][semester][unit][mode];
+            }
+            if (Object.keys(errorBook[grade][semester][unit]).every(k => errorBook[grade][semester][unit][k].length === 0)) {
+                delete errorBook[grade][semester][unit];
+            }
+            if (Object.keys(errorBook[grade][semester]).length === 0) {
+                delete errorBook[grade][semester];
+            }
+            if (Object.keys(errorBook[grade]).length === 0) {
+                delete errorBook[grade];
+            }
+            localStorage.setItem('errorBook', JSON.stringify(errorBook));
+        }
+
+        function updateWrongAnswerInErrorBook(grade, semester, unit, mode, word, wrongAnswer) {
+            const entries = errorBook[grade]?.[semester]?.[unit]?.[mode];
+            if (!entries) return;
+            const entry = entries.find(e => e.word.english === word.english);
+            if (entry) {
+                entry.wrongAnswer = wrongAnswer;
+                entry.timestamp = Date.now();
+                localStorage.setItem('errorBook', JSON.stringify(errorBook));
+            }
+        }
+
+        function clearUnitErrors(grade, semester, unit) {
+            if (confirm('确定要清空该单元的所有错题吗？此操作不可恢复！')) {
+                if (errorBook[grade]?.[semester]) {
+                    delete errorBook[grade][semester][unit];
+                    if (Object.keys(errorBook[grade][semester]).length === 0) {
+                        delete errorBook[grade][semester];
+                    }
+                    if (Object.keys(errorBook[grade]).length === 0) {
+                        delete errorBook[grade];
+                    }
+                }
+                localStorage.setItem('errorBook', JSON.stringify(errorBook));
+                renderErrorBook();
+            }
+        }
+
+        function clearAllErrors() {
+            if (confirm('确定要清空所有错题吗？此操作不可恢复！')) {
+                errorBook = {};
+                localStorage.setItem('errorBook', JSON.stringify(errorBook));
+                renderErrorBook();
+            }
+        }
+
+        function backToErrorBook() {
+            clearTimeout(errorPracticeAdvanceTimer);
+            errorPracticeAnswerLocked = false;
+            answerReviewGeneration++;
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+            document.getElementById('error-practice-mode').classList.add('hidden');
+            document.getElementById('error-book-mode').classList.remove('hidden');
+            errorPracticeWords = [];
+            renderErrorBook();
+        }
+
+        // ============ End Error Book Functions ============
+
         function backToSelection() {
+            clearTimeout(spellingAdvanceTimer);
+            clearTimeout(quizAdvanceTimer);
+            clearTimeout(errorPracticeAdvanceTimer);
+            spellingAnswerLocked = false;
+            quizAnswerLocked = false;
+            errorPracticeAnswerLocked = false;
+            answerReviewGeneration++;
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+            document.querySelectorAll('.quiz-remember-btn').forEach(button => button.remove());
             document.getElementById('selection-screen').classList.remove('hidden');
             document.getElementById('learning-mode').classList.add('hidden');
             document.getElementById('quiz-mode').classList.add('hidden');
             document.getElementById('spelling-mode').classList.add('hidden');
-            currentWords = [];
+            document.getElementById('error-book-mode').classList.add('hidden');
+            document.getElementById('error-practice-mode').classList.add('hidden');
             spellingWords = [];
         }
 
