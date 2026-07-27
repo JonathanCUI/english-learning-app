@@ -10,18 +10,18 @@
             grade1: {
                 "上学期": {
                     unit1: [
-                        {english: "hello", chinese: "喂，你好", pronunciation: "həˈloʊ", emoji: "👋", example: "Hello! My name is Tom.", exampleChinese: "你好！我的名字是汤姆。"},
-                        {english: "nice", chinese: "令人愉快的", pronunciation: "naɪs", emoji: "😊", example: "Nice to meet you!", exampleChinese: "很高兴认识你！"},
-                        {english: "meet", chinese: "认识，结识", pronunciation: "miːt", emoji: "🤝", example: "Let's meet at school.", exampleChinese: "让我们在学校见面。"},
-                        {english: "you", chinese: "你", pronunciation: "juː", emoji: "👤", example: "How are you today?", exampleChinese: "你今天怎么样？"},
-                        {english: "let's", chinese: "让我们", pronunciation: "lets", emoji: "👫", example: "Let's play together!", exampleChinese: "让我们一起玩吧！"},
-                        {english: "play", chinese: "玩，玩耍", pronunciation: "pleɪ", emoji: "🎮", example: "I like to play football.", exampleChinese: "我喜欢踢足球。"},
-                        {english: "I", chinese: "我", pronunciation: "aɪ", emoji: "👤", example: "I am a student.", exampleChinese: "我是一名学生。"},
-                        {english: "am", chinese: "是", pronunciation: "æm", emoji: "❓", example: "I am happy today.", exampleChinese: "我今天很开心。"},
-                        {english: "too", chinese: "也，还", pronunciation: "tuː", emoji: "➕", example: "I am happy too!", exampleChinese: "我也很开心！"},
-                        {english: "photo", chinese: "照片，相片", pronunciation: "ˈfoʊtoʊ", emoji: "📸", example: "This is my family photo.", exampleChinese: "这是我家人的照片。"},
-                        {english: "how", chinese: "怎样，如何", pronunciation: "haʊ", emoji: "❓", example: "How old are you?", exampleChinese: "你几岁了？"},
-                        {english: "say", chinese: "说", pronunciation: "seɪ", emoji: "💬", example: "Say hello to your friend.", exampleChinese: "对你的朋友说你好。"}
+                        {english: "hello", chinese: "喂，你好", pronunciation: "həˈloʊ", emoji: "👋", imageAtlas: "grade1Unit1", imageIndex: 0, example: "Hello! My name is Tom.", exampleChinese: "你好！我的名字是汤姆。"},
+                        {english: "nice", chinese: "令人愉快的", pronunciation: "naɪs", emoji: "😊", imageAtlas: "grade1Unit1", imageIndex: 1, example: "Nice to meet you!", exampleChinese: "很高兴认识你！"},
+                        {english: "meet", chinese: "认识，结识", pronunciation: "miːt", emoji: "🤝", imageAtlas: "grade1Unit1", imageIndex: 2, example: "Let's meet at school.", exampleChinese: "让我们在学校见面。"},
+                        {english: "you", chinese: "你", pronunciation: "juː", emoji: "👤", imageAtlas: "grade1Unit1", imageIndex: 3, example: "How are you today?", exampleChinese: "你今天怎么样？"},
+                        {english: "let's", chinese: "让我们", pronunciation: "lets", emoji: "👫", imageAtlas: "grade1Unit1", imageIndex: 4, example: "Let's play together!", exampleChinese: "让我们一起玩吧！"},
+                        {english: "play", chinese: "玩，玩耍", pronunciation: "pleɪ", emoji: "🎮", imageAtlas: "grade1Unit1", imageIndex: 5, example: "I like to play football.", exampleChinese: "我喜欢踢足球。"},
+                        {english: "I", chinese: "我", pronunciation: "aɪ", emoji: "👤", imageAtlas: "grade1Unit1", imageIndex: 6, example: "I am a student.", exampleChinese: "我是一名学生。"},
+                        {english: "am", chinese: "是", pronunciation: "æm", emoji: "❓", imageAtlas: "grade1Unit1", imageIndex: 7, example: "I am happy today.", exampleChinese: "我今天很开心。"},
+                        {english: "too", chinese: "也，还", pronunciation: "tuː", emoji: "➕", imageAtlas: "grade1Unit1", imageIndex: 8, example: "I am happy too!", exampleChinese: "我也很开心！"},
+                        {english: "photo", chinese: "照片，相片", pronunciation: "ˈfoʊtoʊ", emoji: "📸", imageAtlas: "grade1Unit1", imageIndex: 9, example: "This is my family photo.", exampleChinese: "这是我家人的照片。"},
+                        {english: "how", chinese: "怎样，如何", pronunciation: "haʊ", emoji: "❓", imageAtlas: "grade1Unit1", imageIndex: 10, example: "How old are you?", exampleChinese: "你几岁了？"},
+                        {english: "say", chinese: "说", pronunciation: "seɪ", emoji: "💬", imageAtlas: "grade1Unit1", imageIndex: 11, example: "Say hello to your friend.", exampleChinese: "对你的朋友说你好。"}
                     ],
                     unit2: [
                         {english: "one", chinese: "一", pronunciation: "wʌn", emoji: "1️⃣", example: "I have one apple.", exampleChinese: "我有一个苹果。"},
@@ -556,6 +556,47 @@
             position: relative; overflow: hidden;
         }
         .word-emoji { font-size: 6rem; margin-bottom: 20px; }
+        .has-word-image {
+            display: inline-block;
+            position: relative;
+            aspect-ratio: var(--word-image-aspect, 3 / 4);
+            background-image: var(--word-image-url);
+            background-size: var(--word-image-size);
+            background-position: var(--word-image-position-x) var(--word-image-position-y);
+            background-repeat: no-repeat;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.16);
+            font-size: 0 !important;
+            flex: 0 0 auto;
+        }
+        .has-word-image[data-word-label]::after {
+            content: attr(data-word-label);
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            z-index: 1;
+            transform: translateX(-50%);
+            max-width: calc(100% - 12px);
+            padding: 3px 8px;
+            overflow: hidden;
+            color: #17365d;
+            background: rgba(255, 250, 225, 0.94);
+            border: 1px solid rgba(23, 54, 93, 0.18);
+            border-radius: 999px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.14);
+            font-family: "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+            font-size: 0.95rem;
+            font-weight: 800;
+            line-height: 1.2;
+            letter-spacing: 0.02em;
+            text-align: center;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .word-emoji.has-word-image {
+            width: 150px;
+            border: 4px solid rgba(255,255,255,0.82);
+        }
         .word-text { font-size: 3.5rem; font-weight: bold; margin-bottom: 20px; text-shadow: 3px 3px 6px rgba(0,0,0,0.3); }
         .pronunciation { font-size: 1.5rem; opacity: 0.8; margin: 10px 0; }
         .word-chinese {
@@ -951,6 +992,19 @@
             padding: 10px 15px; display: flex; align-items: center; gap: 12px;
         }
         .error-word-emoji { font-size: 1.8rem; }
+        .error-word-emoji.has-word-image {
+            width: 48px;
+            border-radius: 8px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.14);
+        }
+        .error-word-emoji.has-word-image[data-word-label]::after {
+            top: 2px;
+            max-width: calc(100% - 4px);
+            padding: 1px 2px;
+            border: none;
+            font-size: 0.3rem;
+            letter-spacing: 0;
+        }
         .error-word-info { flex: 1; min-width: 0; }
         .error-word-english {
             font-weight: bold; color: #333; font-size: 1rem;
@@ -1004,6 +1058,10 @@
             text-align: center; border: 3px solid #f44336;
         }
         .error-practice-emoji { font-size: 5rem; margin-bottom: 15px; }
+        .error-practice-emoji.has-word-image {
+            width: 150px;
+            border: 4px solid white;
+        }
         .error-practice-chinese { font-size: 2rem; color: #333; margin-bottom: 10px; }
         .error-practice-pronunciation { font-size: 1.2rem; color: #666; margin-bottom: 20px; }
         .error-practice-instruction {
@@ -1329,6 +1387,114 @@
             return true;
         }
 
+        const WORD_ATLAS_UNIT_LAYOUTS = [
+            ['grade1', '上学期', 'unit1', 'grade1Unit1', 4, 3, 'assets/unit1-vocabulary-atlas.png'],
+            ['grade1', '上学期', 'unit2', 'g1s1unit2', 4, 3, 'assets/g1-s1-unit2-atlas.png'],
+            ['grade1', '上学期', 'unit3', 'g1s1unit3', 4, 4, 'assets/g1-s1-unit3-atlas.png'],
+            ['grade1', '上学期', 'unit4', 'g1s1unit4', 5, 4, 'assets/g1-s1-unit4-atlas.png'],
+            ['grade1', '上学期', 'unit5', 'g1s1unit5', 4, 3, 'assets/g1-s1-unit5-atlas.png'],
+            ['grade1', '上学期', 'unit6', 'g1s1unit6', 4, 4, 'assets/g1-s1-unit6-atlas.png'],
+            ['grade1', '下学期', 'unit1', 'g1s2unit1', 4, 3, 'assets/g1-s2-unit1-atlas.png'],
+            ['grade1', '下学期', 'unit2', 'g1s2unit2', 4, 3, 'assets/g1-s2-unit2-atlas.png'],
+            ['grade1', '下学期', 'unit3', 'g1s2unit3', 5, 4, 'assets/g1-s2-unit3-atlas.png'],
+            ['grade1', '下学期', 'unit4', 'g1s2unit4', 6, 5, 'assets/g1-s2-unit4-atlas.png'],
+            ['grade1', '下学期', 'unit5', 'g1s2unit5', 4, 4, 'assets/g1-s2-unit5-atlas.png'],
+            ['grade1', '下学期', 'unit6', 'g1s2unit6', 4, 4, 'assets/g1-s2-unit6-atlas.png'],
+            ['grade2', '上学期', 'unit1', 'g2s1unit1', 4, 4, 'assets/g2-s1-unit1-atlas.png'],
+            ['grade2', '上学期', 'unit2', 'g2s1unit2', 4, 4, 'assets/g2-s1-unit2-atlas.png'],
+            ['grade2', '上学期', 'unit3', 'g2s1unit3', 4, 3, 'assets/g2-s1-unit3-atlas.png'],
+            ['grade2', '上学期', 'unit4', 'g2s1unit4', 4, 3, 'assets/g2-s1-unit4-atlas.png'],
+            ['grade2', '上学期', 'unit5', 'g2s1unit5', 4, 3, 'assets/g2-s1-unit5-atlas.png'],
+            ['grade2', '上学期', 'unit6', 'g2s1unit6', 4, 3, 'assets/g2-s1-unit6-atlas.png'],
+            ['grade2', '下学期', 'unit1', 'g2s2unit1', 4, 3, 'assets/g2-s2-unit1-atlas.png'],
+            ['grade2', '下学期', 'unit2', 'g2s2unit2', 4, 3, 'assets/g2-s2-unit2-atlas.png'],
+            ['grade2', '下学期', 'unit3', 'g2s2unit3', 4, 3, 'assets/g2-s2-unit3-atlas.png'],
+            ['grade2', '下学期', 'unit4', 'g2s2unit4', 4, 4, 'assets/g2-s2-unit4-atlas.png'],
+            ['grade2', '下学期', 'unit5', 'g2s2unit5', 4, 3, 'assets/g2-s2-unit5-atlas.png'],
+            ['grade2', '下学期', 'unit6', 'g2s2unit6', 4, 3, 'assets/g2-s2-unit6-atlas.png']
+        ];
+
+        const WORD_IMAGE_ATLASES = Object.fromEntries(
+            WORD_ATLAS_UNIT_LAYOUTS.map(([, , , atlasKey, columns, rows, src]) => [
+                atlasKey,
+                { src, columns, rows }
+            ])
+        );
+
+        WORD_ATLAS_UNIT_LAYOUTS.forEach(([grade, semester, unit, atlasKey]) => {
+            (VOCABULARY[grade]?.[semester]?.[unit] || []).forEach((word, imageIndex) => {
+                word.imageAtlas = atlasKey;
+                word.imageIndex = imageIndex;
+            });
+        });
+
+        const WEEKDAY_IMAGE_LABELS = new Set([
+            'Monday', 'Tuesday', 'Wednesday', 'Thursday',
+            'Friday', 'Saturday', 'Sunday'
+        ]);
+
+        function getWordImageLabel(word) {
+            return word && WEEKDAY_IMAGE_LABELS.has(word.english)
+                ? word.english.toUpperCase()
+                : '';
+        }
+
+        function getWordImageStyle(word) {
+            const atlas = word && WORD_IMAGE_ATLASES[word.imageAtlas];
+            if (!atlas || !Number.isInteger(word.imageIndex)) return null;
+
+            const column = word.imageIndex % atlas.columns;
+            const row = Math.floor(word.imageIndex / atlas.columns);
+            if (row >= atlas.rows) return null;
+
+            const positionX = atlas.columns === 1 ? 0 : (column / (atlas.columns - 1)) * 100;
+            const positionY = atlas.rows === 1 ? 0 : (row / (atlas.rows - 1)) * 100;
+            return {
+                imageUrl: `url('${atlas.src}')`,
+                imageSize: `${atlas.columns * 100}% ${atlas.rows * 100}%`,
+                positionX: `${positionX}%`,
+                positionY: `${positionY}%`,
+                aspectRatio: `${atlas.rows} / ${atlas.columns}`
+            };
+        }
+
+        function applyWordVisual(element, word, fallbackEmoji = '📝') {
+            if (!element) return;
+            const imageStyle = getWordImageStyle(word);
+            const imageLabel = getWordImageLabel(word);
+            element.classList.remove('has-word-image');
+            element.removeAttribute('data-word-label');
+            element.style.removeProperty('--word-image-url');
+            element.style.removeProperty('--word-image-size');
+            element.style.removeProperty('--word-image-position-x');
+            element.style.removeProperty('--word-image-position-y');
+            element.style.removeProperty('--word-image-aspect');
+
+            if (!imageStyle) {
+                element.textContent = (word && word.emoji) || fallbackEmoji;
+                return;
+            }
+
+            element.textContent = '';
+            element.classList.add('has-word-image');
+            element.style.setProperty('--word-image-url', imageStyle.imageUrl);
+            element.style.setProperty('--word-image-size', imageStyle.imageSize);
+            element.style.setProperty('--word-image-position-x', imageStyle.positionX);
+            element.style.setProperty('--word-image-position-y', imageStyle.positionY);
+            element.style.setProperty('--word-image-aspect', imageStyle.aspectRatio);
+            if (imageLabel) element.setAttribute('data-word-label', imageLabel);
+        }
+
+        function getWordVisualMarkup(word, className, fallbackEmoji = '📝') {
+            const imageStyle = getWordImageStyle(word);
+            if (!imageStyle) {
+                return `<span class="${className}">${(word && word.emoji) || fallbackEmoji}</span>`;
+            }
+            const imageLabel = getWordImageLabel(word);
+            const labelAttribute = imageLabel ? ` data-word-label="${imageLabel}"` : '';
+            return `<span class="${className} has-word-image"${labelAttribute} style="--word-image-url:${imageStyle.imageUrl};--word-image-size:${imageStyle.imageSize};--word-image-position-x:${imageStyle.positionX};--word-image-position-y:${imageStyle.positionY};--word-image-aspect:${imageStyle.aspectRatio}"></span>`;
+        }
+
         function selectGrade(grade) {
             currentGrade = grade;
             document.querySelectorAll('.btn-grade1, .btn-grade2').forEach(btn => {
@@ -1403,7 +1569,7 @@
             const escapedExample = (word.example || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
             flashcard.innerHTML = `
-                <div class="word-emoji hidden" id="word-emoji">${word.emoji}</div>
+                <div class="word-emoji hidden" id="word-emoji"></div>
                 <div class="word-text">${word.english}</div>
                 <div class="pronunciation hidden" id="pronunciation">/${word.pronunciation}/</div>
                 <div class="word-chinese hidden" id="chinese-meaning">${word.chinese}</div>
@@ -1413,6 +1579,7 @@
                 </div>
                 <div class="word-example-chinese hidden" id="word-example-chinese">${word.exampleChinese || ''}</div>
             `;
+            applyWordVisual(document.getElementById('word-emoji'), word);
 
             showingChinese = false;
             showingPhonetic = false;
@@ -1831,7 +1998,7 @@
 
             document.getElementById('spelling-word-chinese').textContent = `中文意思: ${word.chinese}`;
             document.getElementById('spelling-word-pronunciation').textContent = `发音: /${word.pronunciation}/`;
-            document.getElementById('spelling-emoji').textContent = word.emoji || '🔤';
+            applyWordVisual(document.getElementById('spelling-emoji'), word, '🔤');
 
             currentSpellingOptions = generateSpellingOptions(word.english);
             const optionsContainer = document.getElementById('spelling-options');
@@ -2041,7 +2208,7 @@
             document.getElementById('quiz-review-status').textContent = '';
 
             document.getElementById('quiz-question-text').textContent = question.questionText;
-            document.getElementById('quiz-emoji').textContent = '❓';
+            applyWordVisual(document.getElementById('quiz-emoji'), null, '❓');
 
             const optionsContainer = document.getElementById('quiz-options');
             optionsContainer.innerHTML = '';
@@ -2065,7 +2232,7 @@
                 btn.disabled = true;
             });
 
-            document.getElementById('quiz-emoji').textContent = question.word.emoji;
+            applyWordVisual(document.getElementById('quiz-emoji'), question.word);
             playSound(selectedOption.correct);
 
             if (selectedOption.correct) {
@@ -2322,7 +2489,7 @@
                             html += `<div class="error-word-list">`;
                             quizErrors.forEach(err => {
                                 html += `<div class="error-word-item">`;
-                                html += `<span class="error-word-emoji">${err.word.emoji || '📝'}</span>`;
+                                html += getWordVisualMarkup(err.word, 'error-word-emoji');
                                 html += `<div class="error-word-info">`;
                                 html += `<div class="error-word-english">${err.word.english}</div>`;
                                 html += `<div class="error-word-chinese">${err.word.chinese}</div>`;
@@ -2339,7 +2506,7 @@
                             html += `<div class="error-word-list">`;
                             spellingErrors.forEach(err => {
                                 html += `<div class="error-word-item">`;
-                                html += `<span class="error-word-emoji">${err.word.emoji || '📝'}</span>`;
+                                html += getWordVisualMarkup(err.word, 'error-word-emoji');
                                 html += `<div class="error-word-info">`;
                                 html += `<div class="error-word-english">${err.word.english}</div>`;
                                 html += `<div class="error-word-chinese">${err.word.chinese}</div>`;
@@ -2430,7 +2597,7 @@
             errorPracticeAnswerLocked = false;
             document.getElementById('error-practice-review-status').textContent = '';
 
-            document.getElementById('error-practice-emoji').textContent = word.emoji || '📝';
+            applyWordVisual(document.getElementById('error-practice-emoji'), word);
             document.getElementById('error-practice-chinese').textContent = `中文: ${word.chinese}`;
             document.getElementById('error-practice-pronunciation').textContent = `发音: /${word.pronunciation}/`;
 
