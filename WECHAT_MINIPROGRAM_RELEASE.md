@@ -9,7 +9,7 @@
 - 完整词库：2 个年级、上下学期、每学期 6 个单元，共 300 个单词
 - 已迁移功能：单词学习、中英双向测验、相似拼写选择、错题本、错题拼写复习、金币与奖励商店
 - 本地数据：金币、收藏和错题全部使用 `wx.setStorageSync` 保存在用户设备中
-- 语音：使用微信官方同声传译插件 WechatSI，答题后依次播放英文和中文
+- 语音：使用百度短文本语音合成预生成 889 条本地音频，并按 24 个课本单元拆为页面分包；不依赖插件、登录或运行时 API
 
 微信官方配置说明：<https://developers.weixin.qq.com/miniprogram/dev/framework/config.html>
 
@@ -22,36 +22,47 @@
 
 > 主体认证、类目资质和管理员扫码属于账号侧操作，不能由代码仓库自动完成。
 
-## 二、开通发音插件
+## 二、生成与打包百度语音
 
-游客模式默认不加载 WechatSI，因此可以直接在微信开发者工具中预览学习和答题功能。取得真实 AppID 并在后台添加插件后，运行：
+百度短文本语音合成采用“开发时批量生成 MP3、小程序播放静态文件”的方式。API Key 和 Secret Key 只在生成音频时使用，不会放进小程序，也不应提交到 Git。
+
+1. 注册或登录百度智能云账号，并完成百度智能云的个人实名认证。
+2. 打开新版[语音技术控制台](https://console.bce.baidu.com/ai-engine/speech/overview/index)，等待免费测试资源到账（官方说明通常需要 5–10 分钟）。
+3. 展开左侧导航，进入“应用列表”并点击“创建应用”；勾选“短文本在线合成”，取得该应用的 API Key 和 Secret Key。如果新版页面没有显示入口，可打开[兼容版应用列表](https://console.bce.baidu.com/ai-engine/old/#/ai/speech/app/list)。
+4. 在仓库根目录打开 PowerShell，只为当前终端设置密钥：
 
 ```powershell
-npm run mini:tts:on
+$env:BAIDU_TTS_API_KEY='在这里粘贴 API Key'
+$env:BAIDU_TTS_SECRET_KEY='在这里粘贴 Secret Key'
+npm run mini:audio:sample
 ```
 
-该命令会把 `miniprogram/app.wechatsi.json` 中的插件声明写入 `miniprogram/app.json`：
+试听文件会生成到 `generated-audio/baidu-tts/`。该目录和 `.env` 文件已经加入 `.gitignore`，不会被提交。默认使用可爱童声 `per=103` 和较慢语速 `spd=4`；可以在当前终端临时调整后重新生成：
 
-```json
-"plugins": {
-  "WechatSI": {
-    "version": "0.3.5",
-    "provider": "wx069ba97219f66d99"
-  }
-}
+```powershell
+$env:BAIDU_TTS_VOICE='110'
+$env:BAIDU_TTS_SPEED='5'
+npm run mini:audio:sample -- --force
 ```
 
-在小程序管理后台的插件管理中搜索并申请该插件。插件通过后，英文和中文发音即可在真机与开发者工具中工作。如果需要切回游客调试模式，运行 `npm run mini:tts:off`。
+确认试听效果后，运行以下命令生成全部单词、中文释义和英文例句，并构建小程序语音分包：
 
-如果开发者工具提示 `INVALID_LOGIN, access_token expired`：
+```powershell
+npm.cmd run mini:audio:generate
+npm.cmd run mini:audio:pack
+```
 
-1. 检查 `project.config.json`，不能仍为 `touristappid`。
-2. 确认当前扫码登录的微信号是该 AppID 的开发者或管理员。
-3. 在开发者工具中退出登录，再重新扫码登录并重新打开项目。
-4. 确认管理后台已经添加微信同声传译插件，然后运行 `npm run mini:tts:on`。
-5. 若只是临时预览，运行 `npm run mini:tts:off`，插件鉴权错误会立即消失。
+完整音频约 10.55 MB，构建脚本会按“年级 × 学期 × 单元”自动拆成 24 个页面分包，每包均小于 1 MB。用户进入学习、测验、拼写或错题复习时，微信会按普通小程序的页面分包机制加载对应课本单元；无需 `wx.loadSubpackage`、云存储或百度密钥。
 
-微信官方插件开发说明：<https://developers.weixin.qq.com/miniprogram/dev/framework/plugin/using.html>
+无需密钥也可以查看预计生成数量：
+
+```powershell
+npm run mini:audio:list
+```
+
+百度官方资料：<https://ai.baidu.com/ai-doc/SPEECH/4l9mh6qf9>、<https://ai.baidu.com/ai-doc/SPEECH/mlbxh7xie>
+
+WechatSI 的插件声明和切换脚本已经移除，从根源上避免 `wx069ba97219f66d99 插件未授权使用` 阻止编译。
 
 ## 三、填入 AppID 并导入开发者工具
 

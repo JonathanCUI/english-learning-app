@@ -12,10 +12,174 @@
   "style": "v2",
   "lazyCodeLoading": "requiredComponents",
   "sitemapLocation": "sitemap.json",
-  "plugins": {
-    "WechatSI": {
-      "version": "0.3.5",
-      "provider": "wx069ba97219f66d99"
+  "subpackages": [
+    {
+      "root": "audio-g1s1u1",
+      "name": "speech-g1s1u1",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g1s1u2",
+      "name": "speech-g1s1u2",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g1s1u3",
+      "name": "speech-g1s1u3",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g1s1u4",
+      "name": "speech-g1s1u4",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g1s1u5",
+      "name": "speech-g1s1u5",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g1s1u6",
+      "name": "speech-g1s1u6",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g1s2u1",
+      "name": "speech-g1s2u1",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g1s2u2",
+      "name": "speech-g1s2u2",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g1s2u3",
+      "name": "speech-g1s2u3",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g1s2u4",
+      "name": "speech-g1s2u4",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g1s2u5",
+      "name": "speech-g1s2u5",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g1s2u6",
+      "name": "speech-g1s2u6",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g2s1u1",
+      "name": "speech-g2s1u1",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g2s1u2",
+      "name": "speech-g2s1u2",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g2s1u3",
+      "name": "speech-g2s1u3",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g2s1u4",
+      "name": "speech-g2s1u4",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g2s1u5",
+      "name": "speech-g2s1u5",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g2s1u6",
+      "name": "speech-g2s1u6",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g2s2u1",
+      "name": "speech-g2s2u1",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g2s2u2",
+      "name": "speech-g2s2u2",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g2s2u3",
+      "name": "speech-g2s2u3",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g2s2u4",
+      "name": "speech-g2s2u4",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g2s2u5",
+      "name": "speech-g2s2u5",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g2s2u6",
+      "name": "speech-g2s2u6",
+      "pages": [
+        "pages/index/index"
+      ]
     }
-  }
+  ]
 }

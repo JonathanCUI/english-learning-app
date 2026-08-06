@@ -17,3 +17,9 @@ project.private.config.json
 .miniprogram-ci/
 private.*.key
 private.*.pem
+
+# Locally generated speech files and local environment secrets
+generated-audio/
+.env
+.env.*
+!.env.example

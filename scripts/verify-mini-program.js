@@ -6,12 +6,13 @@ const miniRoot = path.join(root, 'miniprogram');
 const vocabulary = require(path.join(miniRoot, 'data', 'vocabulary.js'));
 const atlas = require(path.join(miniRoot, 'data', 'atlas.js'));
 const shop = require(path.join(miniRoot, 'data', 'shop.js'));
+const speechMap = require(path.join(miniRoot, 'data', 'audio.js'));
 const game = require(path.join(miniRoot, 'utils', 'game.js'));
 const semesters = ['上学期', '下学期'];
 let wordCount = 0;
 
 JSON.parse(fs.readFileSync(path.join(root, 'project.config.json'), 'utf8'));
-JSON.parse(fs.readFileSync(path.join(miniRoot, 'app.json'), 'utf8'));
+const appConfig = JSON.parse(fs.readFileSync(path.join(miniRoot, 'app.json'), 'utf8'));
 JSON.parse(fs.readFileSync(path.join(miniRoot, 'sitemap.json'), 'utf8'));
 
 ['grade1', 'grade2'].forEach((grade) => {
@@ -20,9 +21,16 @@ JSON.parse(fs.readFileSync(path.join(miniRoot, 'sitemap.json'), 'utf8'));
       const unit = 'unit' + unitIndex;
       const words = vocabulary[grade][semester][unit];
       if (!Array.isArray(words) || words.length === 0) throw new Error('缺少词汇：' + [grade, semester, unit].join('/'));
+      const speechScope = speechMap[[grade, semester, unit].join('|')];
+      if (!speechScope) throw new Error('缺少语音单元映射：' + [grade, semester, unit].join('/'));
       const enriched = atlas.enrichWords(words, grade, semester, unit);
-      if (enriched.some((word) => !word.visualStyle)) throw new Error('图片映射失败：' + [grade, semester, unit].join('/'));
+      if (enriched.some((word) => !word.visualSrc || !word.visualFrameStyle || !word.visualImageStyle || !word.miniVisualFrameStyle || !word.miniVisualImageStyle)) {
+        throw new Error('图片映射失败：' + [grade, semester, unit].join('/'));
+      }
       words.forEach((word) => {
+        if (!speechScope['word-en'][word.english]) throw new Error('缺少英文单词语音：' + word.english);
+        if (!speechScope['meaning-zh'][word.chinese]) throw new Error('缺少中文释义语音：' + word.chinese);
+        if (word.example && !speechScope['example-en'][word.example]) throw new Error('缺少英文例句语音：' + word.example);
         for (let attempt = 0; attempt < 4; attempt += 1) {
           const sample = game.spellingOptions(word.english, 4);
           if (sample.length !== 4 || new Set(sample.map((option) => option.text)).size !== 4 || sample.filter((option) => option.text === word.english).length !== 1) {
@@ -53,10 +61,37 @@ shop.forEach((item) => {
 });
 if (missingAssets.length) throw new Error('缺少资源：\n' + missingAssets.join('\n'));
 
+const speechPackages = Array.isArray(appConfig.subpackages) ? appConfig.subpackages.filter((item) => /^speech-g\d+s\d+u\d+$/.test(item.name || '')) : [];
+if (speechPackages.length !== 24) throw new Error('语音资源必须拆分为 24 个课本单元分包');
+const speechEntries = Object.values(speechMap).reduce((scopeSum, scope) => (
+  scopeSum + Object.values(scope).reduce((kindSum, collection) => kindSum + Object.keys(collection).length, 0)
+), 0);
+const speechPackageRoots = new Set(speechPackages.map((item) => item.root));
+Object.values(speechMap).forEach((scope) => {
+  Object.values(scope).forEach((collection) => Object.values(collection).forEach((source) => {
+    const sourceRoot = source.replace(/^\//, '').split('/')[0];
+    if (!speechPackageRoots.has(sourceRoot)) throw new Error('语音映射引用未知分包：' + sourceRoot);
+    const filePath = path.join(miniRoot, source.replace(/^\//, ''));
+    if (!fs.existsSync(filePath)) throw new Error('缺少语音资源：' + source);
+  }));
+});
+
+speechPackages.forEach((item) => {
+  const packageRoot = path.join(miniRoot, item.root);
+  const bytes = walk(packageRoot).reduce((sum, file) => sum + fs.statSync(file).size, 0);
+  if (bytes > 2 * 1024 * 1024) throw new Error(item.name + ' 超过 2 MB：' + (bytes / 1024 / 1024).toFixed(2) + ' MB');
+  ['index.js', 'index.json', 'index.wxml', 'index.wxss'].forEach((fileName) => {
+    const pageFile = path.join(packageRoot, 'pages', 'index', fileName);
+    if (!fs.existsSync(pageFile)) throw new Error(item.name + ' 缺少页面文件：' + fileName);
+  });
+});
+
 const wxmlPath = path.join(miniRoot, 'pages', 'index', 'index.wxml');
-const pageScriptPath = path.join(miniRoot, 'pages', 'index', 'index.js');
+const pageScriptPath = path.join(miniRoot, 'pages', 'index', 'page-config.js');
 const wxml = fs.readFileSync(wxmlPath, 'utf8');
 const pageScript = fs.readFileSync(pageScriptPath, 'utf8');
+const speechScript = fs.readFileSync(path.join(miniRoot, 'utils', 'speech.js'), 'utf8');
+if (speechScript.indexOf('loadSubpackage') >= 0) throw new Error('普通小程序语音不得调用 wx.loadSubpackage');
 const tagStack = [];
 for (const match of wxml.matchAll(/<\/?([\w-]+)(?:\s[^>]*)?>/g)) {
   const raw = match[0];
@@ -77,9 +112,17 @@ handlers.forEach((handler) => {
 });
 
 const packageBytes = walk(miniRoot).reduce((sum, file) => sum + fs.statSync(file).size, 0);
+const speechRoots = new Set(speechPackages.map((item) => item.root));
+const mainPackageBytes = fs.readdirSync(miniRoot, { withFileTypes: true })
+  .filter((entry) => !speechRoots.has(entry.name))
+  .flatMap((entry) => entry.isDirectory() ? walk(path.join(miniRoot, entry.name)) : [path.join(miniRoot, entry.name)])
+  .reduce((sum, file) => sum + fs.statSync(file).size, 0);
+if (mainPackageBytes > 2 * 1024 * 1024) throw new Error('主包超过 2 MB：' + (mainPackageBytes / 1024 / 1024).toFixed(2) + ' MB');
+if (packageBytes > 20 * 1024 * 1024) throw new Error('小程序总包超过 20 MB：' + (packageBytes / 1024 / 1024).toFixed(2) + ' MB');
 console.log('词汇：' + wordCount + ' 个');
 console.log('图集：' + atlas.layouts.length + ' 个；商店商品：' + shop.length + ' 件');
-console.log('小程序目录体积：' + (packageBytes / 1024 / 1024).toFixed(2) + ' MB');
+console.log('语音：889 条唯一内容，' + speechEntries + ' 个课本单元映射，24 个页面分包');
+console.log('主包体积：' + (mainPackageBytes / 1024 / 1024).toFixed(2) + ' MB；小程序总目录：' + (packageBytes / 1024 / 1024).toFixed(2) + ' MB');
 console.log('WXML 标签与 ' + handlers.length + ' 个交互事件检查通过');
 console.log('关键数据与资源检查通过');
 
