@@ -843,74 +843,159 @@
             color: #FF9800; font-weight: bold;
         }
 
-        /* New shop overlay styles */
+        /* Playful reward cabinet shop */
         .shop-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 2000;
+            position: fixed; inset: 0; z-index: 2000;
             display: flex; justify-content: center; align-items: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+            padding: 24px;
+            background: rgba(20, 43, 54, 0.72);
+            backdrop-filter: blur(8px);
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.25s ease;
         }
-        .shop-overlay.active {
-            opacity: 1; pointer-events: all;
-        }
+        .shop-overlay.active { opacity: 1; pointer-events: all; }
         .shop-button {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white; border: none; padding: 10px 20px;
-            border-radius: 25px; font-size: 1.2rem; font-weight: bold;
-            cursor: pointer; transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            background: linear-gradient(135deg, #087f8c, #0b6574);
+            color: white; border: 2px solid rgba(255,255,255,0.5);
+            padding: 10px 20px; border-radius: 25px;
+            font-family: "Trebuchet MS", "Microsoft YaHei", sans-serif;
+            font-size: 1.1rem; font-weight: 800; cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 5px 0 #064c57, 0 8px 16px rgba(0,0,0,0.16);
         }
-        .shop-button:hover { transform: scale(1.05); }
+        .shop-button:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #064c57, 0 12px 20px rgba(0,0,0,0.18); }
         .coin-shop-container {
             position: absolute; top: 20px; right: 20px;
             display: flex; gap: 10px; align-items: center;
         }
         .coin-display {
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            padding: 10px 20px; border-radius: 25px;
-            font-size: 1.2rem; font-weight: bold; color: white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            cursor: pointer; transition: all 0.3s ease;
+            background: linear-gradient(135deg, #ffd84d, #f5a623);
+            padding: 10px 18px; border: 2px solid #fff3b0;
+            border-radius: 25px; font-size: 1.1rem; font-weight: 900;
+            color: #694100; box-shadow: 0 5px 0 #c97911, 0 8px 16px rgba(0,0,0,0.15);
+            cursor: pointer; transition: transform 0.2s ease;
         }
-        .coin-display:hover { transform: scale(1.05); }
+        .coin-display:hover { transform: translateY(-2px); }
         .shop-modal {
-            background: white; border-radius: 20px; width: 90%; max-width: 600px;
-            max-height: 80vh; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            transform: scale(0.9); transition: transform 0.3s ease;
+            width: min(980px, 96vw); max-height: min(900px, 92vh);
+            display: flex; flex-direction: column; overflow: hidden;
+            background: #fff8e8; border: 4px solid #f2c96d;
+            border-radius: 28px; box-shadow: 0 24px 70px rgba(0,0,0,0.38);
+            transform: translateY(18px) scale(0.97);
+            transition: transform 0.25s ease;
+            font-family: "Trebuchet MS", "Microsoft YaHei", sans-serif;
         }
-        .shop-overlay.active .shop-modal {
-            transform: scale(1);
+        .shop-overlay.active .shop-modal { transform: translateY(0) scale(1); }
+        .shop-header {
+            position: relative; overflow: hidden;
+            padding: 20px 24px;
+            background: linear-gradient(120deg, #087f8c, #0b6574 65%, #074d5c);
+            color: white;
         }
-        .shop-controls {
-            display: flex; align-items: center; gap: 15px;
+        .shop-header::after {
+            content: "★  A B C  ★"; position: absolute; right: 180px; top: 14px;
+            color: rgba(255,255,255,0.12); font-size: 2rem; font-weight: 900;
+            transform: rotate(-5deg); pointer-events: none;
         }
+        .shop-title-wrap { position: relative; z-index: 1; }
+        .shop-header h3 { margin: 0; font-size: 1.75rem; letter-spacing: 0.03em; }
+        .shop-header-subtitle { margin: 3px 0 0; color: #d8fbf7; font-size: 0.9rem; }
+        .shop-controls { position: relative; z-index: 1; display: flex; align-items: center; gap: 12px; }
         .coin-balance {
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            padding: 5px 15px; border-radius: 20px;
-            font-weight: bold; color: white;
+            display: inline-flex; align-items: center; gap: 5px;
+            background: #ffd84d; padding: 7px 14px; border: 2px solid #fff2a8;
+            border-radius: 999px; font-weight: 900; color: #694100;
+            box-shadow: 0 3px 0 #c97911;
         }
+        .close-shop {
+            width: 40px; height: 40px; display: inline-flex;
+            align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.14); border: 2px solid rgba(255,255,255,0.45);
+            border-radius: 50%; color: white; font-size: 1.15rem; cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        .close-shop:hover { transform: rotate(8deg) scale(1.08); background: #e95d55; }
+        .shop-toolbar {
+            display: grid; grid-template-columns: minmax(220px, 1fr) auto;
+            gap: 14px; align-items: center; padding: 15px 22px 12px;
+            background: #fffdf6; border-bottom: 1px solid #efddb6;
+        }
+        .shop-progress { color: #305568; font-weight: 800; }
+        .shop-progress strong { color: #e36b2c; }
+        .shop-filter-row { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px; }
+        .shop-filter {
+            padding: 7px 12px; border: 2px solid #b8d9d6; border-radius: 999px;
+            background: white; color: #28626a; font: inherit; font-size: 0.86rem;
+            font-weight: 800; cursor: pointer; transition: 0.18s ease;
+        }
+        .shop-filter:hover, .shop-filter.active { background: #087f8c; border-color: #087f8c; color: white; transform: translateY(-1px); }
+        .shop-message {
+            min-height: 0; margin: 0 22px; padding: 0;
+            border-radius: 12px; text-align: center; font-weight: 800;
+            transition: all 0.2s ease;
+        }
+        .shop-message:not(:empty) { min-height: 24px; margin-top: 10px; padding: 8px 12px; }
+        .shop-message.success { background: #dcf7e4; color: #20733a; }
+        .shop-message.warning { background: #fff0c9; color: #8a5500; }
         .shop-items-grid {
-            max-height: 60vh; overflow-y: auto; padding: 20px;
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
+            flex: 1; min-height: 0; overflow-y: auto; padding: 18px 22px 24px;
+            display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 15px;
+            scrollbar-color: #e3b856 transparent;
         }
         .shop-item-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 15px; padding: 15px; text-align: center;
-            color: white; cursor: pointer; transition: all 0.3s ease;
-            border: 3px solid transparent;
+            position: relative; overflow: hidden; min-width: 0;
+            display: flex; flex-direction: column; align-items: stretch; padding: 0;
+            background: #fff; border: 3px solid #ead8b1; border-radius: 18px;
+            color: #284553; text-align: left; font: inherit; cursor: pointer;
+            box-shadow: 0 6px 0 #ddc58f, 0 9px 18px rgba(72,53,18,0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            animation: shopItemEnter 0.35s both; animation-delay: var(--shop-delay, 0ms);
         }
-        .shop-item-card:hover { transform: scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
-        .shop-item-card.purchased { background: linear-gradient(135deg, #4CAF50, #45a049); }
-        .shop-item-card.unaffordable { opacity: 0.6; cursor: not-allowed; }
-        .shop-item-card h4 { margin-bottom: 8px; font-size: 1.1rem; }
-        .shop-item-card p { margin-bottom: 12px; opacity: 0.9; font-size: 0.9rem; }
+        .shop-item-card:hover:not(:disabled) {
+            transform: translateY(-5px) rotate(-0.4deg); border-color: #f1b84b;
+            box-shadow: 0 10px 0 #d9a23b, 0 15px 24px rgba(72,53,18,0.16);
+        }
+        .shop-item-card:focus-visible { outline: 4px solid #48bfc6; outline-offset: 3px; }
+        .shop-item-card.unaffordable { filter: saturate(0.7); }
+        .shop-item-card.purchased { border-color: #61b976; box-shadow: 0 6px 0 #4a9d5e; cursor: default; }
+        .shop-item-media {
+            width: 100%; aspect-ratio: 5 / 4; flex: 0 0 auto; overflow: hidden;
+            background: #fff9e8; border-bottom: 2px solid #f0dfba;
+        }
+        .shop-item-image {
+            display: block; width: 100%; height: 100%;
+            object-fit: cover; object-position: center;
+        }
+        .shop-item-body { display: flex; width: 100%; flex: 1; flex-direction: column; padding: 10px 12px 12px; }
+        .shop-item-name-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 7px; }
+        .shop-item-name {
+            display: block; min-width: 0; margin: 0; color: #173f4e;
+            font-size: 1rem; font-weight: 900; line-height: 1.3;
+        }
+        .shop-item-card p { min-height: 2.5em; margin: 6px 0 10px; color: #6c7c80; font-size: 0.8rem; line-height: 1.25; }
+        .shop-rarity { flex: 0 0 auto; padding: 3px 7px; border-radius: 999px; font-size: 0.64rem; font-weight: 900; }
+        .rarity-starter { background: #e8f7ef; color: #348052; }
+        .rarity-popular { background: #e7f2ff; color: #326fa8; }
+        .rarity-special { background: #f1eaff; color: #7550a8; }
+        .rarity-legendary { background: #fff0c7; color: #a85d00; }
+        .shop-item-footer { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
         .shop-item-card .price {
-            background: rgba(255,255,255,0.2); padding: 5px 10px;
-            border-radius: 15px; font-weight: bold; display: inline-block;
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 5px 9px; background: #fff2bd; border-radius: 999px;
+            color: #785000; font-size: 0.78rem; font-weight: 900;
         }
-        .shop-item-card.purchased .price { background: rgba(255,255,255,0.3); }
-        .shop-item-card.unaffordable .price { background: rgba(255,255,255,0.1); }
+        .shop-buy-hint { color: #087f8c; font-size: 0.72rem; font-weight: 900; }
+        .shop-item-card.unaffordable .shop-buy-hint { color: #b06b25; }
+        .purchased-text {
+            position: absolute; top: 9px; right: 9px; z-index: 2;
+            padding: 5px 8px; border-radius: 999px;
+            background: #2f9b55; color: white; font-size: 0.68rem; font-weight: 900;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+        @keyframes shopItemEnter {
+            from { opacity: 0; transform: translateY(10px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
         /* Error book styles */
         .error-book-mode {
             background: white; border-radius: 20px; padding: 40px;
@@ -1097,6 +1182,20 @@
             .spelling-options { grid-template-columns: 1fr; }
             .spelling-option { min-height: 72px; font-size: 1.35rem; padding: 12px 16px; }
             .error-word-list { grid-template-columns: 1fr; }
+            .shop-overlay { padding: 8px; }
+            .shop-modal { width: 100%; max-height: 96vh; border-radius: 20px; }
+            .shop-header { padding: 15px; }
+            .shop-header h3 { font-size: 1.35rem; }
+            .shop-header-subtitle, .shop-header::after { display: none; }
+            .shop-toolbar { grid-template-columns: 1fr; padding: 12px 14px; }
+            .shop-filter-row { justify-content: flex-start; }
+            .shop-items-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; padding: 14px; }
+            .shop-item-name { font-size: 0.9rem; }
+            .shop-item-card p { min-height: 0; font-size: 0.72rem; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .shop-item-card { animation: none; }
+            .shop-modal, .shop-overlay, .shop-item-card { transition: none; }
         }
     </style>
 </head>
@@ -1116,15 +1215,29 @@
         </header>
 
         <!-- Full Screen Shop Overlay -->
-        <div class="shop-overlay" id="shop-overlay">
-            <div class="shop-modal">
+        <div class="shop-overlay" id="shop-overlay" aria-hidden="true">
+            <div class="shop-modal" role="dialog" aria-modal="true" aria-labelledby="shop-title">
                 <div class="shop-header">
-                    <h3>🏪 金币商店</h3>
+                    <div class="shop-title-wrap">
+                        <h3 id="shop-title">🎁 星光奖励商店</h3>
+                        <p class="shop-header-subtitle">认真学习赚金币，把喜欢的奖励带回家！</p>
+                    </div>
                     <div class="shop-controls">
                         <span class="coin-balance">💰 <span id="shop-coin-balance">0</span></span>
-                        <button class="close-shop" onclick="closeShop()">✖️</button>
+                        <button class="close-shop" onclick="closeShop()" aria-label="关闭金币商店">✕</button>
                     </div>
                 </div>
+                <div class="shop-toolbar">
+                    <div class="shop-progress" id="shop-progress">已收藏 <strong>0</strong> / 20 件奖励</div>
+                    <div class="shop-filter-row" id="shop-filter-row" aria-label="商品分类">
+                        <button class="shop-filter active" data-category="all" onclick="setShopCategory('all')">全部</button>
+                        <button class="shop-filter" data-category="learning" onclick="setShopCategory('learning')">📚 学习用品</button>
+                        <button class="shop-filter" data-category="fun" onclick="setShopCategory('fun')">🚀 趣味玩具</button>
+                        <button class="shop-filter" data-category="gear" onclick="setShopCategory('gear')">⌚ 智能设备</button>
+                        <button class="shop-filter" data-category="collection" onclick="setShopCategory('collection')">🏆 收藏奖励</button>
+                    </div>
+                </div>
+                <div class="shop-message" id="shop-message" aria-live="polite"></div>
                 <div class="shop-items-grid" id="shop-items-grid">
                     <!-- Shop items will be generated by JavaScript -->
                 </div>
@@ -2818,13 +2931,60 @@
         }
 
         // Shop functionality
+        const SHOP_ITEMS = [
+            { name: '学习徽章', price: 50, category: 'collection', rarity: 'starter', imageIndex: 0, desc: '完成学习目标的第一枚勋章' },
+            { name: '小星星贴纸', price: 75, category: 'collection', rarity: 'starter', imageIndex: 1, desc: '把闪亮星星收入收藏册' },
+            { name: '彩色铅笔', price: 100, category: 'learning', rarity: 'starter', imageIndex: 2, desc: '画出今天学会的新单词' },
+            { name: '迷你词典', price: 150, category: 'learning', rarity: 'starter', imageIndex: 3, desc: '随时发现陌生单词的秘密' },
+            { name: '英语故事书', price: 175, category: 'learning', rarity: 'popular', imageIndex: 4, desc: '开启一段有趣的英文冒险' },
+            { name: '单词卡片套装', price: 200, category: 'learning', rarity: 'popular', imageIndex: 5, desc: '翻一翻，记单词更轻松' },
+            { name: '电子单词笔', price: 250, category: 'gear', rarity: 'popular', imageIndex: 6, desc: '点一点就能听到标准发音' },
+            { name: '学习海报', price: 275, category: 'learning', rarity: 'popular', imageIndex: 7, desc: '把常用单词贴在学习角' },
+            { name: '英语游戏卡', price: 300, category: 'fun', rarity: 'popular', imageIndex: 8, desc: '和家人一起玩单词挑战' },
+            { name: '智能学习手表', price: 350, category: 'gear', rarity: 'popular', imageIndex: 9, desc: '记录每天坚持学习的时间' },
+            { name: '火箭文具盒', price: 400, category: 'fun', rarity: 'special', imageIndex: 10, desc: '装好文具，向知识星球出发' },
+            { name: '小熊书包', price: 425, category: 'gear', rarity: 'special', imageIndex: 11, desc: '背上可爱书包快乐去学习' },
+            { name: '彩虹笔记本', price: 450, category: 'learning', rarity: 'special', imageIndex: 12, desc: '记录每一个进步的小瞬间' },
+            { name: '字母积木', price: 475, category: 'fun', rarity: 'special', imageIndex: 13, desc: '动手搭出有趣的英文单词' },
+            { name: '恐龙书签', price: 500, category: 'collection', rarity: 'special', imageIndex: 14, desc: '让小恐龙陪你继续阅读' },
+            { name: '星光阅读灯', price: 550, category: 'gear', rarity: 'special', imageIndex: 15, desc: '用温暖灯光守护阅读时间' },
+            { name: '太空耳机', price: 600, category: 'gear', rarity: 'legendary', imageIndex: 16, desc: '沉浸聆听清晰的英语发音' },
+            { name: '单词宝藏箱', price: 650, category: 'collection', rarity: 'legendary', imageIndex: 17, desc: '收藏一路学会的单词宝藏' },
+            { name: '冠军奖杯', price: 700, category: 'collection', rarity: 'legendary', imageIndex: 18, desc: '为坚持学习的自己喝彩' },
+            { name: '猫头鹰学伴', price: 800, category: 'collection', rarity: 'legendary', imageIndex: 19, desc: '最珍贵的智慧学习伙伴' }
+        ];
+        const SHOP_RARITY_LABELS = {
+            starter: '入门', popular: '人气', special: '珍藏', legendary: '传说'
+        };
+        const SHOP_ITEM_IMAGES = [
+            'assets/shop-items/00-learning-medal.png',
+            'assets/shop-items/01-star-stickers.png',
+            'assets/shop-items/02-colored-pencils.png',
+            'assets/shop-items/03-mini-dictionary.png',
+            'assets/shop-items/04-english-storybook.png',
+            'assets/shop-items/05-word-cards.png',
+            'assets/shop-items/06-reading-pen.png',
+            'assets/shop-items/07-learning-poster.png',
+            'assets/shop-items/08-game-cards.png',
+            'assets/shop-items/09-smart-watch.png',
+            'assets/shop-items/10-rocket-pencil-case.png',
+            'assets/shop-items/11-bear-backpack.png',
+            'assets/shop-items/12-rainbow-notebook.png',
+            'assets/shop-items/13-alphabet-blocks.png',
+            'assets/shop-items/14-dinosaur-bookmark.png',
+            'assets/shop-items/15-reading-lamp.png',
+            'assets/shop-items/16-space-headphones.png',
+            'assets/shop-items/17-word-treasure-box.png',
+            'assets/shop-items/18-champion-trophy.png',
+            'assets/shop-items/19-owl-companion.png'
+        ];
+        let currentShopCategory = 'all';
+        let shopMessageTimer = null;
+
         function toggleShop() {
-            const overlay = document.getElementById('shop-overlay');
-            if (overlay.classList.contains('active')) {
-                closeFullShop();
-            } else {
-                openFullShop();
-            }
+            document.getElementById('shop-overlay').classList.contains('active')
+                ? closeFullShop()
+                : openFullShop();
         }
 
         function openShop() {
@@ -2834,8 +2994,9 @@
         function openFullShop() {
             const overlay = document.getElementById('shop-overlay');
             overlay.classList.add('active');
+            overlay.setAttribute('aria-hidden', 'false');
+            updateCoinDisplay();
             updateShopItems();
-            document.getElementById('shop-coin-balance').textContent = totalCoins;
         }
 
         function closeShop() {
@@ -2845,182 +3006,114 @@
         function closeFullShop() {
             const overlay = document.getElementById('shop-overlay');
             overlay.classList.remove('active');
+            overlay.setAttribute('aria-hidden', 'true');
         }
 
         function updateCoinDisplay() {
-            document.getElementById('coin-display').textContent = `💰 金币: ${totalCoins} 🏪`;
+            document.getElementById('coin-display').textContent = `💰 金币: ${totalCoins}`;
+            document.getElementById('shop-coin-balance').textContent = totalCoins;
             localStorage.setItem('totalCoins', totalCoins);
+        }
+
+        function setShopCategory(category) {
+            currentShopCategory = category;
+            updateShopItems();
+        }
+
+        function showShopMessage(message, type = 'success') {
+            const messageElement = document.getElementById('shop-message');
+            clearTimeout(shopMessageTimer);
+            messageElement.className = `shop-message ${type}`;
+            messageElement.textContent = message;
+            shopMessageTimer = setTimeout(() => {
+                messageElement.className = 'shop-message';
+                messageElement.textContent = '';
+            }, 2800);
         }
 
         function updateShopItems() {
             const shopGrid = document.getElementById('shop-items-grid');
+            const visibleItems = currentShopCategory === 'all'
+                ? SHOP_ITEMS
+                : SHOP_ITEMS.filter(item => item.category === currentShopCategory);
+
+            document.querySelectorAll('.shop-filter').forEach(button => {
+                button.classList.toggle('active', button.dataset.category === currentShopCategory);
+            });
+
+            const purchasedCount = SHOP_ITEMS.filter(item => purchasedItems.includes(item.name)).length;
+            document.getElementById('shop-progress').innerHTML = `已收藏 <strong>${purchasedCount}</strong> / ${SHOP_ITEMS.length} 件奖励`;
             shopGrid.innerHTML = '';
 
-            const shopItems = [
-                { name: '学习徽章', price: 50, icon: '🏅', desc: '基础学习成就' },
-                { name: '小星星贴纸', price: 75, icon: '⭐', desc: '收集可爱贴纸' },
-                { name: '彩色铅笔', price: 100, icon: '🖍️', desc: '绘画学习工具' },
-                { name: '迷你词典', price: 150, icon: '📖', desc: '随身查单词' },
-                { name: '英语故事书', price: 175, icon: '📚', desc: '阅读提升' },
-                { name: '单词卡片套装', price: 200, icon: '📮', desc: '复习必备' },
-                { name: '电子单词笔', price: 250, icon: '✏️', desc: '智能学习' },
-                { name: '学习海报', price: 275, icon: '🖼️', desc: '装饰空间' },
-                { name: '英语游戏卡', price: 300, icon: '🃏', desc: '趣味学习' },
-                { name: '智能学习手表', price: 350, icon: '⌚', desc: '高级装备' }
-            ];
-
-            shopItems.forEach(item => {
-                const itemCard = document.createElement('div');
-                itemCard.className = 'shop-item-card';
-                if (purchasedItems.includes(item.name)) {
-                    itemCard.classList.add('purchased');
-                } else if (totalCoins < item.price) {
-                    itemCard.classList.add('unaffordable');
-                }
-
-                if (!itemCard.classList.contains('purchased')) {
+            visibleItems.forEach((item, visibleIndex) => {
+                const purchased = purchasedItems.includes(item.name);
+                const affordable = totalCoins >= item.price;
+                const itemCard = document.createElement('button');
+                itemCard.type = 'button';
+                itemCard.className = `shop-item-card${purchased ? ' purchased' : ''}${!purchased && !affordable ? ' unaffordable' : ''}`;
+                itemCard.style.setProperty('--shop-delay', `${visibleIndex * 28}ms`);
+                itemCard.setAttribute('aria-label', `${item.name}，${item.price}金币${purchased ? '，已购买' : affordable ? '，可以购买' : '，金币不足'}`);
+                if (purchased) {
+                    itemCard.disabled = true;
+                } else {
                     itemCard.onclick = () => purchaseItem(item);
                 }
 
                 itemCard.innerHTML = `
-                    <h4>${item.icon} ${item.name}</h4>
-                    <p>${item.desc}</p>
-                    <div class="price">${item.price}金币</div>
-                    ${itemCard.classList.contains('purchased') ? '<div class="purchased-text">已购买</div>' : ''}
+                    ${purchased ? '<span class="purchased-text">✓ 已收藏</span>' : ''}
+                    <div class="shop-item-media">
+                        <img class="shop-item-image" src="${SHOP_ITEM_IMAGES[item.imageIndex]}" alt="${item.name}" loading="lazy">
+                    </div>
+                    <div class="shop-item-body">
+                        <div class="shop-item-name-row">
+                            <h4 class="shop-item-name">${item.name}</h4>
+                            <span class="shop-rarity rarity-${item.rarity}">${SHOP_RARITY_LABELS[item.rarity]}</span>
+                        </div>
+                        <p>${item.desc}</p>
+                        <div class="shop-item-footer">
+                            <span class="price">🪙 ${item.price}</span>
+                            <span class="shop-buy-hint">${purchased ? '已拥有' : affordable ? '点击购买' : `还差 ${item.price - totalCoins}`}</span>
+                        </div>
+                    </div>
                 `;
-
                 shopGrid.appendChild(itemCard);
             });
         }
 
         function purchaseItem(item) {
-            if (totalCoins >= item.price && !purchasedItems.includes(item.name)) {
-                totalCoins -= item.price;
-                purchasedItems.push(item.name);
-                localStorage.setItem('totalCoins', totalCoins);
-                localStorage.setItem('purchasedItems', JSON.stringify(purchasedItems));
-                updateCoinDisplay();
-                updateShopItems();
-                alert(`成功购买 ${item.name}！`);
-            } else if (purchasedItems.includes(item.name)) {
-                alert('您已经购买过这个物品了！');
-            } else {
-                alert('金币不足！');
+            if (purchasedItems.includes(item.name)) {
+                showShopMessage('这个奖励已经在你的收藏里啦！', 'warning');
+                return;
             }
+            if (totalCoins < item.price) {
+                showShopMessage(`还差 ${item.price - totalCoins} 枚金币，再完成几道题吧！`, 'warning');
+                return;
+            }
+
+            totalCoins -= item.price;
+            purchasedItems.push(item.name);
+            localStorage.setItem('purchasedItems', JSON.stringify(purchasedItems));
+            updateCoinDisplay();
+            updateShopItems();
+            showShopMessage(`🎉 成功收藏「${item.name}」！`);
         }
 
         // Load saved data on page load
         window.addEventListener('load', function() {
-            const savedCoins = localStorage.getItem('totalCoins');
-            if (savedCoins) {
-                totalCoins = parseInt(savedCoins);
-                updateCoinDisplay();
-            }
+            const savedCoins = Number.parseInt(localStorage.getItem('totalCoins'), 10);
+            if (Number.isFinite(savedCoins)) totalCoins = savedCoins;
             const savedItems = localStorage.getItem('purchasedItems');
-            if (savedItems) {
-                purchasedItems = JSON.parse(savedItems);
-            }
+            if (savedItems) purchasedItems = JSON.parse(savedItems);
+            updateCoinDisplay();
         });
 
-        // Close shop when clicking outside
-        document.getElementById('shop-overlay').addEventListener('click', function(e) {
-            if (e.target === this) {
+        document.getElementById('shop-overlay').addEventListener('click', function(event) {
+            if (event.target === this) closeFullShop();
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && document.getElementById('shop-overlay').classList.contains('active')) {
                 closeFullShop();
-            }
-        });
-
-        function openShop() {
-            openFullShop();
-        }
-
-        function openFullShop() {
-            const overlay = document.getElementById('shop-overlay');
-            overlay.classList.add('active');
-            updateShopItems();
-            document.getElementById('shop-coin-balance').textContent = totalCoins;
-        }
-
-        function closeShop() {
-            closeFullShop();
-        }
-
-        function closeFullShop() {
-            const overlay = document.getElementById('shop-overlay');
-            overlay.classList.remove('active');
-        }
-
-        function updateCoinDisplay() {
-            document.getElementById('coin-display').textContent = `💰 金币: ${totalCoins} 🏪`;
-            localStorage.setItem('totalCoins', totalCoins);
-        }
-
-        function updateShopItems() {
-            const shopGrid = document.getElementById('shop-items-grid');
-            shopGrid.innerHTML = '';
-
-            const shopItems = [
-                { name: '学习徽章', price: 50, icon: '🏅', desc: '基础学习成就' },
-                { name: '小星星贴纸', price: 75, icon: '⭐', desc: '收集可爱贴纸' },
-                { name: '彩色铅笔', price: 100, icon: '🖍️', desc: '绘画学习工具' },
-                { name: '迷你词典', price: 150, icon: '📖', desc: '随身查单词' },
-                { name: '英语故事书', price: 175, icon: '📚', desc: '阅读提升' },
-                { name: '单词卡片套装', price: 200, icon: '📮', desc: '复习必备' },
-                { name: '电子单词笔', price: 250, icon: '✏️', desc: '智能学习' },
-                { name: '学习海报', price: 275, icon: '🖼️', desc: '装饰空间' },
-                { name: '英语游戏卡', price: 300, icon: '🃏', desc: '趣味学习' },
-                { name: '智能学习手表', price: 350, icon: '⌚', desc: '高级装备' }
-            ];
-
-            shopItems.forEach(item => {
-                const itemCard = document.createElement('div');
-                itemCard.className = 'shop-item-card';
-                if (purchasedItems.includes(item.name)) {
-                    itemCard.classList.add('purchased');
-                } else if (totalCoins < item.price) {
-                    itemCard.classList.add('unaffordable');
-                }
-
-                if (!itemCard.classList.contains('purchased')) {
-                    itemCard.onclick = () => purchaseItem(item);
-                }
-
-                itemCard.innerHTML = `
-                    <h4>${item.icon} ${item.name}</h4>
-                    <p>${item.desc}</p>
-                    <div class="price">${item.price}金币</div>
-                    ${itemCard.classList.contains('purchased') ? '<div class="purchased-text">已购买</div>' : ''}
-                `;
-
-                shopGrid.appendChild(itemCard);
-            });
-        }
-
-        function purchaseItem(item) {
-            if (totalCoins >= item.price && !purchasedItems.includes(item.name)) {
-                totalCoins -= item.price;
-                purchasedItems.push(item.name);
-                localStorage.setItem('totalCoins', totalCoins);
-                localStorage.setItem('purchasedItems', JSON.stringify(purchasedItems));
-                updateCoinDisplay();
-                updateShopItems();
-                alert(`成功购买 ${item.name}！`);
-            } else if (purchasedItems.includes(item.name)) {
-                alert('您已经购买过这个物品了！');
-            } else {
-                alert('金币不足！');
-            }
-        }
-
-        // Load saved data on page load
-        window.addEventListener('load', function() {
-            const savedCoins = localStorage.getItem('totalCoins');
-            if (savedCoins) {
-                totalCoins = parseInt(savedCoins);
-                updateCoinDisplay();
-            }
-            const savedItems = localStorage.getItem('purchasedItems');
-            if (savedItems) {
-                purchasedItems = JSON.parse(savedItems);
             }
         });
     </script>

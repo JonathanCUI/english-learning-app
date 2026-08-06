@@ -1,0 +1,18 @@
+{
+  "name": "english-learning-mini-program",
+  "version": "1.0.0",
+  "private": true,
+  "description": "星光英语小助手微信小程序构建与上传工具",
+  "scripts": {
+    "mini:data": "node scripts/extract-mini-vocabulary.js",
+    "mini:assets": "powershell -ExecutionPolicy Bypass -File scripts/build-mini-assets.ps1",
+    "mini:build": "npm run mini:data && npm run mini:assets && npm run mini:verify",
+    "mini:verify": "node scripts/verify-mini-program.js",
+    "mini:tts:on": "node scripts/toggle-wechat-si.js enable",
+    "mini:tts:off": "node scripts/toggle-wechat-si.js disable",
+    "mini:upload": "node scripts/upload-miniprogram.js"
+  },
+  "devDependencies": {
+    "miniprogram-ci": "2.1.32"
+  }
+}

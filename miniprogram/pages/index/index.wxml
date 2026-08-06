@@ -1,0 +1,273 @@
+<view class="page-shell safe-bottom">
+  <view class="ambient ambient-one"></view>
+  <view class="ambient ambient-two"></view>
+
+  <view class="app-header">
+    <view class="brand" bindtap="goHome">
+      <view class="brand-star">★</view>
+      <view>
+        <view class="brand-title">星光英语</view>
+        <view class="brand-subtitle">每天点亮一个新单词</view>
+      </view>
+    </view>
+    <button class="coin-pill" bindtap="openShop" aria-label="打开星光奖励商店">
+      <text>🪙</text>
+      <text>{{coins}}</text>
+    </button>
+  </view>
+
+  <view wx:if="{{view === 'home'}}" class="screen home-screen">
+    <view class="hero-card">
+      <view class="hero-kicker">HELLO, LITTLE EXPLORER!</view>
+      <view class="hero-title">今天想去哪个<text>单词星球</text>？</view>
+      <view class="hero-copy">选择课本范围，再开始学习、测验或拼写挑战。</view>
+      <view class="orbit orbit-one">A</view>
+      <view class="orbit orbit-two">B</view>
+      <view class="hero-mascot">🦉</view>
+    </view>
+
+    <view class="selection-card">
+      <view class="section-heading">
+        <view class="section-number">1</view>
+        <view>
+          <view class="section-title">选择年级</view>
+          <view class="section-hint">找到你的学习进度</view>
+        </view>
+      </view>
+      <view class="choice-row two-columns">
+        <button
+          wx:for="{{grades}}"
+          wx:key="value"
+          class="choice-card grade-choice {{selectedGrade === item.value ? 'is-active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="selectGrade"
+        >
+          <text class="choice-icon">{{item.icon}}</text>
+          <text>{{item.label}}</text>
+        </button>
+      </view>
+
+      <view class="section-heading compact-heading">
+        <view class="section-number coral">2</view>
+        <view class="section-title">选择学期</view>
+      </view>
+      <view class="choice-row two-columns">
+        <button
+          wx:for="{{semesters}}"
+          wx:key="*this"
+          class="semester-choice {{selectedSemester === item ? 'is-active' : ''}}"
+          data-value="{{item}}"
+          bindtap="selectSemester"
+        >{{item}}</button>
+      </view>
+
+      <view class="section-heading compact-heading">
+        <view class="section-number gold">3</view>
+        <view class="section-title">选择单元</view>
+      </view>
+      <view class="unit-grid">
+        <button
+          wx:for="{{units}}"
+          wx:key="*this"
+          class="unit-choice {{selectedUnit === item ? 'is-active' : ''}}"
+          data-value="{{item}}"
+          bindtap="selectUnit"
+        >Unit {{index + 1}}</button>
+      </view>
+    </view>
+
+    <view class="selection-summary">
+      <text class="summary-dot"></text>
+      <text>{{selectionLabel}}</text>
+      <text class="summary-count">{{currentWords.length}} 个单词</text>
+    </view>
+
+    <view class="mode-grid">
+      <button class="mode-card learn-mode" bindtap="openLearning">
+        <view class="mode-icon">📚</view>
+        <view class="mode-title">单词学习</view>
+        <view class="mode-copy">看图、例句与发音</view>
+      </button>
+      <button class="mode-card quiz-mode" bindtap="startQuiz">
+        <view class="mode-icon">🎯</view>
+        <view class="mode-title">中英测验</view>
+        <view class="mode-copy">双向选择小挑战</view>
+      </button>
+      <button class="mode-card spell-mode" bindtap="startSpelling">
+        <view class="mode-icon">🔤</view>
+        <view class="mode-title">拼写选择</view>
+        <view class="mode-copy">找出细微拼写差别</view>
+      </button>
+      <button class="mode-card error-mode" bindtap="openErrorBook">
+        <view class="mode-icon">📕</view>
+        <view class="mode-title">错题本</view>
+        <view class="mode-copy">{{errorCount ? errorCount + ' 个单词待复习' : '现在没有错题'}}</view>
+      </button>
+    </view>
+  </view>
+
+  <view wx:if="{{view === 'learning'}}" class="screen activity-screen">
+    <view class="activity-topbar">
+      <button class="back-button" bindtap="goHome">‹ 返回</button>
+      <view class="activity-label">{{selectionLabel}}</view>
+      <view class="progress-number">{{currentWordIndex + 1}} / {{currentWords.length}}</view>
+    </view>
+    <view class="progress-track"><view class="progress-fill" style="width: {{((currentWordIndex + 1) / currentWords.length) * 100}}%;"></view></view>
+
+    <view class="learning-card">
+      <view class="word-visual" style="{{currentWord.visualStyle}}">
+        <view wx:if="{{currentWord.visualLabel}}" class="visual-label">{{currentWord.visualLabel}}</view>
+      </view>
+      <view class="word-main">{{currentWord.english}}</view>
+      <view wx:if="{{showDetails}}" class="word-details">
+        <view class="phonetic">/{{currentWord.pronunciation}}/</view>
+        <view class="chinese-meaning">{{currentWord.chinese}}</view>
+        <view wx:if="{{currentWord.example}}" class="example-card">
+          <view class="example-english">{{currentWord.example}}</view>
+          <view class="example-chinese">{{currentWord.exampleChinese}}</view>
+          <button class="tiny-audio" bindtap="pronounceExample">🔊 例句</button>
+        </view>
+      </view>
+      <view class="learning-actions">
+        <button class="round-action audio-action" bindtap="pronounceCurrent">🔊 发音</button>
+        <button class="round-action reveal-action" bindtap="toggleDetails">{{showDetails ? '隐藏释义' : '显示释义'}}</button>
+      </view>
+    </view>
+    <view class="pager-actions">
+      <button bindtap="previousWord">← 上一个</button>
+      <button class="primary-next" bindtap="nextWord">下一个 →</button>
+    </view>
+  </view>
+
+  <view wx:if="{{view === 'quiz'}}" class="screen activity-screen">
+    <view class="activity-topbar">
+      <button class="back-button" bindtap="goHome">‹ 返回</button>
+      <view class="activity-label">中英测验</view>
+      <view class="progress-number">{{quizIndex + 1}} / {{quizQuestions.length}}</view>
+    </view>
+    <view class="progress-track"><view class="progress-fill coral-fill" style="width: {{((quizIndex + 1) / quizQuestions.length) * 100}}%;"></view></view>
+    <view class="question-card">
+      <view class="mini-visual" style="{{currentWord.visualStyle}}"><view wx:if="{{currentWord.visualLabel}}" class="visual-label small-label">{{currentWord.visualLabel}}</view></view>
+      <view class="question-instruction">{{quizInstruction}}</view>
+      <view class="question-prompt">{{quizPrompt}}</view>
+    </view>
+    <view class="answer-grid">
+      <button
+        wx:for="{{quizOptions}}"
+        wx:key="id"
+        class="answer-option {{item.state}}"
+        data-text="{{item.text}}"
+        disabled="{{answerLocked}}"
+        bindtap="chooseQuizOption"
+      ><text class="option-letter">{{item.label}}</text><text>{{item.text}}</text></button>
+    </view>
+    <view wx:if="{{answerStatus}}" class="answer-status">{{answerStatus}}</view>
+  </view>
+
+  <view wx:if="{{view === 'spelling' || view === 'errorPractice'}}" class="screen activity-screen">
+    <view class="activity-topbar">
+      <button class="back-button" bindtap="goHome">‹ 返回</button>
+      <view class="activity-label">{{view === 'spelling' ? '拼写选择' : '错题复习'}}</view>
+      <view class="progress-number" wx:if="{{view === 'spelling'}}">{{spellingIndex + 1}} / {{spellingWords.length}}</view>
+      <view class="progress-number" wx:else>{{errorPracticeIndex + 1}} / {{errorPracticeWords.length}}</view>
+    </view>
+    <view class="question-card spelling-card">
+      <view class="mini-visual" style="{{currentWord.visualStyle}}"><view wx:if="{{currentWord.visualLabel}}" class="visual-label small-label">{{currentWord.visualLabel}}</view></view>
+      <view class="question-instruction">从相似拼写中选出正确答案</view>
+      <view class="spelling-chinese">{{currentWord.chinese}}</view>
+      <view class="phonetic">/{{currentWord.pronunciation}}/</view>
+      <button class="listen-chip" bindtap="pronounceSpelling">🔊 听英文发音</button>
+    </view>
+    <view class="answer-grid spelling-grid">
+      <button
+        wx:for="{{spellingOptions}}"
+        wx:key="id"
+        class="answer-option spelling-option {{item.state}}"
+        data-text="{{item.text}}"
+        disabled="{{answerLocked}}"
+        bindtap="chooseSpellingLikeOption"
+      ><text class="option-letter">{{item.label}}</text><text>{{item.text}}</text></button>
+    </view>
+    <button wx:if="{{view === 'spelling' && !answerLocked}}" class="skip-button" bindtap="skipSpelling">暂时跳过</button>
+    <view wx:if="{{answerStatus}}" class="answer-status">{{answerStatus}}</view>
+  </view>
+
+  <view wx:if="{{view === 'errors'}}" class="screen list-screen">
+    <view class="activity-topbar">
+      <button class="back-button" bindtap="goHome">‹ 返回</button>
+      <view class="activity-label">我的错题本</view>
+      <view class="progress-number">{{errorCount}} 词</view>
+    </view>
+    <view wx:if="{{!errorCount}}" class="empty-state">
+      <view class="empty-icon">🌟</view>
+      <view class="empty-title">错题本空空的</view>
+      <view class="empty-copy">继续保持专注，新的星光金币在等你！</view>
+    </view>
+    <view wx:else>
+      <view class="error-summary">
+        <view><view class="error-summary-title">把容易混淆的拼写再练一次</view><view class="error-summary-copy">答对后会自动移出错题本</view></view>
+        <button bindtap="startErrorPractice">开始复习</button>
+      </view>
+      <view class="error-list">
+        <view wx:for="{{errorEntries}}" wx:key="key" class="error-card">
+          <view class="error-word">{{item.word.english}}</view>
+          <view class="error-meaning">{{item.word.chinese}}</view>
+          <view class="error-meta">{{item.mode}} · 累计 {{item.count}} 次</view>
+          <view wx:if="{{item.wrongAnswer}}" class="wrong-answer">曾选：{{item.wrongAnswer}}</view>
+        </view>
+      </view>
+      <button class="danger-button" bindtap="clearAllErrors">清空错题本</button>
+    </view>
+  </view>
+
+  <view wx:if="{{view === 'shop'}}" class="screen list-screen shop-screen">
+    <view class="shop-hero">
+      <button class="shop-back" bindtap="goHome">‹ 返回学习</button>
+      <view class="shop-title">星光奖励商店</view>
+      <view class="shop-copy">用认真学习赚到的金币，收藏喜欢的奖励。</view>
+      <view class="shop-balance">🪙 {{coins}} 枚</view>
+    </view>
+    <scroll-view scroll-x class="filter-scroll" enhanced show-scrollbar="{{false}}">
+      <view class="filter-row">
+        <button
+          wx:for="{{shopFilters}}"
+          wx:key="value"
+          class="filter-chip {{shopCategory === item.value ? 'is-active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="setShopCategory"
+        >{{item.label}}</button>
+      </view>
+    </scroll-view>
+    <view class="shop-progress">{{shopProgress}}</view>
+    <view class="shop-grid">
+      <button
+        wx:for="{{shopItems}}"
+        wx:key="name"
+        class="shop-item {{item.purchased ? 'purchased' : ''}} {{!item.affordable && !item.purchased ? 'unaffordable' : ''}}"
+        data-name="{{item.name}}"
+        bindtap="purchaseShopItem"
+      >
+        <view class="shop-image-wrap">
+          <image class="shop-image" src="{{item.image}}" mode="aspectFill"></image>
+          <view wx:if="{{item.purchased}}" class="purchased-badge">✓ 已收藏</view>
+        </view>
+        <view class="shop-item-body">
+          <view class="shop-name-row"><text class="shop-name">{{item.name}}</text><text class="rarity">{{item.rarity}}</text></view>
+          <view class="shop-desc">{{item.desc}}</view>
+          <view class="shop-footer"><text class="shop-price">🪙 {{item.price}}</text><text>{{item.purchased ? '已拥有' : (item.affordable ? '点击兑换' : '金币不足')}}</text></view>
+        </view>
+      </button>
+    </view>
+  </view>
+
+  <view wx:if="{{view === 'complete'}}" class="screen completion-screen">
+    <view class="completion-burst">✦</view>
+    <view class="completion-card">
+      <view class="completion-icon">🏅</view>
+      <view class="completion-title">{{completionTitle}}</view>
+      <view class="completion-score">{{completionScore}}</view>
+      <view class="completion-message">{{completionMessage}}</view>
+      <button class="completion-button" bindtap="goHome">回到学习星球</button>
+    </view>
+  </view>
+</view>

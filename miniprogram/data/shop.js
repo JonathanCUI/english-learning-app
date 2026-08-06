@@ -1,0 +1,22 @@
+module.exports = [
+  { name: '学习徽章', price: 50, category: 'collection', rarity: '入门', image: '/assets/shop/00-learning-medal.jpg', desc: '完成学习目标的第一枚勋章' },
+  { name: '小星星贴纸', price: 75, category: 'collection', rarity: '入门', image: '/assets/shop/01-star-stickers.jpg', desc: '把闪亮星星收入收藏册' },
+  { name: '彩色铅笔', price: 100, category: 'learning', rarity: '入门', image: '/assets/shop/02-colored-pencils.jpg', desc: '画出今天学会的新单词' },
+  { name: '迷你词典', price: 150, category: 'learning', rarity: '入门', image: '/assets/shop/03-mini-dictionary.jpg', desc: '随时发现陌生单词的秘密' },
+  { name: '英语故事书', price: 175, category: 'learning', rarity: '人气', image: '/assets/shop/04-english-storybook.jpg', desc: '开启一段有趣的英文冒险' },
+  { name: '单词卡片套装', price: 200, category: 'learning', rarity: '人气', image: '/assets/shop/05-word-cards.jpg', desc: '翻一翻，记单词更轻松' },
+  { name: '电子单词笔', price: 250, category: 'gear', rarity: '人气', image: '/assets/shop/06-reading-pen.jpg', desc: '点一点就能听到标准发音' },
+  { name: '学习海报', price: 275, category: 'learning', rarity: '人气', image: '/assets/shop/07-learning-poster.jpg', desc: '把常用单词贴在学习角' },
+  { name: '英语游戏卡', price: 300, category: 'fun', rarity: '人气', image: '/assets/shop/08-game-cards.jpg', desc: '和家人一起玩单词挑战' },
+  { name: '智能学习手表', price: 350, category: 'gear', rarity: '人气', image: '/assets/shop/09-smart-watch.jpg', desc: '记录每天坚持学习的时间' },
+  { name: '火箭文具盒', price: 400, category: 'fun', rarity: '珍藏', image: '/assets/shop/10-rocket-pencil-case.jpg', desc: '装好文具，向知识星球出发' },
+  { name: '小熊书包', price: 425, category: 'gear', rarity: '珍藏', image: '/assets/shop/11-bear-backpack.jpg', desc: '背上可爱书包快乐去学习' },
+  { name: '彩虹笔记本', price: 450, category: 'learning', rarity: '珍藏', image: '/assets/shop/12-rainbow-notebook.jpg', desc: '记录每一个进步的小瞬间' },
+  { name: '字母积木', price: 475, category: 'fun', rarity: '珍藏', image: '/assets/shop/13-alphabet-blocks.jpg', desc: '动手搭出有趣的英文单词' },
+  { name: '恐龙书签', price: 500, category: 'collection', rarity: '珍藏', image: '/assets/shop/14-dinosaur-bookmark.jpg', desc: '让小恐龙陪你继续阅读' },
+  { name: '星光阅读灯', price: 550, category: 'gear', rarity: '珍藏', image: '/assets/shop/15-reading-lamp.jpg', desc: '用温暖灯光守护阅读时间' },
+  { name: '太空耳机', price: 600, category: 'gear', rarity: '传说', image: '/assets/shop/16-space-headphones.jpg', desc: '沉浸聆听清晰的英语发音' },
+  { name: '单词宝藏箱', price: 650, category: 'collection', rarity: '传说', image: '/assets/shop/17-word-treasure-box.jpg', desc: '收藏一路学会的单词宝藏' },
+  { name: '冠军奖杯', price: 700, category: 'collection', rarity: '传说', image: '/assets/shop/18-champion-trophy.jpg', desc: '为坚持学习的自己喝彩' },
+  { name: '猫头鹰学伴', price: 800, category: 'collection', rarity: '传说', image: '/assets/shop/19-owl-companion.jpg', desc: '最珍贵的智慧学习伙伴' }
+];
