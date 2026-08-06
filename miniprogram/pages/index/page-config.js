@@ -5,6 +5,7 @@ const game = require('../../utils/game.js');
 const speech = require('../../utils/speech.js');
 
 const STORAGE = {
+  economy: 'starlightEconomyV1',
   coins: 'starlightCoins',
   purchased: 'purchasedShopItems',
   errors: 'englishErrorBook',
@@ -56,6 +57,45 @@ function normalizedSelection(grade, semester, unit) {
   return { grade: cleanGrade, semester: cleanSemester, unit: cleanUnit };
 }
 
+function normalizedCoins(value) {
+  const coins = Number(value);
+  return Number.isFinite(coins) && coins > 0 ? Math.floor(coins) : 0;
+}
+
+function normalizedPurchases(value) {
+  if (!Array.isArray(value)) return [];
+  return value.filter((name, index) => (
+    typeof name === 'string'
+    && value.indexOf(name) === index
+    && shopCatalog.some((item) => item.name === name)
+  ));
+}
+
+function loadEconomy() {
+  const saved = wx.getStorageSync(STORAGE.economy);
+  if (saved && typeof saved === 'object') {
+    return {
+      coins: normalizedCoins(saved.coins),
+      purchasedItems: normalizedPurchases(saved.purchasedItems)
+    };
+  }
+  return {
+    coins: normalizedCoins(wx.getStorageSync(STORAGE.coins)),
+    purchasedItems: normalizedPurchases(wx.getStorageSync(STORAGE.purchased))
+  };
+}
+
+function saveEconomy(coins, purchasedItems) {
+  const economy = {
+    coins: normalizedCoins(coins),
+    purchasedItems: normalizedPurchases(purchasedItems)
+  };
+  wx.setStorageSync(STORAGE.economy, economy);
+  wx.setStorageSync(STORAGE.coins, economy.coins);
+  wx.setStorageSync(STORAGE.purchased, economy.purchasedItems);
+  return economy;
+}
+
 function createPageConfig() {
   return {
   data: {
@@ -77,6 +117,7 @@ function createPageConfig() {
     showDetails: false,
     coins: 0,
     purchasedItems: [],
+    purchasePending: false,
     errorBook: {},
     errorEntries: [],
     errorCount: 0,
@@ -114,8 +155,9 @@ function createPageConfig() {
     const storedLaunch = isAudioPage() ? (wx.getStorageSync(STORAGE.activityLaunch) || {}) : {};
     const launchOptions = Object.assign({}, options || {}, storedLaunch);
     if (isAudioPage()) wx.removeStorageSync(STORAGE.activityLaunch);
-    const coins = Number(wx.getStorageSync(STORAGE.coins)) || 0;
-    const purchasedItems = wx.getStorageSync(STORAGE.purchased) || [];
+    const economy = loadEconomy();
+    const coins = economy.coins;
+    const purchasedItems = economy.purchasedItems;
     const errorBook = wx.getStorageSync(STORAGE.errors) || {};
     const selection = normalizedSelection(launchOptions.grade, launchOptions.semester, launchOptions.unit);
     const selectedGrade = selection.grade;
@@ -146,12 +188,17 @@ function createPageConfig() {
   },
 
   onShow() {
+    const economy = loadEconomy();
     const errorBook = wx.getStorageSync(STORAGE.errors) || {};
-    this.setData({ errorBook }, () => {
+    this.setData({
+      coins: economy.coins,
+      purchasedItems: economy.purchasedItems,
+      errorBook
+    }, () => {
       this.refreshErrorEntries();
+      this.refreshShop(this.data.shopCategory);
       if (!isAudioPage() && wx.getStorageSync(STORAGE.pendingView) === 'shop') {
         wx.removeStorageSync(STORAGE.pendingView);
-        this.refreshShop(this.data.shopCategory);
         this.setData({ view: 'shop' });
       }
     });
@@ -334,9 +381,9 @@ function createPageConfig() {
       answerLocked: true,
       quizOptions,
       quizScore,
-      answerStatus: (correct ? '答对啦！ ' : '记住哦：') + question.word.english + ' · ' + question.word.chinese
+      answerStatus: (correct ? '答对啦！+1 星光币 · ' : '记住哦：') + question.word.english + ' · ' + question.word.chinese
     });
-    if (correct) this.addCoins(5);
+    if (correct) this.addCoins(1);
     else this.addError(question.word, '中英文测验');
     await speech.speakPair(question.word);
     await wait(450);
@@ -388,9 +435,9 @@ function createPageConfig() {
       answerLocked: true,
       spellingOptions,
       spellingScore,
-      answerStatus: (correct ? '拼对啦！ ' : '正确拼写是：') + word.english + ' · ' + word.chinese
+      answerStatus: (correct ? '拼对啦！+1 星光币 · ' : '正确拼写是：') + word.english + ' · ' + word.chinese
     });
-    if (correct) this.addCoins(5);
+    if (correct) this.addCoins(1);
     else this.addError(word, '拼写练习', selectedText);
     await speech.speakPair(word);
     await wait(450);
@@ -427,9 +474,18 @@ function createPageConfig() {
   },
 
   addCoins(amount) {
-    const coins = this.data.coins + amount;
-    this.setData({ coins });
-    wx.setStorageSync(STORAGE.coins, coins);
+    const reward = Math.max(0, Math.floor(Number(amount) || 0));
+    if (!reward) return false;
+    const economy = loadEconomy();
+    try {
+      const saved = saveEconomy(economy.coins + reward, economy.purchasedItems);
+      this.setData({ coins: saved.coins, purchasedItems: saved.purchasedItems });
+      return true;
+    } catch (error) {
+      console.error('星光币保存失败', error);
+      wx.showToast({ title: '星光币保存失败，请重试', icon: 'none' });
+      return false;
+    }
   },
 
   errorKey(word) {
@@ -572,8 +628,12 @@ function createPageConfig() {
       wx.navigateBack({ delta: 1 });
       return;
     }
-    this.refreshShop(this.data.shopCategory);
-    this.setData({ view: 'shop' });
+    const economy = loadEconomy();
+    this.setData({
+      coins: economy.coins,
+      purchasedItems: economy.purchasedItems,
+      view: 'shop'
+    }, () => this.refreshShop(this.data.shopCategory));
   },
 
   setShopCategory(event) {
@@ -582,7 +642,7 @@ function createPageConfig() {
 
   refreshShop(category) {
     const shopCategory = category || 'all';
-    const purchasedItems = this.data.purchasedItems;
+    const purchasedItems = normalizedPurchases(this.data.purchasedItems);
     const shopItems = shopCatalog
       .filter((item) => shopCategory === 'all' || item.category === shopCategory)
       .map((item) => Object.assign({}, item, {
@@ -599,24 +659,40 @@ function createPageConfig() {
   purchaseShopItem(event) {
     const name = event.currentTarget.dataset.name;
     const item = shopCatalog.find((candidate) => candidate.name === name);
-    if (!item || this.data.purchasedItems.indexOf(name) >= 0) return;
-    if (this.data.coins < item.price) {
+    if (!item || this.data.purchasePending) return;
+    const economy = loadEconomy();
+    if (economy.purchasedItems.indexOf(name) >= 0) {
+      wx.showToast({ title: '已经收藏过啦', icon: 'none' });
+      return;
+    }
+    if (economy.coins < item.price) {
       wx.showToast({ title: '星光金币还不够哦', icon: 'none' });
       return;
     }
+    this.setData({ purchasePending: true });
     wx.showModal({
       title: '兑换 ' + item.name,
       content: '需要 ' + item.price + ' 枚星光金币，确定兑换吗？',
       success: (result) => {
         if (!result.confirm) return;
-        const coins = this.data.coins - item.price;
-        const purchasedItems = this.data.purchasedItems.concat(item.name);
-        this.setData({ coins, purchasedItems });
-        wx.setStorageSync(STORAGE.coins, coins);
-        wx.setStorageSync(STORAGE.purchased, purchasedItems);
-        this.refreshShop(this.data.shopCategory);
-        wx.showToast({ title: '收藏成功', icon: 'success' });
-      }
+        const latest = loadEconomy();
+        if (latest.purchasedItems.indexOf(name) >= 0) return;
+        if (latest.coins < item.price) {
+          wx.showToast({ title: '星光金币还不够哦', icon: 'none' });
+          return;
+        }
+        try {
+          const saved = saveEconomy(latest.coins - item.price, latest.purchasedItems.concat(name));
+          this.setData({ coins: saved.coins, purchasedItems: saved.purchasedItems }, () => {
+            this.refreshShop(this.data.shopCategory);
+          });
+          wx.showToast({ title: '收藏成功', icon: 'success' });
+        } catch (error) {
+          console.error('商品收藏保存失败', error);
+          wx.showToast({ title: '收藏失败，请重试', icon: 'none' });
+        }
+      },
+      complete: () => this.setData({ purchasePending: false })
     });
   }
   };

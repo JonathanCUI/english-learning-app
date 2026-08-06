@@ -8,6 +8,7 @@ const atlas = require(path.join(miniRoot, 'data', 'atlas.js'));
 const shop = require(path.join(miniRoot, 'data', 'shop.js'));
 const speechMap = require(path.join(miniRoot, 'data', 'audio.js'));
 const game = require(path.join(miniRoot, 'utils', 'game.js'));
+const createPageConfig = require(path.join(miniRoot, 'pages', 'index', 'page-config.js'));
 const semesters = ['上学期', '下学期'];
 let wordCount = 0;
 
@@ -105,6 +106,15 @@ for (const match of wxml.matchAll(/<\/?([\w-]+)(?:\s[^>]*)?>/g)) {
 }
 if (tagStack.length) throw new Error('WXML 存在未闭合标签：' + tagStack.join(', '));
 
+const weekdayWords = atlas.enrichWords(vocabulary.grade2['下学期'].unit6, 'grade2', '下学期', 'unit6')
+  .filter((word) => /^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)$/i.test(word.english));
+if (weekdayWords.some((word) => word.visualLabel)) throw new Error('星期图片不得显示英文答案标签');
+if (wxml.indexOf('visualLabel') >= 0) throw new Error('页面中仍残留星期英文图片标签');
+if (wxml.indexOf('coin-shop-label') < 0 || wxml.indexOf('商店 ›') < 0) throw new Error('星光币区域缺少商店入口提示');
+const oneCoinRewards = pageScript.match(/if \(correct\) this\.addCoins\(1\);/g) || [];
+if (oneCoinRewards.length !== 2) throw new Error('中英测验和拼写选择必须每题奖励 1 枚星光币');
+verifyEconomyPersistence();
+
 const handlers = Array.from(new Set(Array.from(wxml.matchAll(/bindtap="([^"]+)"/g), (match) => match[1])));
 handlers.forEach((handler) => {
   const methodPattern = new RegExp('\\n\\s*(?:async\\s+)?' + handler + '\\s*\\(');
@@ -124,7 +134,75 @@ console.log('图集：' + atlas.layouts.length + ' 个；商店商品：' + shop
 console.log('语音：889 条唯一内容，' + speechEntries + ' 个课本单元映射，24 个页面分包');
 console.log('主包体积：' + (mainPackageBytes / 1024 / 1024).toFixed(2) + ' MB；小程序总目录：' + (packageBytes / 1024 / 1024).toFixed(2) + ' MB');
 console.log('WXML 标签与 ' + handlers.length + ' 个交互事件检查通过');
+console.log('星光币奖励、购买扣币与本地恢复检查通过');
 console.log('关键数据与资源检查通过');
+
+function verifyEconomyPersistence() {
+  const previousWx = global.wx;
+  const previousGetCurrentPages = global.getCurrentPages;
+  const storage = {
+    starlightCoins: 75,
+    purchasedShopItems: []
+  };
+  const copy = (value) => (value === undefined ? undefined : JSON.parse(JSON.stringify(value)));
+  global.getCurrentPages = () => [{ route: 'pages/index/index' }];
+  global.wx = {
+    getStorageSync(key) { return copy(storage[key]); },
+    setStorageSync(key, value) { storage[key] = copy(value); },
+    removeStorageSync(key) { delete storage[key]; },
+    showToast() {},
+    showModal(options) {
+      if (typeof options.success === 'function') options.success({ confirm: true, cancel: false });
+      if (typeof options.complete === 'function') options.complete();
+    }
+  };
+
+  try {
+    const page = mockPage(createPageConfig());
+    page.onLoad({});
+    if (page.data.coins !== 75 || page.data.purchasedItems.length !== 0) throw new Error('旧版星光币存储迁移失败');
+    page.addCoins(1);
+    if (page.data.coins !== 76) throw new Error('答对题目后星光币没有增加 1');
+
+    const firstItem = shop[0];
+    page.purchaseShopItem({ currentTarget: { dataset: { name: firstItem.name } } });
+    if (page.data.coins !== 76 - firstItem.price) throw new Error('购买商品后星光币扣除错误');
+    if (page.data.purchasedItems.indexOf(firstItem.name) < 0) throw new Error('购买商品后没有记录收藏');
+
+    const reloaded = mockPage(createPageConfig());
+    reloaded.onLoad({});
+    if (reloaded.data.coins !== 76 - firstItem.price) throw new Error('重新进入小程序后星光币没有恢复');
+    if (reloaded.data.purchasedItems.indexOf(firstItem.name) < 0) throw new Error('重新进入小程序后已购商品没有恢复');
+
+    const savedCoins = reloaded.data.coins;
+    reloaded.purchaseShopItem({ currentTarget: { dataset: { name: firstItem.name } } });
+    if (reloaded.data.coins !== savedCoins) throw new Error('重复购买已收藏商品时错误扣币');
+    const expensiveItem = shop[shop.length - 1];
+    reloaded.purchaseShopItem({ currentTarget: { dataset: { name: expensiveItem.name } } });
+    if (reloaded.data.coins !== savedCoins || reloaded.data.purchasedItems.indexOf(expensiveItem.name) >= 0) {
+      throw new Error('星光币不足时仍然购买了商品');
+    }
+
+    storage.starlightEconomyV1.coins += 3;
+    reloaded.onShow();
+    if (reloaded.data.coins !== 79 - firstItem.price) throw new Error('从语音分包返回后星光币没有刷新');
+  } finally {
+    if (previousWx === undefined) delete global.wx;
+    else global.wx = previousWx;
+    if (previousGetCurrentPages === undefined) delete global.getCurrentPages;
+    else global.getCurrentPages = previousGetCurrentPages;
+  }
+}
+
+function mockPage(config) {
+  const page = Object.assign({}, config);
+  page.data = JSON.parse(JSON.stringify(config.data));
+  page.setData = function setData(updates, callback) {
+    Object.assign(this.data, updates);
+    if (typeof callback === 'function') callback();
+  };
+  return page;
+}
 
 function walk(directory) {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {

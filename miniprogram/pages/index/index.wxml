@@ -11,8 +11,8 @@
       </view>
     </view>
     <button class="coin-pill" bindtap="openShop" aria-label="打开星光奖励商店">
-      <text class="coin-star-icon">★</text>
-      <text>{{coins}}</text>
+      <view class="coin-balance"><text class="coin-star-icon">★</text><text>{{coins}}</text></view>
+      <text class="coin-shop-label">商店 ›</text>
     </button>
   </view>
 
@@ -126,7 +126,6 @@
           aria-label="{{currentWord.english}} 的卡通图片"
           binderror="handleWordImageError"
         ></image>
-        <view wx:if="{{currentWord.visualLabel}}" class="visual-label">{{currentWord.visualLabel}}</view>
       </view>
       <view class="word-main">{{currentWord.english}}</view>
       <view wx:if="{{showDetails}}" class="word-details">
@@ -168,7 +167,6 @@
           aria-label="{{currentWord.english}} 的卡通图片"
           binderror="handleWordImageError"
         ></image>
-        <view wx:if="{{currentWord.visualLabel}}" class="visual-label small-label">{{currentWord.visualLabel}}</view>
       </view>
       <view class="question-instruction">{{quizInstruction}}</view>
       <view class="question-prompt">{{quizPrompt}}</view>
@@ -205,7 +203,6 @@
           aria-label="{{currentWord.english}} 的卡通图片"
           binderror="handleWordImageError"
         ></image>
-        <view wx:if="{{currentWord.visualLabel}}" class="visual-label small-label">{{currentWord.visualLabel}}</view>
       </view>
       <view class="question-instruction">从相似拼写中选出正确答案</view>
       <view class="spelling-chinese">{{currentWord.chinese}}</view>

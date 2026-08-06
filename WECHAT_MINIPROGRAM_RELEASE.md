@@ -8,7 +8,7 @@
 - 开发者工具项目配置：`project.config.json`
 - 完整词库：2 个年级、上下学期、每学期 6 个单元，共 300 个单词
 - 已迁移功能：单词学习、中英双向测验、相似拼写选择、错题本、错题拼写复习、金币与奖励商店
-- 本地数据：金币、收藏和错题全部使用 `wx.setStorageSync` 保存在用户设备中
+- 本地数据：星光币、已购商品和错题使用 `wx.setStorageSync` 保存在当前设备中，关闭后可恢复，但不会跨手机同步
 - 语音：使用百度短文本语音合成预生成 889 条本地音频，并按 24 个课本单元拆为页面分包；不依赖插件、登录或运行时 API
 
 微信官方配置说明：<https://developers.weixin.qq.com/miniprogram/dev/framework/config.html>

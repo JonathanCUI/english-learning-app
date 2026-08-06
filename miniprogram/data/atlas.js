@@ -64,8 +64,7 @@ function enrichWords(words, grade, semester, unit) {
       visualFrameStyle: learningVisual.frame,
       visualImageStyle: learningVisual.image,
       miniVisualFrameStyle: miniVisual.frame,
-      miniVisualImageStyle: miniVisual.image,
-      visualLabel: /^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)$/i.test(word.english) ? word.english.toUpperCase() : ''
+      miniVisualImageStyle: miniVisual.image
     });
   });
 }

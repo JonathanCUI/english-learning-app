@@ -569,30 +569,6 @@
             font-size: 0 !important;
             flex: 0 0 auto;
         }
-        .has-word-image[data-word-label]::after {
-            content: attr(data-word-label);
-            position: absolute;
-            top: 6px;
-            left: 50%;
-            z-index: 1;
-            transform: translateX(-50%);
-            max-width: calc(100% - 12px);
-            padding: 3px 8px;
-            overflow: hidden;
-            color: #17365d;
-            background: rgba(255, 250, 225, 0.94);
-            border: 1px solid rgba(23, 54, 93, 0.18);
-            border-radius: 999px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.14);
-            font-family: "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
-            font-size: 0.95rem;
-            font-weight: 800;
-            line-height: 1.2;
-            letter-spacing: 0.02em;
-            text-align: center;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
         .word-emoji.has-word-image {
             width: 150px;
             border: 4px solid rgba(255,255,255,0.82);
@@ -1082,14 +1058,6 @@
             border-radius: 8px;
             box-shadow: 0 3px 8px rgba(0,0,0,0.14);
         }
-        .error-word-emoji.has-word-image[data-word-label]::after {
-            top: 2px;
-            max-width: calc(100% - 4px);
-            padding: 1px 2px;
-            border: none;
-            font-size: 0.3rem;
-            letter-spacing: 0;
-        }
         .error-word-info { flex: 1; min-width: 0; }
         .error-word-english {
             font-weight: bold; color: #333; font-size: 1rem;
@@ -1541,17 +1509,6 @@
             });
         });
 
-        const WEEKDAY_IMAGE_LABELS = new Set([
-            'Monday', 'Tuesday', 'Wednesday', 'Thursday',
-            'Friday', 'Saturday', 'Sunday'
-        ]);
-
-        function getWordImageLabel(word) {
-            return word && WEEKDAY_IMAGE_LABELS.has(word.english)
-                ? word.english.toUpperCase()
-                : '';
-        }
-
         function getWordImageStyle(word) {
             const atlas = word && WORD_IMAGE_ATLASES[word.imageAtlas];
             if (!atlas || !Number.isInteger(word.imageIndex)) return null;
@@ -1574,9 +1531,7 @@
         function applyWordVisual(element, word, fallbackEmoji = '📝') {
             if (!element) return;
             const imageStyle = getWordImageStyle(word);
-            const imageLabel = getWordImageLabel(word);
             element.classList.remove('has-word-image');
-            element.removeAttribute('data-word-label');
             element.style.removeProperty('--word-image-url');
             element.style.removeProperty('--word-image-size');
             element.style.removeProperty('--word-image-position-x');
@@ -1595,7 +1550,6 @@
             element.style.setProperty('--word-image-position-x', imageStyle.positionX);
             element.style.setProperty('--word-image-position-y', imageStyle.positionY);
             element.style.setProperty('--word-image-aspect', imageStyle.aspectRatio);
-            if (imageLabel) element.setAttribute('data-word-label', imageLabel);
         }
 
         function getWordVisualMarkup(word, className, fallbackEmoji = '📝') {
@@ -1603,9 +1557,7 @@
             if (!imageStyle) {
                 return `<span class="${className}">${(word && word.emoji) || fallbackEmoji}</span>`;
             }
-            const imageLabel = getWordImageLabel(word);
-            const labelAttribute = imageLabel ? ` data-word-label="${imageLabel}"` : '';
-            return `<span class="${className} has-word-image"${labelAttribute} style="--word-image-url:${imageStyle.imageUrl};--word-image-size:${imageStyle.imageSize};--word-image-position-x:${imageStyle.positionX};--word-image-position-y:${imageStyle.positionY};--word-image-aspect:${imageStyle.aspectRatio}"></span>`;
+            return `<span class="${className} has-word-image" style="--word-image-url:${imageStyle.imageUrl};--word-image-size:${imageStyle.imageSize};--word-image-position-x:${imageStyle.positionX};--word-image-position-y:${imageStyle.positionY};--word-image-aspect:${imageStyle.aspectRatio}"></span>`;
         }
 
         function selectGrade(grade) {
