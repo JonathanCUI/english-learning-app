@@ -179,7 +179,7 @@
         data-text="{{item.text}}"
         disabled="{{answerLocked}}"
         bindtap="chooseQuizOption"
-      ><text class="option-letter">{{item.label}}</text><text>{{item.text}}</text></button>
+      ><text class="option-letter">{{item.label}}</text><text class="option-word">{{item.text}}</text></button>
     </view>
     <view wx:if="{{answerStatus}}" class="answer-status">{{answerStatus}}</view>
   </view>
@@ -217,7 +217,7 @@
         data-text="{{item.text}}"
         disabled="{{answerLocked}}"
         bindtap="chooseSpellingLikeOption"
-      ><text class="option-letter">{{item.label}}</text><text>{{item.text}}</text></button>
+      ><text class="option-letter">{{item.label}}</text><text class="option-word">{{item.text}}</text></button>
     </view>
     <button wx:if="{{view === 'spelling' && !answerLocked}}" class="skip-button" bindtap="skipSpelling">暂时跳过</button>
     <view wx:if="{{answerStatus}}" class="answer-status">{{answerStatus}}</view>

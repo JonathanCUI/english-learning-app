@@ -57,6 +57,24 @@ function normalizedSelection(grade, semester, unit) {
   return { grade: cleanGrade, semester: cleanSemester, unit: cleanUnit };
 }
 
+function shareSelection(data) {
+  return normalizedSelection(data.selectedGrade, data.selectedSemester, data.selectedUnit);
+}
+
+function shareQuery(data) {
+  const selection = shareSelection(data);
+  if (!selection.grade || !selection.semester || !selection.unit) return '';
+  return '?grade=' + encodeURIComponent(selection.grade)
+    + '&semester=' + encodeURIComponent(selection.semester)
+    + '&unit=' + encodeURIComponent(selection.unit);
+}
+
+function shareTitle(data) {
+  const selection = shareSelection(data);
+  if (!selection.grade || !selection.semester || !selection.unit) return '星光英语小助手｜每天学会一个新单词';
+  return '和我一起学英语｜' + GRADE_LABELS[selection.grade] + ' · ' + selection.semester + ' · ' + selection.unit.replace('unit', 'Unit ');
+}
+
 function normalizedCoins(value) {
   const coins = Number(value);
   return Number.isFinite(coins) && coins > 0 ? Math.floor(coins) : 0;
@@ -206,6 +224,22 @@ function createPageConfig() {
 
   onUnload() {
     speech.stop();
+  },
+
+  onShareAppMessage() {
+    return {
+      title: shareTitle(this.data),
+      path: '/pages/index/index' + shareQuery(this.data),
+      imageUrl: '/assets/branding/avatar-144.png'
+    };
+  },
+
+  onShareTimeline() {
+    return {
+      title: shareTitle(this.data),
+      query: shareQuery(this.data).replace(/^\?/, ''),
+      imageUrl: '/assets/branding/avatar-144.png'
+    };
   },
 
   selectGrade(event) {
@@ -396,7 +430,8 @@ function createPageConfig() {
   },
 
   beginSpelling() {
-    const spellingWords = game.shuffle(this.data.currentWords).slice(0, Math.min(10, this.data.currentWords.length));
+    // Every word in the selected unit should be reviewed, including units with more than ten words.
+    const spellingWords = game.shuffle(this.data.currentWords);
     this.setData({
       view: 'spelling',
       spellingWords,

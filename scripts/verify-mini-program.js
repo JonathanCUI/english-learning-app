@@ -91,6 +91,7 @@ const wxmlPath = path.join(miniRoot, 'pages', 'index', 'index.wxml');
 const pageScriptPath = path.join(miniRoot, 'pages', 'index', 'page-config.js');
 const wxml = fs.readFileSync(wxmlPath, 'utf8');
 const pageScript = fs.readFileSync(pageScriptPath, 'utf8');
+const pageStyles = fs.readFileSync(path.join(miniRoot, 'pages', 'index', 'index.wxss'), 'utf8');
 const speechScript = fs.readFileSync(path.join(miniRoot, 'utils', 'speech.js'), 'utf8');
 if (speechScript.indexOf('loadSubpackage') >= 0) throw new Error('普通小程序语音不得调用 wx.loadSubpackage');
 const tagStack = [];
@@ -113,7 +114,15 @@ if (wxml.indexOf('visualLabel') >= 0) throw new Error('页面中仍残留星期�
 if (wxml.indexOf('coin-shop-label') < 0 || wxml.indexOf('商店 ›') < 0) throw new Error('星光币区域缺少商店入口提示');
 const oneCoinRewards = pageScript.match(/if \(correct\) this\.addCoins\(1\);/g) || [];
 if (oneCoinRewards.length !== 2) throw new Error('中英测验和拼写选择必须每题奖励 1 枚星光币');
+if (!/onShareAppMessage\s*\(/.test(pageScript) || !/onShareTimeline\s*\(/.test(pageScript) || pageScript.indexOf("path: '/pages/index/index' + shareQuery(this.data)") < 0) {
+  throw new Error('分享给好友与分享到朋友圈的页面回调缺失');
+}
 verifyEconomyPersistence();
+verifyFullUnitSpelling();
+verifySharing();
+if (wxml.indexOf('class="option-word"') < 0 || !/grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/.test(pageStyles) || !/\.option-word\s*\{[\s\S]*?word-break:\s*break-all/.test(pageStyles)) {
+  throw new Error('拼写选项的长单词响应式样式缺失');
+}
 
 const handlers = Array.from(new Set(Array.from(wxml.matchAll(/bindtap="([^"]+)"/g), (match) => match[1])));
 handlers.forEach((handler) => {
@@ -192,6 +201,42 @@ function verifyEconomyPersistence() {
     if (previousGetCurrentPages === undefined) delete global.getCurrentPages;
     else global.getCurrentPages = previousGetCurrentPages;
   }
+}
+
+function verifyFullUnitSpelling() {
+  let longUnit = null;
+  ['grade1', 'grade2'].forEach((grade) => {
+    semesters.forEach((semester) => {
+      for (let unitIndex = 1; unitIndex <= 6; unitIndex += 1) {
+        const words = vocabulary[grade][semester]['unit' + unitIndex];
+        if (!longUnit && words.length > 10) longUnit = words;
+      }
+    });
+  });
+  if (!longUnit) throw new Error('词表中应至少有一个超过 10 个单词的单元用于验证');
+
+  const page = mockPage(createPageConfig());
+  page.renderSpelling = () => {};
+  page.data.currentWords = longUnit;
+  page.beginSpelling();
+  if (page.data.spellingWords.length !== longUnit.length) throw new Error('拼写练习未包含所选单元的全部单词');
+  if (new Set(page.data.spellingWords.map((word) => word.english)).size !== longUnit.length) throw new Error('拼写练习的单词列表存在遗漏或重复');
+}
+
+function verifySharing() {
+  const page = mockPage(createPageConfig());
+  page.data.selectedGrade = 'grade2';
+  page.data.selectedSemester = '下学期';
+  page.data.selectedUnit = 'unit6';
+  const friendShare = page.onShareAppMessage();
+  const timelineShare = page.onShareTimeline();
+  if (friendShare.path !== '/pages/index/index?grade=grade2&semester=%E4%B8%8B%E5%AD%A6%E6%9C%9F&unit=unit6') {
+    throw new Error('分享给好友时没有保留已选课本单元');
+  }
+  if (timelineShare.query !== 'grade=grade2&semester=%E4%B8%8B%E5%AD%A6%E6%9C%9F&unit=unit6') {
+    throw new Error('分享到朋友圈时没有保留已选课本单元');
+  }
+  if (!friendShare.imageUrl || !timelineShare.imageUrl) throw new Error('分享卡片缺少封面图');
 }
 
 function mockPage(config) {

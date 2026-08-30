@@ -1,6 +1,6 @@
 {
   "name": "english-learning-mini-program",
-  "version": "1.1.2",
+  "version": "1.1.5",
   "private": true,
   "description": "星光英语小助手微信小程序构建与上传工具",
   "scripts": {
@@ -11,6 +11,8 @@
     "mini:audio:list": "node scripts/generate-baidu-tts.js --list",
     "mini:audio:sample": "node scripts/generate-baidu-tts.js --sample",
     "mini:audio:generate": "node scripts/generate-baidu-tts.js",
+    "mini:audio:baidu:en:sample": "node scripts/generate-baidu-english-samples.js",
+    "mini:audio:baidu:en:replace": "node scripts/generate-baidu-english-samples.js --all",
     "mini:audio:pack": "node scripts/build-mini-audio-packs.js",
     "mini:upload": "node scripts/upload-miniprogram.js"
   },
