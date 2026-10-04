@@ -11,6 +11,7 @@ const listOnly = args.has('--list');
 const sampleOnly = args.has('--sample');
 const force = args.has('--force');
 const voice = process.env.BAIDU_TTS_VOICE || '103';
+const englishVoice = process.env.BAIDU_EN_TTS_VOICE || '4194';
 const speed = process.env.BAIDU_TTS_SPEED || '4';
 const pitch = process.env.BAIDU_TTS_PITCH || '5';
 const volume = process.env.BAIDU_TTS_VOLUME || '8';
@@ -92,7 +93,7 @@ async function synthesize(task, token) {
     spd: speed,
     pit: pitch,
     vol: volume,
-    per: voice,
+    per: task.kind === 'meaning-zh' ? voice : englishVoice,
     aue: '3'
   });
   const response = await fetch('https://tsn.baidu.com/text2audio', {
@@ -118,7 +119,7 @@ async function main() {
 
   console.log('词汇条目：' + words.length);
   console.log('待生成语音：' + tasks.length + '，' + JSON.stringify(counts));
-  console.log('音色 per=' + voice + '，语速 spd=' + speed + '，输出：' + outputRoot);
+  console.log('中文音色 per=' + voice + '，英文音色 per=' + englishVoice + '，语速 spd=' + speed + '，输出：' + outputRoot);
   if (listOnly) return;
 
   const apiKey = process.env.BAIDU_TTS_API_KEY;
@@ -132,6 +133,9 @@ async function main() {
   fs.mkdirSync(outputRoot, { recursive: true });
   const token = await getAccessToken(apiKey, secretKey);
   const manifest = [];
+  const manifestPath = path.join(outputRoot, 'manifest.json');
+  const previous = fs.existsSync(manifestPath) ? JSON.parse(fs.readFileSync(manifestPath, 'utf8')) : [];
+  const previousByKey = new Map(previous.map((entry) => [entry.kind + '\0' + entry.text, entry]));
   let created = 0;
   let skipped = 0;
 
@@ -139,19 +143,21 @@ async function main() {
     const task = tasks[index];
     const destination = taskPath(task);
     fs.mkdirSync(path.dirname(destination), { recursive: true });
-    if (!force && fs.existsSync(destination)) {
+    const existing = previousByKey.get(task.kind + '\0' + task.text);
+    const reuse = !force && fs.existsSync(destination);
+    if (reuse) {
       skipped += 1;
     } else {
       const audio = await synthesize(task, token);
       fs.writeFileSync(destination, audio);
       created += 1;
     }
-    manifest.push({
+    manifest.push(reuse && existing ? existing : {
       kind: task.kind,
       text: task.text,
       synthesisText: synthesisText(task),
       file: path.relative(outputRoot, destination).replace(/\\/g, '/'),
-      voice,
+      voice: task.kind === 'meaning-zh' ? voice : englishVoice,
       speed
     });
     console.log('[' + (index + 1) + '/' + tasks.length + '] ' + task.kind + '：' + task.text);

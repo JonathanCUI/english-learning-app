@@ -25,15 +25,18 @@ const items = manifest.map((entry) => {
 const itemKey = (kind, text) => kind + '\0' + text;
 const itemByKey = new Map(items.map((item) => [itemKey(item.entry.kind, item.entry.text), item]));
 const packs = [];
-['grade1', 'grade2'].forEach((grade, gradeIndex) => {
-  ['上学期', '下学期'].forEach((semester, semesterIndex) => {
-    for (let unitIndex = 1; unitIndex <= 6; unitIndex += 1) {
-      const shortName = 'g' + (gradeIndex + 1) + 's' + (semesterIndex + 1) + 'u' + unitIndex;
+const allowMissing = process.argv.includes('--allow-missing');
+const missing = [];
+Object.keys(vocabulary).forEach((grade) => {
+  Object.keys(vocabulary[grade]).forEach((semester) => {
+    for (const unit of Object.keys(vocabulary[grade][semester])) {
+      const unitIndex = unit === 'welcome' ? 0 : Number(unit.replace('unit', ''));
+      const shortName = 'g' + grade.replace('grade', '') + 's' + (semester === '上学期' ? 1 : 2) + 'u' + unitIndex;
       packs.push({
         grade,
         semester,
-        unit: 'unit' + unitIndex,
-        scope: [grade, semester, 'unit' + unitIndex].join('|'),
+        unit,
+        scope: [grade, semester, unit].join('|'),
         name: 'speech-' + shortName,
         root: 'audio-' + shortName,
         bytes: 0,
@@ -62,7 +65,11 @@ packs.forEach((pack) => {
       const key = itemKey(kind, text);
       if (seen.has(key)) return;
       const item = itemByKey.get(key);
-      if (!item) throw new Error('语音清单缺少：' + kind + ' / ' + text);
+      if (!item) {
+        missing.push({ scope: pack.scope, kind, text });
+        if (!allowMissing) throw new Error('语音清单缺少：' + kind + ' / ' + text + '；请先生成缺失语音。');
+        return;
+      }
       seen.add(key);
       pack.items.push(item);
       pack.bytes += item.size;
@@ -117,3 +124,4 @@ packs.forEach((pack) => {
 const copiedItems = packs.reduce((sum, pack) => sum + pack.items.length, 0);
 const copiedBytes = packs.reduce((sum, pack) => sum + pack.bytes, 0);
 console.log('语音分包完成：' + copiedItems + ' 个单元资源副本，共 ' + (copiedBytes / 1024 / 1024).toFixed(2) + ' MB；原始唯一语音 ' + manifest.length + ' 条');
+if (missing.length) console.warn('开发预览：仍缺少 ' + missing.length + ' 条单元语音映射，发布前请生成音频并重新严格打包。');

@@ -11,15 +11,18 @@ const game = require(path.join(miniRoot, 'utils', 'game.js'));
 const createPageConfig = require(path.join(miniRoot, 'pages', 'index', 'page-config.js'));
 const semesters = ['上学期', '下学期'];
 let wordCount = 0;
+let unitCount = 0;
+let missingAudioCount = 0;
+const allowMissing = process.argv.includes('--allow-missing');
 
 JSON.parse(fs.readFileSync(path.join(root, 'project.config.json'), 'utf8'));
 const appConfig = JSON.parse(fs.readFileSync(path.join(miniRoot, 'app.json'), 'utf8'));
 JSON.parse(fs.readFileSync(path.join(miniRoot, 'sitemap.json'), 'utf8'));
 
-['grade1', 'grade2'].forEach((grade) => {
-  semesters.forEach((semester) => {
-    for (let unitIndex = 1; unitIndex <= 6; unitIndex += 1) {
-      const unit = 'unit' + unitIndex;
+Object.keys(vocabulary).forEach((grade) => {
+  Object.keys(vocabulary[grade]).forEach((semester) => {
+    for (const unit of Object.keys(vocabulary[grade][semester])) {
+      unitCount += 1;
       const words = vocabulary[grade][semester][unit];
       if (!Array.isArray(words) || words.length === 0) throw new Error('缺少词汇：' + [grade, semester, unit].join('/'));
       const speechScope = speechMap[[grade, semester, unit].join('|')];
@@ -28,10 +31,16 @@ JSON.parse(fs.readFileSync(path.join(miniRoot, 'sitemap.json'), 'utf8'));
       if (enriched.some((word) => !word.visualSrc || !word.visualFrameStyle || !word.visualImageStyle || !word.miniVisualFrameStyle || !word.miniVisualImageStyle)) {
         throw new Error('图片映射失败：' + [grade, semester, unit].join('/'));
       }
+      enriched.forEach((word) => {
+        if (!fs.existsSync(path.join(miniRoot, word.visualSrc))) throw new Error('缺少单词图片：' + word.english + ' / ' + word.visualSrc);
+      });
       words.forEach((word) => {
-        if (!speechScope['word-en'][word.english]) throw new Error('缺少英文单词语音：' + word.english);
-        if (!speechScope['meaning-zh'][word.chinese]) throw new Error('缺少中文释义语音：' + word.chinese);
-        if (word.example && !speechScope['example-en'][word.example]) throw new Error('缺少英文例句语音：' + word.example);
+        [['word-en', word.english], ['meaning-zh', word.chinese], ['example-en', word.example]].forEach(([kind, text]) => {
+          if (text && !speechScope[kind][text]) {
+            missingAudioCount += 1;
+            if (!allowMissing) throw new Error('缺少语音：' + kind + ' / ' + text + '；请先补齐音频。');
+          }
+        });
         for (let attempt = 0; attempt < 4; attempt += 1) {
           const sample = game.spellingOptions(word.english, 4);
           if (sample.length !== 4 || new Set(sample.map((option) => option.text)).size !== 4 || sample.filter((option) => option.text === word.english).length !== 1) {
@@ -63,7 +72,7 @@ shop.forEach((item) => {
 if (missingAssets.length) throw new Error('缺少资源：\n' + missingAssets.join('\n'));
 
 const speechPackages = Array.isArray(appConfig.subpackages) ? appConfig.subpackages.filter((item) => /^speech-g\d+s\d+u\d+$/.test(item.name || '')) : [];
-if (speechPackages.length !== 24) throw new Error('语音资源必须拆分为 24 个课本单元分包');
+if (speechPackages.length !== unitCount) throw new Error('语音资源分包数应与课本分组数一致：' + unitCount);
 const speechEntries = Object.values(speechMap).reduce((scopeSum, scope) => (
   scopeSum + Object.values(scope).reduce((kindSum, collection) => kindSum + Object.keys(collection).length, 0)
 ), 0);
@@ -137,11 +146,16 @@ const mainPackageBytes = fs.readdirSync(miniRoot, { withFileTypes: true })
   .flatMap((entry) => entry.isDirectory() ? walk(path.join(miniRoot, entry.name)) : [path.join(miniRoot, entry.name)])
   .reduce((sum, file) => sum + fs.statSync(file).size, 0);
 if (mainPackageBytes > 2 * 1024 * 1024) throw new Error('主包超过 2 MB：' + (mainPackageBytes / 1024 / 1024).toFixed(2) + ' MB');
-if (packageBytes > 20 * 1024 * 1024) throw new Error('小程序总包超过 20 MB：' + (packageBytes / 1024 / 1024).toFixed(2) + ' MB');
+// 微信官方分包限制（2026-09 核实）：自主开发 30 MB，服务商代开发 20 MB。
+// https://developers.weixin.qq.com/miniprogram/dev/framework/subpackages.html
+const totalLimitMB = process.env.WX_SERVICE_PROVIDER === '1' ? 20 : 30;
+if (packageBytes > totalLimitMB * 1024 * 1024) throw new Error('小程序总包超过 ' + totalLimitMB + ' MB：' + (packageBytes / 1024 / 1024).toFixed(2) + ' MB');
 console.log('词汇：' + wordCount + ' 个');
-console.log('图集：' + atlas.layouts.length + ' 个；商店商品：' + shop.length + ' 件');
-console.log('语音：889 条唯一内容，' + speechEntries + ' 个课本单元映射，24 个页面分包');
+console.log('图集：' + (atlas.layouts.length + require('../data/grade3-images.js').length) + ' 个；商店商品：' + shop.length + ' 件');
+console.log('语音：' + speechEntries + ' 个课本单元映射，' + speechPackages.length + ' 个页面分包');
+if (missingAudioCount) console.warn('开发预览检查：缺少 ' + missingAudioCount + ' 条语音映射，尚不可作为音频完整的发布包。');
 console.log('主包体积：' + (mainPackageBytes / 1024 / 1024).toFixed(2) + ' MB；小程序总目录：' + (packageBytes / 1024 / 1024).toFixed(2) + ' MB');
+console.log('总包限额：' + totalLimitMB + ' MB（' + (totalLimitMB === 30 ? '自主开发' : '服务商代开发') + '）');
 console.log('WXML 标签与 ' + handlers.length + ' 个交互事件检查通过');
 console.log('星光币奖励、购买扣币与本地恢复检查通过');
 console.log('关键数据与资源检查通过');
@@ -204,24 +218,74 @@ function verifyEconomyPersistence() {
 }
 
 function verifyFullUnitSpelling() {
-  let longUnit = null;
-  ['grade1', 'grade2'].forEach((grade) => {
-    semesters.forEach((semester) => {
-      for (let unitIndex = 1; unitIndex <= 6; unitIndex += 1) {
-        const words = vocabulary[grade][semester]['unit' + unitIndex];
-        if (!longUnit && words.length > 10) longUnit = words;
+  for (const grade of Object.values(vocabulary)) {
+    for (const semester of Object.values(grade)) {
+      for (const words of Object.values(semester)) {
+        const page = mockPage(createPageConfig());
+        page.renderSpelling = () => {};
+        page.data.currentWords = words;
+        page.beginSpelling();
+        if (page.data.spellingWords.length !== words.length) throw new Error('拼写练习未包含所选单元的全部单词');
+        if (new Set(page.data.spellingWords.map((word) => word.english)).size !== words.length) throw new Error('拼写练习的单词列表存在遗漏或重复');
       }
-    });
-  });
-  if (!longUnit) throw new Error('词表中应至少有一个超过 10 个单词的单元用于验证');
-
-  const page = mockPage(createPageConfig());
-  page.renderSpelling = () => {};
-  page.data.currentWords = longUnit;
-  page.beginSpelling();
-  if (page.data.spellingWords.length !== longUnit.length) throw new Error('拼写练习未包含所选单元的全部单词');
-  if (new Set(page.data.spellingWords.map((word) => word.english)).size !== longUnit.length) throw new Error('拼写练习的单词列表存在遗漏或重复');
+    }
+  }
 }
+
+function verifyGradeThree() {
+  const assert = require('assert');
+  const originalWx = global.wx;
+  const originalPages = global.getCurrentPages;
+  const storage = {};
+  let destination = '';
+  global.getCurrentPages = () => [{ route: 'pages/index/index' }];
+  global.wx = {
+    getStorageSync: (key) => storage[key],
+    setStorageSync: (key, value) => { storage[key] = value; },
+    removeStorageSync: (key) => { delete storage[key]; },
+    navigateTo: (options) => { destination = options.url; }
+  };
+  try {
+    const page = mockPage(createPageConfig());
+    page.onLoad({ grade: 'grade2', semester: '下学期', unit: 'unit6' });
+    page.selectGrade({ currentTarget: { dataset: { value: 'grade3' } } });
+    assert.deepStrictEqual(page.data.semesters, ['上学期']);
+    assert.strictEqual(page.data.selectedSemester, '');
+    assert.strictEqual(page.data.currentWords.length, 0);
+    page.selectSemester({ currentTarget: { dataset: { value: '上学期' } } });
+    assert.deepStrictEqual(page.data.units, ['welcome', 'unit1', 'unit2', 'unit3', 'unit4', 'unit5', 'unit6']);
+    const expectedCounts = [35, 40, 28, 28, 33, 25, 28];
+    page.data.units.forEach((unit, index) => {
+      page.selectUnit({ currentTarget: { dataset: { value: unit } } });
+      assert.strictEqual(page.data.currentWords.length, expectedCounts[index]);
+      assert.ok(page.data.currentWords.every((word) => word.pronunciation && word.example && word.exampleChinese));
+      page.openLearning();
+      assert.ok(destination.startsWith('/audio-g3s1u' + index + '/pages/index/index?activity=learning'));
+      const share = page.onShareAppMessage();
+      const received = mockPage(createPageConfig());
+      received.onLoad(Object.fromEntries(new URLSearchParams(share.path.split('?')[1])));
+      assert.strictEqual(received.data.currentWords.length, expectedCounts[index]);
+      assert.strictEqual(received.data.selectedUnit, unit);
+      page.addError(page.data.currentWords[0], '拼写练习', 'wrong');
+    });
+    assert.strictEqual(page.data.errorEntries.length, 7);
+    assert.ok(page.data.errorEntries.every((entry) => entry.grade === 'grade3' && entry.word.english));
+    Object.values(page.data.errorBook).forEach((entry) => { entry.word = { english: entry.word.english, visualPlaceholder: true }; });
+    page.refreshErrorEntries();
+    assert.ok(page.data.errorEntries.every((entry) => entry.word.visualSrc && !entry.word.visualPlaceholder), '旧错题应恢复最新词库插图');
+    page.startErrorPractice();
+    assert.ok(destination.startsWith('/audio-g3s1u'));
+    assert.ok(destination.includes('activity=errorPractice'));
+    page.selectGrade({ currentTarget: { dataset: { value: 'grade1' } } });
+    assert.deepStrictEqual(page.data.semesters, ['上学期', '下学期']);
+    assert.ok(!page.data.units.includes('welcome'));
+  } finally {
+    global.wx = originalWx;
+    global.getCurrentPages = originalPages;
+  }
+}
+
+verifyGradeThree();
 
 function verifySharing() {
   const page = mockPage(createPageConfig());

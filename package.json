@@ -11,6 +11,7 @@
     "mini:audio:list": "node scripts/generate-baidu-tts.js --list",
     "mini:audio:sample": "node scripts/generate-baidu-tts.js --sample",
     "mini:audio:generate": "node scripts/generate-baidu-tts.js",
+    "mini:audio:update": "npm run mini:data && npm run mini:audio:generate && npm run mini:audio:pack && npm run mini:verify",
     "mini:audio:baidu:en:sample": "node scripts/generate-baidu-english-samples.js",
     "mini:audio:baidu:en:replace": "node scripts/generate-baidu-english-samples.js --all",
     "mini:audio:pack": "node scripts/build-mini-audio-packs.js",

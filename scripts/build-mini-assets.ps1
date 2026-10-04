@@ -96,6 +96,15 @@ foreach ($mapping in $vocabularySources) {
         -Quality 66
 }
 
+$grade3Sources = Get-ChildItem -LiteralPath (Join-Path $sourceAssetRoot 'grade3') -Filter '*.png' -File
+foreach ($source in $grade3Sources) {
+    $destination = Join-Path $vocabularyTarget ($source.BaseName + '.jpg')
+    Save-OptimizedJpeg -Source $source.FullName -Destination $destination -MaxSize 768 -Quality 70
+    if ((Get-Item -LiteralPath $destination).Length -gt 64KB) {
+        Save-OptimizedJpeg -Source $source.FullName -Destination $destination -MaxSize 640 -Quality 62
+    }
+}
+
 $shopSources = Get-ChildItem -LiteralPath (Join-Path $sourceAssetRoot 'shop-items') -Filter '*.png' -File
 foreach ($source in $shopSources) {
     $destinationName = [System.IO.Path]::GetFileNameWithoutExtension($source.Name) + '.jpg'
@@ -107,4 +116,4 @@ foreach ($source in $shopSources) {
 }
 
 $assetSize = (Get-ChildItem -LiteralPath $targetAssetRoot -Recurse -File | Measure-Object Length -Sum).Sum
-Write-Output ('Generated {0} vocabulary atlases and {1} shop images ({2:N2} MB)' -f $vocabularySources.Count, $shopSources.Count, ($assetSize / 1MB))
+Write-Output ('Generated {0} vocabulary atlases and {1} shop images ({2:N2} MB)' -f ($vocabularySources.Count + $grade3Sources.Count), $shopSources.Count, ($assetSize / 1MB))

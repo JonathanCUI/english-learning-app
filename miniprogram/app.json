@@ -14,6 +14,55 @@
   "sitemapLocation": "sitemap.json",
   "subpackages": [
     {
+      "root": "audio-g3s1u0",
+      "name": "speech-g3s1u0",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g3s1u1",
+      "name": "speech-g3s1u1",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g3s1u2",
+      "name": "speech-g3s1u2",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g3s1u3",
+      "name": "speech-g3s1u3",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g3s1u4",
+      "name": "speech-g3s1u4",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g3s1u5",
+      "name": "speech-g3s1u5",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
+      "root": "audio-g3s1u6",
+      "name": "speech-g3s1u6",
+      "pages": [
+        "pages/index/index"
+      ]
+    },
+    {
       "root": "audio-g1s1u1",
       "name": "speech-g1s1u1",
       "pages": [

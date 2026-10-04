@@ -11,14 +11,14 @@ if (!match) {
   throw new Error('无法从 Final_English_Learning_App.html 提取 VOCABULARY');
 }
 
-const vocabulary = Function('"use strict"; return (' + match[1] + ');')();
+const vocabulary = Function('GRADE3_VOCABULARY', '"use strict"; return (' + match[1] + ');')(require('../data/grade3-semester1.js'));
 const semesters = ['上学期', '下学期'];
 let wordCount = 0;
 
-['grade1', 'grade2'].forEach((grade) => {
-  semesters.forEach((semester) => {
-    for (let unit = 1; unit <= 6; unit += 1) {
-      const words = vocabulary[grade] && vocabulary[grade][semester] && vocabulary[grade][semester]['unit' + unit];
+Object.keys(vocabulary).forEach((grade) => {
+  Object.keys(vocabulary[grade]).forEach((semester) => {
+    for (const unit of Object.keys(vocabulary[grade][semester])) {
+      const words = vocabulary[grade][semester][unit];
       if (!Array.isArray(words) || words.length === 0) {
         throw new Error(grade + ' / ' + semester + ' / unit' + unit + ' 缺少词汇数据');
       }
@@ -35,4 +35,5 @@ const output = [
 
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(outputPath, output, 'utf8');
+fs.copyFileSync(path.join(root, 'data', 'grade3-images.js'), path.join(root, 'miniprogram', 'data', 'grade3-images.js'));
 console.log('已生成小程序词库：' + wordCount + ' 个单词');

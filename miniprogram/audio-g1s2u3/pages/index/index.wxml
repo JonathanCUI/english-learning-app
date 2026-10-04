@@ -72,7 +72,7 @@
           class="unit-choice {{selectedUnit === item ? 'is-active' : ''}}"
           data-value="{{item}}"
           bindtap="selectUnit"
-        >Unit {{index + 1}}</button>
+        >{{unitLabels[item]}}</button>
       </view>
     </view>
 

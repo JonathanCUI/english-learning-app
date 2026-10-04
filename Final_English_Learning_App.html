@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>英语学习小助手 - 最终版本</title>
+    <script src="data/grade3-semester1.js"></script>
+    <script src="data/grade3-images.js"></script>
     <script>
         // 嵌入式词汇数据 - 最终版本
         const VOCABULARY = {
+            grade3: GRADE3_VOCABULARY,
             grade1: {
                 "上学期": {
                     unit1: [
@@ -1219,6 +1222,7 @@
                 <div class="button-grid">
                     <button class="btn btn-grade1" onclick="selectGrade('grade1')">1年级</button>
                     <button class="btn btn-grade2" onclick="selectGrade('grade2')">2年级</button>
+                    <button class="btn btn-grade3 btn-grade2" onclick="selectGrade('grade3')">3年级</button>
                 </div>
             </div>
 
@@ -1233,6 +1237,7 @@
             <div class="selection-group">
                 <h2>请选择单元</h2>
                 <div class="button-grid">
+                    <button class="btn btn-welcome btn-unit1" style="display:none" disabled onclick="selectUnit('welcome')">Welcome</button>
                     <button class="btn btn-unit1" disabled onclick="selectUnit('unit1')">Unit 1</button>
                     <button class="btn btn-unit2" disabled onclick="selectUnit('unit2')">Unit 2</button>
                     <button class="btn btn-unit3" disabled onclick="selectUnit('unit3')">Unit 3</button>
@@ -1509,7 +1514,30 @@
             });
         });
 
+        GRADE3_IMAGE_PLANS.forEach(plan => {
+            WORD_IMAGE_ATLASES[plan.name] = {
+                src: 'assets/grade3/' + plan.name + '.png', columns: plan.columns, rows: plan.rows
+            };
+            VOCABULARY.grade3['上学期'][plan.unit].forEach(word => {
+                const index = plan.words.indexOf(word.english);
+                if (index >= 0) {
+                    word.imageAtlas = plan.name;
+                    word.imageIndex = index;
+                }
+            });
+        });
+
         function getWordImageStyle(word) {
+            if (word && !word.imageAtlas) {
+                const meaning = value => String(value).split(/[，,；;（(]/)[0].trim();
+                for (const [grade, semester, unit] of WORD_ATLAS_UNIT_LAYOUTS) {
+                    const oldWord = VOCABULARY[grade][semester][unit].find(entry => entry.english === word.english && meaning(entry.chinese) === meaning(word.chinese));
+                    if (oldWord) {
+                        word = oldWord;
+                        break;
+                    }
+                }
+            }
             const atlas = word && WORD_IMAGE_ATLASES[word.imageAtlas];
             if (!atlas || !Number.isInteger(word.imageIndex)) return null;
 
@@ -1562,6 +1590,14 @@
 
         function selectGrade(grade) {
             currentGrade = grade;
+            currentSemester = '';
+            currentUnit = '';
+            currentWords = [];
+            document.querySelectorAll('.btn-semester1, .btn-semester2, [onclick^="selectUnit("]').forEach(btn => {
+                btn.classList.remove('selected');
+                if (btn.getAttribute('onclick').startsWith('selectUnit(')) btn.disabled = true;
+            });
+            document.querySelector('.btn-welcome').style.display = grade === 'grade3' ? '' : 'none';
             document.querySelectorAll('.btn-grade1, .btn-grade2').forEach(btn => {
                 btn.classList.remove('selected');
             });
@@ -1572,6 +1608,9 @@
 
         function selectSemester(semester) {
             currentSemester = semester;
+            currentUnit = '';
+            currentWords = [];
+            document.querySelectorAll('[onclick^="selectUnit("]').forEach(btn => btn.classList.remove('selected'));
             document.querySelectorAll('.btn-semester1, .btn-semester2').forEach(btn => {
                 btn.classList.remove('selected');
             });
@@ -1592,8 +1631,9 @@
 
         function enableSemesterButtons() {
             document.querySelectorAll('.btn-semester1, .btn-semester2').forEach(btn => {
-                btn.disabled = false;
-                btn.style.opacity = '1';
+                const available = !!VOCABULARY[currentGrade][btn.textContent.trim()];
+                btn.disabled = !available;
+                btn.style.opacity = available ? '1' : '0.5';
             });
         }
 
@@ -2484,7 +2524,7 @@
 
             // Count stats
             let totalQuiz = 0, totalSpelling = 0;
-            const gradeNames = { grade1: '1年级', grade2: '2年级' };
+            const gradeNames = { grade1: '1年级', grade2: '2年级', grade3: '3年级' };
             const semesterNames = { '上学期': '上学期', '下学期': '下学期' };
             const unitNames = { unit1: 'Unit 1', unit2: 'Unit 2', unit3: 'Unit 3', unit4: 'Unit 4', unit5: 'Unit 5', unit6: 'Unit 6' };
 

@@ -1,5 +1,1759 @@
 // 此文件由 scripts/extract-mini-vocabulary.js 从网页版自动生成，请勿手工修改。
 module.exports = {
+  "grade3": {
+    "上学期": {
+      "welcome": [
+        {
+          "english": "welcome",
+          "chinese": "欢迎",
+          "pronunciation": "ˈwelkəm",
+          "example": "Welcome to our school!",
+          "exampleChinese": "欢迎来到我们的学校！",
+          "emoji": "📖"
+        },
+        {
+          "english": "to",
+          "chinese": "向，到，往",
+          "pronunciation": "tuː",
+          "example": "Let's go to school.",
+          "exampleChinese": "我们去上学吧。",
+          "emoji": "📖"
+        },
+        {
+          "english": "school",
+          "chinese": "学校",
+          "pronunciation": "skuːl",
+          "example": "This is my school.",
+          "exampleChinese": "这是我的学校。",
+          "emoji": "📖"
+        },
+        {
+          "english": "hi",
+          "chinese": "嘿，喂，你好",
+          "pronunciation": "haɪ",
+          "example": "Hi, Tom!",
+          "exampleChinese": "你好，汤姆！",
+          "emoji": "📖"
+        },
+        {
+          "english": "I",
+          "chinese": "我",
+          "pronunciation": "aɪ",
+          "example": "I am happy.",
+          "exampleChinese": "我很高兴。",
+          "emoji": "📖"
+        },
+        {
+          "english": "be",
+          "chinese": "是",
+          "pronunciation": "biː",
+          "example": "Let's be friends.",
+          "exampleChinese": "我们做朋友吧。",
+          "emoji": "📖"
+        },
+        {
+          "english": "am",
+          "chinese": "是（与 I 连用）",
+          "pronunciation": "æm",
+          "example": "I am nine.",
+          "exampleChinese": "我九岁。",
+          "emoji": "📖"
+        },
+        {
+          "english": "is",
+          "chinese": "是（用于第三人称单数）",
+          "pronunciation": "ɪz",
+          "example": "She is my friend.",
+          "exampleChinese": "她是我的朋友。",
+          "emoji": "📖"
+        },
+        {
+          "english": "are",
+          "chinese": "是（与 you、we、they 等连用）",
+          "pronunciation": "ɑːr",
+          "example": "We are friends.",
+          "exampleChinese": "我们是朋友。",
+          "emoji": "📖"
+        },
+        {
+          "english": "what",
+          "chinese": "什么",
+          "pronunciation": "wʌt",
+          "example": "What is your name?",
+          "exampleChinese": "你叫什么名字？",
+          "emoji": "📖"
+        },
+        {
+          "english": "your",
+          "chinese": "你的，你们的",
+          "pronunciation": "jʊr",
+          "example": "Is this your book?",
+          "exampleChinese": "这是你的书吗？",
+          "emoji": "📖"
+        },
+        {
+          "english": "name",
+          "chinese": "名字",
+          "pronunciation": "neɪm",
+          "example": "My name is Tom.",
+          "exampleChinese": "我的名字是汤姆。",
+          "emoji": "📖"
+        },
+        {
+          "english": "hello",
+          "chinese": "喂，哈啰，你好",
+          "pronunciation": "həˈloʊ",
+          "example": "Hello, my friend!",
+          "exampleChinese": "你好，我的朋友！",
+          "emoji": "📖"
+        },
+        {
+          "english": "my",
+          "chinese": "我的",
+          "pronunciation": "maɪ",
+          "example": "This is my bag.",
+          "exampleChinese": "这是我的包。",
+          "emoji": "📖"
+        },
+        {
+          "english": "goodbye",
+          "chinese": "再见",
+          "pronunciation": "ˌɡʊdˈbaɪ",
+          "example": "Goodbye, Miss Li!",
+          "exampleChinese": "再见，李老师！",
+          "emoji": "📖"
+        },
+        {
+          "english": "have",
+          "chinese": "有，拥有",
+          "pronunciation": "hæv",
+          "example": "I have a pencil.",
+          "exampleChinese": "我有一支铅笔。",
+          "emoji": "📖"
+        },
+        {
+          "english": "a",
+          "chinese": "一（个，用于辅音音素前）",
+          "pronunciation": "ə",
+          "example": "I have a book.",
+          "exampleChinese": "我有一本书。",
+          "emoji": "📖"
+        },
+        {
+          "english": "an",
+          "chinese": "一（个，用于元音音素前）",
+          "pronunciation": "ən",
+          "example": "I have an apple.",
+          "exampleChinese": "我有一个苹果。",
+          "emoji": "📖"
+        },
+        {
+          "english": "nice",
+          "chinese": "令人愉快的",
+          "pronunciation": "naɪs",
+          "example": "Have a nice day!",
+          "exampleChinese": "祝你度过愉快的一天！",
+          "emoji": "📖"
+        },
+        {
+          "english": "day",
+          "chinese": "一天",
+          "pronunciation": "deɪ",
+          "example": "It is a nice day.",
+          "exampleChinese": "这是美好的一天。",
+          "emoji": "📖"
+        },
+        {
+          "english": "good",
+          "chinese": "好的",
+          "pronunciation": "ɡʊd",
+          "example": "This is a good book.",
+          "exampleChinese": "这是一本好书。",
+          "emoji": "📖"
+        },
+        {
+          "english": "morning",
+          "chinese": "早晨，上午",
+          "pronunciation": "ˈmɔːrnɪŋ",
+          "example": "Good morning!",
+          "exampleChinese": "早上好！",
+          "emoji": "📖"
+        },
+        {
+          "english": "Ms",
+          "chinese": "女士",
+          "pronunciation": "mɪz",
+          "example": "Good morning, Ms Li!",
+          "exampleChinese": "早上好，李女士！",
+          "emoji": "📖"
+        },
+        {
+          "english": "stand",
+          "chinese": "站立",
+          "pronunciation": "stænd",
+          "example": "Please stand here.",
+          "exampleChinese": "请站在这里。",
+          "emoji": "📖"
+        },
+        {
+          "english": "stand up",
+          "chinese": "站起来",
+          "pronunciation": "stænd ʌp",
+          "example": "Please stand up.",
+          "exampleChinese": "请站起来。",
+          "emoji": "📖"
+        },
+        {
+          "english": "sit",
+          "chinese": "坐",
+          "pronunciation": "sɪt",
+          "example": "Please sit here.",
+          "exampleChinese": "请坐在这里。",
+          "emoji": "📖"
+        },
+        {
+          "english": "sit down",
+          "chinese": "坐下",
+          "pronunciation": "sɪt daʊn",
+          "example": "Please sit down.",
+          "exampleChinese": "请坐下。",
+          "emoji": "📖"
+        },
+        {
+          "english": "open",
+          "chinese": "打开",
+          "pronunciation": "ˈoʊpən",
+          "example": "Open your book.",
+          "exampleChinese": "打开你的书。",
+          "emoji": "📖"
+        },
+        {
+          "english": "book",
+          "chinese": "书",
+          "pronunciation": "bʊk",
+          "example": "This is my book.",
+          "exampleChinese": "这是我的书。",
+          "emoji": "📖"
+        },
+        {
+          "english": "close",
+          "chinese": "合上",
+          "pronunciation": "kloʊz",
+          "example": "Close your book.",
+          "exampleChinese": "合上你的书。",
+          "emoji": "📖"
+        },
+        {
+          "english": "point",
+          "chinese": "指",
+          "pronunciation": "pɔɪnt",
+          "example": "Point to the door.",
+          "exampleChinese": "指一指门。",
+          "emoji": "📖"
+        },
+        {
+          "english": "say",
+          "chinese": "说",
+          "pronunciation": "seɪ",
+          "example": "Say hello to Tom.",
+          "exampleChinese": "向汤姆问好。",
+          "emoji": "📖"
+        },
+        {
+          "english": "read",
+          "chinese": "阅读",
+          "pronunciation": "riːd",
+          "example": "Let's read a book.",
+          "exampleChinese": "我们读一本书吧。",
+          "emoji": "📖"
+        },
+        {
+          "english": "listen",
+          "chinese": "听",
+          "pronunciation": "ˈlɪsən",
+          "example": "Listen to the song.",
+          "exampleChinese": "听这首歌。",
+          "emoji": "📖"
+        },
+        {
+          "english": "write",
+          "chinese": "写",
+          "pronunciation": "raɪt",
+          "example": "Write your name.",
+          "exampleChinese": "写下你的名字。",
+          "emoji": "📖"
+        }
+      ],
+      "unit1": [
+        {
+          "english": "let's",
+          "chinese": "让我们（let us 的缩写）",
+          "pronunciation": "lets",
+          "example": "Let's play together.",
+          "exampleChinese": "我们一起玩吧。",
+          "emoji": "📖"
+        },
+        {
+          "english": "let us",
+          "chinese": "让我们",
+          "pronunciation": "let ʌs",
+          "example": "Let us sing a song.",
+          "exampleChinese": "让我们唱一首歌。",
+          "emoji": "📖"
+        },
+        {
+          "english": "friend",
+          "chinese": "朋友",
+          "pronunciation": "frend",
+          "example": "She is my friend.",
+          "exampleChinese": "她是我的朋友。",
+          "emoji": "📖"
+        },
+        {
+          "english": "meet",
+          "chinese": "认识，结识",
+          "pronunciation": "miːt",
+          "example": "Nice to meet you!",
+          "exampleChinese": "很高兴认识你！",
+          "emoji": "📖"
+        },
+        {
+          "english": "you",
+          "chinese": "你，你们",
+          "pronunciation": "juː",
+          "example": "You are my friend.",
+          "exampleChinese": "你是我的朋友。",
+          "emoji": "📖"
+        },
+        {
+          "english": "play",
+          "chinese": "玩，玩耍",
+          "pronunciation": "pleɪ",
+          "example": "Let's play a game.",
+          "exampleChinese": "我们玩一个游戏吧。",
+          "emoji": "📖"
+        },
+        {
+          "english": "happy",
+          "chinese": "高兴的，快乐的",
+          "pronunciation": "ˈhæpi",
+          "example": "I am happy today.",
+          "exampleChinese": "我今天很高兴。",
+          "emoji": "📖"
+        },
+        {
+          "english": "new",
+          "chinese": "新的",
+          "pronunciation": "nuː",
+          "example": "This is my new bag.",
+          "exampleChinese": "这是我的新包。",
+          "emoji": "📖"
+        },
+        {
+          "english": "do",
+          "chinese": "构成疑问句或否定句；做",
+          "pronunciation": "duː",
+          "example": "Do you like apples?",
+          "exampleChinese": "你喜欢苹果吗？",
+          "emoji": "📖"
+        },
+        {
+          "english": "they",
+          "chinese": "他们",
+          "pronunciation": "ðeɪ",
+          "example": "They are my friends.",
+          "exampleChinese": "他们是我的朋友。",
+          "emoji": "📖"
+        },
+        {
+          "english": "everyone",
+          "chinese": "每个人，人人",
+          "pronunciation": "ˈevriwʌn",
+          "example": "Hello, everyone!",
+          "exampleChinese": "大家好！",
+          "emoji": "📖"
+        },
+        {
+          "english": "nine",
+          "chinese": "九",
+          "pronunciation": "naɪn",
+          "example": "I am nine.",
+          "exampleChinese": "我九岁。",
+          "emoji": "📖"
+        },
+        {
+          "english": "she",
+          "chinese": "她",
+          "pronunciation": "ʃiː",
+          "example": "She is my sister.",
+          "exampleChinese": "她是我的姐姐。",
+          "emoji": "📖"
+        },
+        {
+          "english": "too",
+          "chinese": "也",
+          "pronunciation": "tuː",
+          "example": "I am happy too.",
+          "exampleChinese": "我也很高兴。",
+          "emoji": "📖"
+        },
+        {
+          "english": "we",
+          "chinese": "我们",
+          "pronunciation": "wiː",
+          "example": "We are friends.",
+          "exampleChinese": "我们是朋友。",
+          "emoji": "📖"
+        },
+        {
+          "english": "from",
+          "chinese": "从",
+          "pronunciation": "frʌm",
+          "example": "I am from China.",
+          "exampleChinese": "我来自中国。",
+          "emoji": "📖"
+        },
+        {
+          "english": "the",
+          "chinese": "用于特指已提到、已知或独一无二的人或物",
+          "pronunciation": "ðə",
+          "example": "Open the door, please.",
+          "exampleChinese": "请打开门。",
+          "emoji": "📖"
+        },
+        {
+          "english": "twin",
+          "chinese": "双胞胎中的一个",
+          "pronunciation": "twɪn",
+          "example": "I have a twin brother.",
+          "exampleChinese": "我有一个双胞胎兄弟。",
+          "emoji": "📖"
+        },
+        {
+          "english": "he",
+          "chinese": "他",
+          "pronunciation": "hiː",
+          "example": "He is my brother.",
+          "exampleChinese": "他是我的哥哥。",
+          "emoji": "📖"
+        },
+        {
+          "english": "come",
+          "chinese": "来，来到",
+          "pronunciation": "kʌm",
+          "example": "Come here, please.",
+          "exampleChinese": "请到这里来。",
+          "emoji": "📖"
+        },
+        {
+          "english": "and",
+          "chinese": "然后，接着；和",
+          "pronunciation": "ænd",
+          "example": "Tom and I are friends.",
+          "exampleChinese": "汤姆和我是朋友。",
+          "emoji": "📖"
+        },
+        {
+          "english": "oh",
+          "chinese": "噢",
+          "pronunciation": "oʊ",
+          "example": "Oh, a rainbow!",
+          "exampleChinese": "噢，一道彩虹！",
+          "emoji": "📖"
+        },
+        {
+          "english": "no",
+          "chinese": "不，不行",
+          "pronunciation": "noʊ",
+          "example": "No, thank you.",
+          "exampleChinese": "不了，谢谢。",
+          "emoji": "📖"
+        },
+        {
+          "english": "help",
+          "chinese": "帮助，帮忙",
+          "pronunciation": "help",
+          "example": "Let me help you.",
+          "exampleChinese": "让我帮你。",
+          "emoji": "📖"
+        },
+        {
+          "english": "here",
+          "chinese": "在这里",
+          "pronunciation": "hɪr",
+          "example": "My book is here.",
+          "exampleChinese": "我的书在这里。",
+          "emoji": "📖"
+        },
+        {
+          "english": "here you are",
+          "chinese": "给你",
+          "pronunciation": "hɪr juː ɑːr",
+          "example": "Here you are, Tom.",
+          "exampleChinese": "给你，汤姆。",
+          "emoji": "📖"
+        },
+        {
+          "english": "thank",
+          "chinese": "感谢，向……表示谢意",
+          "pronunciation": "θæŋk",
+          "example": "Thank you for your help.",
+          "exampleChinese": "谢谢你的帮助。",
+          "emoji": "📖"
+        },
+        {
+          "english": "together",
+          "chinese": "一起，一块儿",
+          "pronunciation": "təˈɡeðər",
+          "example": "Let's sing together.",
+          "exampleChinese": "我们一起唱歌吧。",
+          "emoji": "📖"
+        },
+        {
+          "english": "OK",
+          "chinese": "行，可以",
+          "pronunciation": "ˌoʊˈkeɪ",
+          "example": "OK, let's go!",
+          "exampleChinese": "好的，我们走吧！",
+          "emoji": "📖"
+        },
+        {
+          "english": "great",
+          "chinese": "极棒的，极好的",
+          "pronunciation": "ɡreɪt",
+          "example": "That is great!",
+          "exampleChinese": "那太棒了！",
+          "emoji": "📖"
+        },
+        {
+          "english": "age",
+          "chinese": "年龄",
+          "pronunciation": "eɪdʒ",
+          "example": "What is your age?",
+          "exampleChinese": "你多大了？",
+          "emoji": "📖"
+        },
+        {
+          "english": "song",
+          "chinese": "歌曲",
+          "pronunciation": "sɔːŋ",
+          "example": "This is a nice song.",
+          "exampleChinese": "这是一首好听的歌。",
+          "emoji": "📖"
+        },
+        {
+          "english": "dear",
+          "chinese": "亲爱的",
+          "pronunciation": "dɪr",
+          "example": "Hello, my dear friend!",
+          "exampleChinese": "你好，我亲爱的朋友！",
+          "emoji": "📖"
+        },
+        {
+          "english": "sing",
+          "chinese": "唱，歌唱",
+          "pronunciation": "sɪŋ",
+          "example": "Let's sing a song.",
+          "exampleChinese": "我们唱首歌吧。",
+          "emoji": "📖"
+        },
+        {
+          "english": "now",
+          "chinese": "现在",
+          "pronunciation": "naʊ",
+          "example": "Let's play now.",
+          "exampleChinese": "我们现在玩吧。",
+          "emoji": "📖"
+        },
+        {
+          "english": "know",
+          "chinese": "认识；知道，了解",
+          "pronunciation": "noʊ",
+          "example": "I know your name.",
+          "exampleChinese": "我知道你的名字。",
+          "emoji": "📖"
+        },
+        {
+          "english": "our",
+          "chinese": "我们的",
+          "pronunciation": "aʊr",
+          "example": "This is our school.",
+          "exampleChinese": "这是我们的学校。",
+          "emoji": "📖"
+        },
+        {
+          "english": "everybody",
+          "chinese": "每个人，人人",
+          "pronunciation": "ˈevribɑːdi",
+          "example": "Good morning, everybody!",
+          "exampleChinese": "大家早上好！",
+          "emoji": "📖"
+        },
+        {
+          "english": "with",
+          "chinese": "和……一起",
+          "pronunciation": "wɪð",
+          "example": "Play with me.",
+          "exampleChinese": "和我一起玩。",
+          "emoji": "📖"
+        },
+        {
+          "english": "me",
+          "chinese": "我（宾格）",
+          "pronunciation": "miː",
+          "example": "Look at me.",
+          "exampleChinese": "看看我。",
+          "emoji": "📖"
+        }
+      ],
+      "unit2": [
+        {
+          "english": "thing",
+          "chinese": "东西",
+          "pronunciation": "θɪŋ",
+          "example": "What is this thing?",
+          "exampleChinese": "这是什么东西？",
+          "emoji": "📖"
+        },
+        {
+          "english": "pack",
+          "chinese": "收拾好",
+          "pronunciation": "pæk",
+          "example": "Pack your schoolbag.",
+          "exampleChinese": "收拾好你的书包。",
+          "emoji": "📖"
+        },
+        {
+          "english": "pen",
+          "chinese": "钢笔",
+          "pronunciation": "pen",
+          "example": "This is my pen.",
+          "exampleChinese": "这是我的钢笔。",
+          "emoji": "📖"
+        },
+        {
+          "english": "pencil",
+          "chinese": "铅笔",
+          "pronunciation": "ˈpensəl",
+          "example": "I have a pencil.",
+          "exampleChinese": "我有一支铅笔。",
+          "emoji": "📖"
+        },
+        {
+          "english": "pencil case",
+          "chinese": "笔袋；铅笔盒",
+          "pronunciation": "ˈpensəl keɪs",
+          "example": "My pen is in my pencil case.",
+          "exampleChinese": "我的钢笔在我的笔袋里。",
+          "emoji": "📖"
+        },
+        {
+          "english": "bag",
+          "chinese": "袋，包",
+          "pronunciation": "bæɡ",
+          "example": "This is a blue bag.",
+          "exampleChinese": "这是一个蓝色的包。",
+          "emoji": "📖"
+        },
+        {
+          "english": "for",
+          "chinese": "为了",
+          "pronunciation": "fɔːr",
+          "example": "This is for you.",
+          "exampleChinese": "这是给你的。",
+          "emoji": "📖"
+        },
+        {
+          "english": "ruler",
+          "chinese": "尺子，直尺",
+          "pronunciation": "ˈruːlər",
+          "example": "My ruler is green.",
+          "exampleChinese": "我的尺子是绿色的。",
+          "emoji": "📖"
+        },
+        {
+          "english": "eraser",
+          "chinese": "橡皮",
+          "pronunciation": "ɪˈreɪsər",
+          "example": "I have an eraser.",
+          "exampleChinese": "我有一块橡皮。",
+          "emoji": "📖"
+        },
+        {
+          "english": "this",
+          "chinese": "这，这个",
+          "pronunciation": "ðɪs",
+          "example": "This is my book.",
+          "exampleChinese": "这是我的书。",
+          "emoji": "📖"
+        },
+        {
+          "english": "in",
+          "chinese": "在……里",
+          "pronunciation": "ɪn",
+          "example": "The pen is in the bag.",
+          "exampleChinese": "钢笔在包里。",
+          "emoji": "📖"
+        },
+        {
+          "english": "schoolbag",
+          "chinese": "书包",
+          "pronunciation": "ˈskuːlbæɡ",
+          "example": "My schoolbag is new.",
+          "exampleChinese": "我的书包是新的。",
+          "emoji": "📖"
+        },
+        {
+          "english": "it",
+          "chinese": "它",
+          "pronunciation": "ɪt",
+          "example": "It is a cat.",
+          "exampleChinese": "它是一只猫。",
+          "emoji": "📖"
+        },
+        {
+          "english": "not",
+          "chinese": "不，不是",
+          "pronunciation": "nɑːt",
+          "example": "It is not my bag.",
+          "exampleChinese": "它不是我的包。",
+          "emoji": "📖"
+        },
+        {
+          "english": "that",
+          "chinese": "那，那个",
+          "pronunciation": "ðæt",
+          "example": "That is my school.",
+          "exampleChinese": "那是我的学校。",
+          "emoji": "📖"
+        },
+        {
+          "english": "yes",
+          "chinese": "是，对",
+          "pronunciation": "jes",
+          "example": "Yes, it is my book.",
+          "exampleChinese": "是的，它是我的书。",
+          "emoji": "📖"
+        },
+        {
+          "english": "guess",
+          "chinese": "猜，猜测",
+          "pronunciation": "ɡes",
+          "example": "Guess my age.",
+          "exampleChinese": "猜猜我的年龄。",
+          "emoji": "📖"
+        },
+        {
+          "english": "find",
+          "chinese": "发现，找到",
+          "pronunciation": "faɪnd",
+          "example": "I can find my pen.",
+          "exampleChinese": "我能找到我的钢笔。",
+          "emoji": "📖"
+        },
+        {
+          "english": "lost and found",
+          "chinese": "失物招领",
+          "pronunciation": "lɔːst ənd faʊnd",
+          "example": "My bag is at the lost and found.",
+          "exampleChinese": "我的包在失物招领处。",
+          "emoji": "📖"
+        },
+        {
+          "english": "bye",
+          "chinese": "再见，拜拜",
+          "pronunciation": "baɪ",
+          "example": "Bye, my friend!",
+          "exampleChinese": "再见，我的朋友！",
+          "emoji": "📖"
+        },
+        {
+          "english": "kid",
+          "chinese": "小孩，儿童",
+          "pronunciation": "kɪd",
+          "example": "He is a happy kid.",
+          "exampleChinese": "他是一个快乐的孩子。",
+          "emoji": "📖"
+        },
+        {
+          "english": "take care of",
+          "chinese": "照看，照料",
+          "pronunciation": "teɪk ker əv",
+          "example": "Take care of your little sister.",
+          "exampleChinese": "照顾好你的小妹妹。",
+          "emoji": "📖"
+        },
+        {
+          "english": "there",
+          "chinese": "在那里",
+          "pronunciation": "ðer",
+          "example": "My bag is there.",
+          "exampleChinese": "我的包在那里。",
+          "emoji": "📖"
+        },
+        {
+          "english": "please",
+          "chinese": "请",
+          "pronunciation": "pliːz",
+          "example": "Sit down, please.",
+          "exampleChinese": "请坐。",
+          "emoji": "📖"
+        },
+        {
+          "english": "back",
+          "chinese": "回到原处",
+          "pronunciation": "bæk",
+          "example": "Put the book back.",
+          "exampleChinese": "把书放回原处。",
+          "emoji": "📖"
+        },
+        {
+          "english": "come back",
+          "chinese": "回来",
+          "pronunciation": "kʌm bæk",
+          "example": "Come back, please.",
+          "exampleChinese": "请回来。",
+          "emoji": "📖"
+        },
+        {
+          "english": "look",
+          "chinese": "看，瞧，望",
+          "pronunciation": "lʊk",
+          "example": "Look! A bird!",
+          "exampleChinese": "看！一只鸟！",
+          "emoji": "📖"
+        },
+        {
+          "english": "look at",
+          "chinese": "看",
+          "pronunciation": "lʊk æt",
+          "example": "Look at the picture.",
+          "exampleChinese": "看这幅画。",
+          "emoji": "📖"
+        }
+      ],
+      "unit3": [
+        {
+          "english": "colourful",
+          "chinese": "颜色鲜艳的，色彩丰富的",
+          "pronunciation": "ˈkʌlərfəl",
+          "example": "This is a colourful picture.",
+          "exampleChinese": "这是一幅色彩丰富的画。",
+          "emoji": "📖"
+        },
+        {
+          "english": "world",
+          "chinese": "世界",
+          "pronunciation": "wɜːrld",
+          "example": "We love our world.",
+          "exampleChinese": "我们爱我们的世界。",
+          "emoji": "📖"
+        },
+        {
+          "english": "hooray",
+          "chinese": "好哇",
+          "pronunciation": "hʊˈreɪ",
+          "example": "Hooray! Let's play!",
+          "exampleChinese": "好哇！我们玩吧！",
+          "emoji": "📖"
+        },
+        {
+          "english": "umbrella",
+          "chinese": "伞，雨伞",
+          "pronunciation": "ʌmˈbrelə",
+          "example": "I have a red umbrella.",
+          "exampleChinese": "我有一把红色的雨伞。",
+          "emoji": "📖"
+        },
+        {
+          "english": "clothes",
+          "chinese": "衣服",
+          "pronunciation": "kloʊðz",
+          "example": "My clothes are blue.",
+          "exampleChinese": "我的衣服是蓝色的。",
+          "emoji": "📖"
+        },
+        {
+          "english": "red",
+          "chinese": "红色（的）",
+          "pronunciation": "red",
+          "example": "The apple is red.",
+          "exampleChinese": "这个苹果是红色的。",
+          "emoji": "📖"
+        },
+        {
+          "english": "pink",
+          "chinese": "粉红色（的）",
+          "pronunciation": "pɪŋk",
+          "example": "My bag is pink.",
+          "exampleChinese": "我的包是粉红色的。",
+          "emoji": "📖"
+        },
+        {
+          "english": "green",
+          "chinese": "绿色（的）",
+          "pronunciation": "ɡriːn",
+          "example": "The ruler is green.",
+          "exampleChinese": "这把尺子是绿色的。",
+          "emoji": "📖"
+        },
+        {
+          "english": "yellow",
+          "chinese": "黄色（的）",
+          "pronunciation": "ˈjeloʊ",
+          "example": "The sun is yellow.",
+          "exampleChinese": "太阳是黄色的。",
+          "emoji": "📖"
+        },
+        {
+          "english": "orange",
+          "chinese": "橙色（的）",
+          "pronunciation": "ˈɔːrɪndʒ",
+          "example": "The balloon is orange.",
+          "exampleChinese": "这个气球是橙色的。",
+          "emoji": "📖"
+        },
+        {
+          "english": "blue",
+          "chinese": "蓝色（的）",
+          "pronunciation": "bluː",
+          "example": "My pen is blue.",
+          "exampleChinese": "我的钢笔是蓝色的。",
+          "emoji": "📖"
+        },
+        {
+          "english": "purple",
+          "chinese": "紫色（的）",
+          "pronunciation": "ˈpɜːrpəl",
+          "example": "This is a purple umbrella.",
+          "exampleChinese": "这是一把紫色的雨伞。",
+          "emoji": "📖"
+        },
+        {
+          "english": "rainbow",
+          "chinese": "彩虹",
+          "pronunciation": "ˈreɪnboʊ",
+          "example": "I can see a rainbow.",
+          "exampleChinese": "我能看见一道彩虹。",
+          "emoji": "📖"
+        },
+        {
+          "english": "want",
+          "chinese": "想要",
+          "pronunciation": "wɑːnt",
+          "example": "I want a balloon.",
+          "exampleChinese": "我想要一个气球。",
+          "emoji": "📖"
+        },
+        {
+          "english": "balloon",
+          "chinese": "气球",
+          "pronunciation": "bəˈluːn",
+          "example": "This balloon is red.",
+          "exampleChinese": "这个气球是红色的。",
+          "emoji": "📖"
+        },
+        {
+          "english": "colour",
+          "chinese": "颜色",
+          "pronunciation": "ˈkʌlər",
+          "example": "What colour is it?",
+          "exampleChinese": "它是什么颜色的？",
+          "emoji": "📖"
+        },
+        {
+          "english": "can",
+          "chinese": "能，会",
+          "pronunciation": "kæn",
+          "example": "I can sing.",
+          "exampleChinese": "我会唱歌。",
+          "emoji": "📖"
+        },
+        {
+          "english": "see",
+          "chinese": "看见，看到",
+          "pronunciation": "siː",
+          "example": "I can see a bird.",
+          "exampleChinese": "我能看见一只鸟。",
+          "emoji": "📖"
+        },
+        {
+          "english": "right",
+          "chinese": "正确的，对的",
+          "pronunciation": "raɪt",
+          "example": "You are right.",
+          "exampleChinese": "你是对的。",
+          "emoji": "📖"
+        },
+        {
+          "english": "first",
+          "chinese": "第一的",
+          "pronunciation": "fɜːrst",
+          "example": "This is my first book.",
+          "exampleChinese": "这是我的第一本书。",
+          "emoji": "📖"
+        },
+        {
+          "english": "magical",
+          "chinese": "神奇的，有魔力的",
+          "pronunciation": "ˈmædʒɪkəl",
+          "example": "This is a magical world.",
+          "exampleChinese": "这是一个神奇的世界。",
+          "emoji": "📖"
+        },
+        {
+          "english": "fun",
+          "chinese": "有趣的，逗乐的",
+          "pronunciation": "fʌn",
+          "example": "This is a fun game.",
+          "exampleChinese": "这是一个有趣的游戏。",
+          "emoji": "📖"
+        },
+        {
+          "english": "black",
+          "chinese": "黑色（的）",
+          "pronunciation": "blæk",
+          "example": "The cat is black.",
+          "exampleChinese": "这只猫是黑色的。",
+          "emoji": "📖"
+        },
+        {
+          "english": "so",
+          "chinese": "这么，如此",
+          "pronunciation": "soʊ",
+          "example": "The bird is so little.",
+          "exampleChinese": "这只鸟真小。",
+          "emoji": "📖"
+        },
+        {
+          "english": "many",
+          "chinese": "许多，大量",
+          "pronunciation": "ˈmeni",
+          "example": "I have many books.",
+          "exampleChinese": "我有许多书。",
+          "emoji": "📖"
+        },
+        {
+          "english": "picture",
+          "chinese": "画，图画",
+          "pronunciation": "ˈpɪktʃər",
+          "example": "Look at this picture.",
+          "exampleChinese": "看这幅画。",
+          "emoji": "📖"
+        },
+        {
+          "english": "today",
+          "chinese": "今天",
+          "pronunciation": "təˈdeɪ",
+          "example": "I am happy today.",
+          "exampleChinese": "我今天很高兴。",
+          "emoji": "📖"
+        },
+        {
+          "english": "paint",
+          "chinese": "画，作画",
+          "pronunciation": "peɪnt",
+          "example": "Let's paint a rainbow.",
+          "exampleChinese": "我们画一道彩虹吧。",
+          "emoji": "📖"
+        }
+      ],
+      "unit4": [
+        {
+          "english": "number",
+          "chinese": "数，数字",
+          "pronunciation": "ˈnʌmbər",
+          "example": "What number is this?",
+          "exampleChinese": "这是数字几？",
+          "emoji": "📖"
+        },
+        {
+          "english": "count",
+          "chinese": "数数",
+          "pronunciation": "kaʊnt",
+          "example": "Let's count the birds.",
+          "exampleChinese": "我们数一数鸟吧。",
+          "emoji": "📖"
+        },
+        {
+          "english": "how",
+          "chinese": "多少；怎样，如何",
+          "pronunciation": "haʊ",
+          "example": "How old are you?",
+          "exampleChinese": "你多大了？",
+          "emoji": "📖"
+        },
+        {
+          "english": "bird",
+          "chinese": "鸟",
+          "pronunciation": "bɜːrd",
+          "example": "I can see a bird.",
+          "exampleChinese": "我能看见一只鸟。",
+          "emoji": "📖"
+        },
+        {
+          "english": "one",
+          "chinese": "一",
+          "pronunciation": "wʌn",
+          "example": "I have one pen.",
+          "exampleChinese": "我有一支钢笔。",
+          "emoji": "📖"
+        },
+        {
+          "english": "two",
+          "chinese": "二",
+          "pronunciation": "tuː",
+          "example": "I have two books.",
+          "exampleChinese": "我有两本书。",
+          "emoji": "📖"
+        },
+        {
+          "english": "three",
+          "chinese": "三",
+          "pronunciation": "θriː",
+          "example": "I can see three birds.",
+          "exampleChinese": "我能看见三只鸟。",
+          "emoji": "📖"
+        },
+        {
+          "english": "four",
+          "chinese": "四",
+          "pronunciation": "fɔːr",
+          "example": "I have four pencils.",
+          "exampleChinese": "我有四支铅笔。",
+          "emoji": "📖"
+        },
+        {
+          "english": "five",
+          "chinese": "五",
+          "pronunciation": "faɪv",
+          "example": "I can see five apples.",
+          "exampleChinese": "我能看见五个苹果。",
+          "emoji": "📖"
+        },
+        {
+          "english": "six",
+          "chinese": "六",
+          "pronunciation": "sɪks",
+          "example": "I have six books.",
+          "exampleChinese": "我有六本书。",
+          "emoji": "📖"
+        },
+        {
+          "english": "seven",
+          "chinese": "七",
+          "pronunciation": "ˈsevən",
+          "example": "I can see seven birds.",
+          "exampleChinese": "我能看见七只鸟。",
+          "emoji": "📖"
+        },
+        {
+          "english": "eight",
+          "chinese": "八",
+          "pronunciation": "eɪt",
+          "example": "I have eight pens.",
+          "exampleChinese": "我有八支钢笔。",
+          "emoji": "📖"
+        },
+        {
+          "english": "ten",
+          "chinese": "十",
+          "pronunciation": "ten",
+          "example": "I have ten pencils.",
+          "exampleChinese": "我有十支铅笔。",
+          "emoji": "📖"
+        },
+        {
+          "english": "eleven",
+          "chinese": "十一",
+          "pronunciation": "ɪˈlevən",
+          "example": "I can see eleven birds.",
+          "exampleChinese": "我能看见十一只鸟。",
+          "emoji": "📖"
+        },
+        {
+          "english": "twelve",
+          "chinese": "十二",
+          "pronunciation": "twelv",
+          "example": "I have twelve books.",
+          "exampleChinese": "我有十二本书。",
+          "emoji": "📖"
+        },
+        {
+          "english": "rope",
+          "chinese": "绳",
+          "pronunciation": "roʊp",
+          "example": "This is a long rope.",
+          "exampleChinese": "这是一根长绳。",
+          "emoji": "📖"
+        },
+        {
+          "english": "who",
+          "chinese": "谁，什么人",
+          "pronunciation": "huː",
+          "example": "Who is she?",
+          "exampleChinese": "她是谁？",
+          "emoji": "📖"
+        },
+        {
+          "english": "make",
+          "chinese": "制作",
+          "pronunciation": "meɪk",
+          "example": "Let's make a toy.",
+          "exampleChinese": "我们做一个玩具吧。",
+          "emoji": "📖"
+        },
+        {
+          "english": "Chinese knot",
+          "chinese": "中国结",
+          "pronunciation": "ˌtʃaɪˈniːz nɑːt",
+          "example": "This Chinese knot is red.",
+          "exampleChinese": "这个中国结是红色的。",
+          "emoji": "📖"
+        },
+        {
+          "english": "beautiful",
+          "chinese": "美丽的",
+          "pronunciation": "ˈbjuːtɪfəl",
+          "example": "The rainbow is beautiful.",
+          "exampleChinese": "这道彩虹很美丽。",
+          "emoji": "📖"
+        },
+        {
+          "english": "only",
+          "chinese": "仅仅",
+          "pronunciation": "ˈoʊnli",
+          "example": "I have only one pen.",
+          "exampleChinese": "我只有一支钢笔。",
+          "emoji": "📖"
+        },
+        {
+          "english": "show",
+          "chinese": "给……看",
+          "pronunciation": "ʃoʊ",
+          "example": "Show me your picture.",
+          "exampleChinese": "给我看看你的画。",
+          "emoji": "📖"
+        },
+        {
+          "english": "baby",
+          "chinese": "幼崽，雏鸟",
+          "pronunciation": "ˈbeɪbi",
+          "example": "Look at the baby bird.",
+          "exampleChinese": "看那只雏鸟。",
+          "emoji": "📖"
+        },
+        {
+          "english": "cheep",
+          "chinese": "吱吱（或唧唧）的叫声",
+          "pronunciation": "tʃiːp",
+          "example": "The little bird goes cheep.",
+          "exampleChinese": "小鸟唧唧叫。",
+          "emoji": "📖"
+        },
+        {
+          "english": "egg",
+          "chinese": "蛋",
+          "pronunciation": "eɡ",
+          "example": "This is an egg.",
+          "exampleChinese": "这是一个蛋。",
+          "emoji": "📖"
+        },
+        {
+          "english": "hungry",
+          "chinese": "饥饿的",
+          "pronunciation": "ˈhʌŋɡri",
+          "example": "The cat is hungry.",
+          "exampleChinese": "这只猫饿了。",
+          "emoji": "📖"
+        },
+        {
+          "english": "around",
+          "chinese": "环绕，在……周围",
+          "pronunciation": "əˈraʊnd",
+          "example": "We sit around the table.",
+          "exampleChinese": "我们围坐在桌子旁。",
+          "emoji": "📖"
+        },
+        {
+          "english": "us",
+          "chinese": "我们（宾格）",
+          "pronunciation": "ʌs",
+          "example": "Come with us.",
+          "exampleChinese": "和我们一起来。",
+          "emoji": "📖"
+        },
+        {
+          "english": "all",
+          "chinese": "全部，所有",
+          "pronunciation": "ɔːl",
+          "example": "We are all happy.",
+          "exampleChinese": "我们都很高兴。",
+          "emoji": "📖"
+        },
+        {
+          "english": "all around",
+          "chinese": "处处，到处",
+          "pronunciation": "ɔːl əˈraʊnd",
+          "example": "Birds are all around.",
+          "exampleChinese": "到处都是鸟。",
+          "emoji": "📖"
+        },
+        {
+          "english": "big",
+          "chinese": "大的",
+          "pronunciation": "bɪɡ",
+          "example": "This is a big box.",
+          "exampleChinese": "这是一个大箱子。",
+          "emoji": "📖"
+        },
+        {
+          "english": "little",
+          "chinese": "小的",
+          "pronunciation": "ˈlɪtəl",
+          "example": "This is a little bird.",
+          "exampleChinese": "这是一只小鸟。",
+          "emoji": "📖"
+        },
+        {
+          "english": "everywhere",
+          "chinese": "在各个地方，处处",
+          "pronunciation": "ˈevriwer",
+          "example": "I can see flowers everywhere.",
+          "exampleChinese": "我到处都能看见花。",
+          "emoji": "📖"
+        }
+      ],
+      "unit5": [
+        {
+          "english": "family",
+          "chinese": "家庭，家人",
+          "pronunciation": "ˈfæməli",
+          "example": "I love my family.",
+          "exampleChinese": "我爱我的家人。",
+          "emoji": "📖"
+        },
+        {
+          "english": "dad",
+          "chinese": "爸爸",
+          "pronunciation": "dæd",
+          "example": "This is my dad.",
+          "exampleChinese": "这是我的爸爸。",
+          "emoji": "📖"
+        },
+        {
+          "english": "father",
+          "chinese": "爸爸",
+          "pronunciation": "ˈfɑːðər",
+          "example": "My father is tall.",
+          "exampleChinese": "我的爸爸很高。",
+          "emoji": "📖"
+        },
+        {
+          "english": "mum",
+          "chinese": "妈妈",
+          "pronunciation": "mʌm",
+          "example": "This is my mum.",
+          "exampleChinese": "这是我的妈妈。",
+          "emoji": "📖"
+        },
+        {
+          "english": "mother",
+          "chinese": "妈妈",
+          "pronunciation": "ˈmʌðər",
+          "example": "My mother is happy.",
+          "exampleChinese": "我的妈妈很高兴。",
+          "emoji": "📖"
+        },
+        {
+          "english": "brother",
+          "chinese": "哥哥，弟弟",
+          "pronunciation": "ˈbrʌðər",
+          "example": "He is my brother.",
+          "exampleChinese": "他是我的哥哥。",
+          "emoji": "📖"
+        },
+        {
+          "english": "sister",
+          "chinese": "姐姐，妹妹",
+          "pronunciation": "ˈsɪstər",
+          "example": "She is my sister.",
+          "exampleChinese": "她是我的姐姐。",
+          "emoji": "📖"
+        },
+        {
+          "english": "grandpa",
+          "chinese": "祖父，外祖父",
+          "pronunciation": "ˈɡrænpɑː",
+          "example": "I love my grandpa.",
+          "exampleChinese": "我爱我的爷爷。",
+          "emoji": "📖"
+        },
+        {
+          "english": "grandfather",
+          "chinese": "祖父，外祖父",
+          "pronunciation": "ˈɡrænfɑːðər",
+          "example": "This is my grandfather.",
+          "exampleChinese": "这是我的爷爷。",
+          "emoji": "📖"
+        },
+        {
+          "english": "grandma",
+          "chinese": "祖母，外祖母",
+          "pronunciation": "ˈɡrænmɑː",
+          "example": "I love my grandma.",
+          "exampleChinese": "我爱我的奶奶。",
+          "emoji": "📖"
+        },
+        {
+          "english": "grandmother",
+          "chinese": "祖母，外祖母",
+          "pronunciation": "ˈɡrænmʌðər",
+          "example": "This is my grandmother.",
+          "exampleChinese": "这是我的奶奶。",
+          "emoji": "📖"
+        },
+        {
+          "english": "but",
+          "chinese": "但是，然而",
+          "pronunciation": "bʌt",
+          "example": "The box is big but the ball is little.",
+          "exampleChinese": "箱子很大，但是球很小。",
+          "emoji": "📖"
+        },
+        {
+          "english": "people",
+          "chinese": "人，人们",
+          "pronunciation": "ˈpiːpəl",
+          "example": "I can see many people.",
+          "exampleChinese": "我能看见许多人。",
+          "emoji": "📖"
+        },
+        {
+          "english": "story",
+          "chinese": "故事",
+          "pronunciation": "ˈstɔːri",
+          "example": "This is a funny story.",
+          "exampleChinese": "这是一个有趣的故事。",
+          "emoji": "📖"
+        },
+        {
+          "english": "cap",
+          "chinese": "帽子",
+          "pronunciation": "kæp",
+          "example": "My cap is blue.",
+          "exampleChinese": "我的帽子是蓝色的。",
+          "emoji": "📖"
+        },
+        {
+          "english": "worry",
+          "chinese": "担心",
+          "pronunciation": "ˈwɜːri",
+          "example": "Do not worry.",
+          "exampleChinese": "别担心。",
+          "emoji": "📖"
+        },
+        {
+          "english": "on",
+          "chinese": "在……上面",
+          "pronunciation": "ɑːn",
+          "example": "The book is on the table.",
+          "exampleChinese": "书在桌子上。",
+          "emoji": "📖"
+        },
+        {
+          "english": "come on",
+          "chinese": "快点，加油",
+          "pronunciation": "kʌm ɑːn",
+          "example": "Come on, Tom!",
+          "exampleChinese": "加油，汤姆！",
+          "emoji": "📖"
+        },
+        {
+          "english": "photo",
+          "chinese": "照片，相片",
+          "pronunciation": "ˈfoʊtoʊ",
+          "example": "This is a photo of my family.",
+          "exampleChinese": "这是一张我的全家福。",
+          "emoji": "📖"
+        },
+        {
+          "english": "love",
+          "chinese": "爱，关爱",
+          "pronunciation": "lʌv",
+          "example": "I love my mum.",
+          "exampleChinese": "我爱我的妈妈。",
+          "emoji": "📖"
+        },
+        {
+          "english": "daddy",
+          "chinese": "爸爸",
+          "pronunciation": "ˈdædi",
+          "example": "Hello, Daddy!",
+          "exampleChinese": "你好，爸爸！",
+          "emoji": "📖"
+        },
+        {
+          "english": "mummy",
+          "chinese": "妈妈",
+          "pronunciation": "ˈmʌmi",
+          "example": "Hello, Mummy!",
+          "exampleChinese": "你好，妈妈！",
+          "emoji": "📖"
+        },
+        {
+          "english": "where",
+          "chinese": "在哪里",
+          "pronunciation": "wer",
+          "example": "Where is my book?",
+          "exampleChinese": "我的书在哪里？",
+          "emoji": "📖"
+        },
+        {
+          "english": "dog",
+          "chinese": "狗",
+          "pronunciation": "dɔːɡ",
+          "example": "This is my dog.",
+          "exampleChinese": "这是我的狗。",
+          "emoji": "📖"
+        },
+        {
+          "english": "box",
+          "chinese": "盒，箱",
+          "pronunciation": "bɑːks",
+          "example": "The toy is in the box.",
+          "exampleChinese": "玩具在箱子里。",
+          "emoji": "📖"
+        }
+      ],
+      "unit6": [
+        {
+          "english": "sweet",
+          "chinese": "甜蜜的",
+          "pronunciation": "swiːt",
+          "example": "Home, sweet home!",
+          "exampleChinese": "家，甜蜜的家！",
+          "emoji": "📖"
+        },
+        {
+          "english": "home",
+          "chinese": "家",
+          "pronunciation": "hoʊm",
+          "example": "Welcome to my home!",
+          "exampleChinese": "欢迎来到我家！",
+          "emoji": "📖"
+        },
+        {
+          "english": "game",
+          "chinese": "游戏",
+          "pronunciation": "ɡeɪm",
+          "example": "Let's play a game.",
+          "exampleChinese": "我们玩一个游戏吧。",
+          "emoji": "📖"
+        },
+        {
+          "english": "room",
+          "chinese": "房间",
+          "pronunciation": "ruːm",
+          "example": "This is my room.",
+          "exampleChinese": "这是我的房间。",
+          "emoji": "📖"
+        },
+        {
+          "english": "living room",
+          "chinese": "客厅",
+          "pronunciation": "ˈlɪvɪŋ ruːm",
+          "example": "Dad is in the living room.",
+          "exampleChinese": "爸爸在客厅里。",
+          "emoji": "📖"
+        },
+        {
+          "english": "bedroom",
+          "chinese": "卧室",
+          "pronunciation": "ˈbedruːm",
+          "example": "This is my bedroom.",
+          "exampleChinese": "这是我的卧室。",
+          "emoji": "📖"
+        },
+        {
+          "english": "bathroom",
+          "chinese": "浴室，卫生间",
+          "pronunciation": "ˈbæθruːm",
+          "example": "The bathroom is small.",
+          "exampleChinese": "卫生间很小。",
+          "emoji": "📖"
+        },
+        {
+          "english": "kitchen",
+          "chinese": "厨房",
+          "pronunciation": "ˈkɪtʃən",
+          "example": "Mum is in the kitchen.",
+          "exampleChinese": "妈妈在厨房里。",
+          "emoji": "📖"
+        },
+        {
+          "english": "dining room",
+          "chinese": "餐厅",
+          "pronunciation": "ˈdaɪnɪŋ ruːm",
+          "example": "We eat in the dining room.",
+          "exampleChinese": "我们在餐厅里吃饭。",
+          "emoji": "📖"
+        },
+        {
+          "english": "door",
+          "chinese": "门",
+          "pronunciation": "dɔːr",
+          "example": "Open the door, please.",
+          "exampleChinese": "请打开门。",
+          "emoji": "📖"
+        },
+        {
+          "english": "chair",
+          "chinese": "椅子",
+          "pronunciation": "tʃer",
+          "example": "This is my chair.",
+          "exampleChinese": "这是我的椅子。",
+          "emoji": "📖"
+        },
+        {
+          "english": "think",
+          "chinese": "想，认为",
+          "pronunciation": "θɪŋk",
+          "example": "I think it is a cat.",
+          "exampleChinese": "我认为它是一只猫。",
+          "emoji": "📖"
+        },
+        {
+          "english": "under",
+          "chinese": "在……下面，在……底下",
+          "pronunciation": "ˈʌndər",
+          "example": "The ball is under the bed.",
+          "exampleChinese": "球在床下面。",
+          "emoji": "📖"
+        },
+        {
+          "english": "bed",
+          "chinese": "床",
+          "pronunciation": "bed",
+          "example": "This is my bed.",
+          "exampleChinese": "这是我的床。",
+          "emoji": "📖"
+        },
+        {
+          "english": "toy",
+          "chinese": "玩具",
+          "pronunciation": "tɔɪ",
+          "example": "I have a new toy.",
+          "exampleChinese": "我有一个新玩具。",
+          "emoji": "📖"
+        },
+        {
+          "english": "miaow",
+          "chinese": "咪，喵（猫叫声）",
+          "pronunciation": "miˈaʊ",
+          "example": "The cat goes miaow.",
+          "exampleChinese": "猫喵喵叫。",
+          "emoji": "📖"
+        },
+        {
+          "english": "table",
+          "chinese": "桌子",
+          "pronunciation": "ˈteɪbəl",
+          "example": "The apple is on the table.",
+          "exampleChinese": "苹果在桌子上。",
+          "emoji": "📖"
+        },
+        {
+          "english": "cat",
+          "chinese": "猫",
+          "pronunciation": "kæt",
+          "example": "This is my cat.",
+          "exampleChinese": "这是我的猫。",
+          "emoji": "📖"
+        },
+        {
+          "english": "ball",
+          "chinese": "球",
+          "pronunciation": "bɔːl",
+          "example": "My ball is red.",
+          "exampleChinese": "我的球是红色的。",
+          "emoji": "📖"
+        },
+        {
+          "english": "their",
+          "chinese": "他们的",
+          "pronunciation": "ðer",
+          "example": "This is their home.",
+          "exampleChinese": "这是他们的家。",
+          "emoji": "📖"
+        },
+        {
+          "english": "apple",
+          "chinese": "苹果",
+          "pronunciation": "ˈæpəl",
+          "example": "I have a red apple.",
+          "exampleChinese": "我有一个红苹果。",
+          "emoji": "📖"
+        },
+        {
+          "english": "share",
+          "chinese": "共用，分享",
+          "pronunciation": "ʃer",
+          "example": "Let's share the toys.",
+          "exampleChinese": "我们一起分享玩具吧。",
+          "emoji": "📖"
+        },
+        {
+          "english": "put",
+          "chinese": "放",
+          "pronunciation": "pʊt",
+          "example": "Put the book on the table.",
+          "exampleChinese": "把书放在桌子上。",
+          "emoji": "📖"
+        },
+        {
+          "english": "cooking",
+          "chinese": "做饭",
+          "pronunciation": "ˈkʊkɪŋ",
+          "example": "Dad is cooking.",
+          "exampleChinese": "爸爸正在做饭。",
+          "emoji": "📖"
+        },
+        {
+          "english": "sun",
+          "chinese": "太阳",
+          "pronunciation": "sʌn",
+          "example": "The sun is in the sky.",
+          "exampleChinese": "太阳在天空中。",
+          "emoji": "📖"
+        },
+        {
+          "english": "like",
+          "chinese": "喜欢",
+          "pronunciation": "laɪk",
+          "example": "I like apples.",
+          "exampleChinese": "我喜欢苹果。",
+          "emoji": "📖"
+        },
+        {
+          "english": "run",
+          "chinese": "跑",
+          "pronunciation": "rʌn",
+          "example": "I can run.",
+          "exampleChinese": "我会跑。",
+          "emoji": "📖"
+        },
+        {
+          "english": "lucky",
+          "chinese": "幸运的",
+          "pronunciation": "ˈlʌki",
+          "example": "You are lucky!",
+          "exampleChinese": "你真幸运！",
+          "emoji": "📖"
+        }
+      ]
+    }
+  },
   "grade1": {
     "上学期": {
       "unit1": [

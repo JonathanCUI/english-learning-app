@@ -13,15 +13,15 @@ const STORAGE = {
   activityLaunch: 'starlightActivityLaunch'
 };
 
-const GRADE_LABELS = { grade1: '一年级', grade2: '二年级' };
+const GRADE_LABELS = { grade1: '一年级', grade2: '二年级', grade3: '三年级' };
 const SEMESTERS = ['上学期', '下学期'];
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const ERROR_SESSION = 'starlightErrorPracticeSession';
 
 function audioRoot(grade, semester, unit) {
-  const gradeNumber = grade === 'grade2' ? '2' : '1';
+  const gradeNumber = String(grade).replace('grade', '');
   const semesterNumber = semester === '下学期' ? '2' : '1';
-  const unitNumber = String(unit || 'unit1').replace('unit', '');
+  const unitNumber = unit === 'welcome' ? '0' : String(unit || 'unit1').replace('unit', '');
   return 'audio-g' + gradeNumber + 's' + semesterNumber + 'u' + unitNumber;
 }
 
@@ -52,8 +52,10 @@ function decoded(value) {
 
 function normalizedSelection(grade, semester, unit) {
   const cleanGrade = GRADE_LABELS[grade] ? grade : '';
-  const cleanSemester = SEMESTERS.indexOf(decoded(semester)) >= 0 ? decoded(semester) : '';
-  const cleanUnit = /^unit[1-6]$/.test(String(unit || '')) ? String(unit) : '';
+  const gradeWords = vocabulary[cleanGrade];
+  const cleanSemester = gradeWords && gradeWords[decoded(semester)] ? decoded(semester) : '';
+  const semesterWords = gradeWords && gradeWords[cleanSemester];
+  const cleanUnit = semesterWords && Array.isArray(semesterWords[unit]) ? String(unit) : '';
   return { grade: cleanGrade, semester: cleanSemester, unit: cleanUnit };
 }
 
@@ -72,7 +74,7 @@ function shareQuery(data) {
 function shareTitle(data) {
   const selection = shareSelection(data);
   if (!selection.grade || !selection.semester || !selection.unit) return '星光英语小助手｜每天学会一个新单词';
-  return '和我一起学英语｜' + GRADE_LABELS[selection.grade] + ' · ' + selection.semester + ' · ' + selection.unit.replace('unit', 'Unit ');
+  return '和我一起学英语｜' + GRADE_LABELS[selection.grade] + ' · ' + selection.semester + ' · ' + (selection.unit === 'welcome' ? 'Welcome' : selection.unit.replace('unit', 'Unit '));
 }
 
 function normalizedCoins(value) {
@@ -120,10 +122,12 @@ function createPageConfig() {
     view: 'home',
     grades: [
       { value: 'grade1', label: '一年级', icon: '🌱' },
-      { value: 'grade2', label: '二年级', icon: '🚀' }
+      { value: 'grade2', label: '二年级', icon: '🚀' },
+      { value: 'grade3', label: '三年级', icon: '🌟' }
     ],
     semesters: SEMESTERS,
     units: ['unit1', 'unit2', 'unit3', 'unit4', 'unit5', 'unit6'],
+    unitLabels: { welcome: 'Welcome', unit1: 'Unit 1', unit2: 'Unit 2', unit3: 'Unit 3', unit4: 'Unit 4', unit5: 'Unit 5', unit6: 'Unit 6' },
     selectedGrade: '',
     selectedSemester: '',
     selectedUnit: '',
@@ -244,7 +248,9 @@ function createPageConfig() {
 
   selectGrade(event) {
     const selectedGrade = event.currentTarget.dataset.value;
-    this.setData({ selectedGrade }, () => this.refreshWords());
+    const semesters = Object.keys(vocabulary[selectedGrade] || {});
+    const selectedSemester = semesters.includes(this.data.selectedSemester) ? this.data.selectedSemester : '';
+    this.setData({ selectedGrade, selectedSemester, selectedUnit: '' }, () => this.refreshWords());
   },
 
   selectSemester(event) {
@@ -258,6 +264,14 @@ function createPageConfig() {
   },
 
   refreshWords(afterRefresh) {
+    const selection = normalizedSelection(this.data.selectedGrade, this.data.selectedSemester, this.data.selectedUnit);
+    const availableSemesters = Object.keys(vocabulary[selection.grade] || {});
+    const availableUnits = Object.keys((vocabulary[selection.grade] || {})[selection.semester] || {});
+    this.setData({
+      selectedGrade: selection.grade, selectedSemester: selection.semester, selectedUnit: selection.unit,
+      semesters: availableSemesters.length ? availableSemesters : SEMESTERS,
+      units: availableUnits.length ? availableUnits : ['unit1', 'unit2', 'unit3', 'unit4', 'unit5', 'unit6']
+    });
     const { selectedGrade, selectedSemester, selectedUnit } = this.data;
     const gradeWords = vocabulary[selectedGrade];
     const semesterWords = gradeWords && gradeWords[selectedSemester];
@@ -278,7 +292,7 @@ function createPageConfig() {
     const unitNumber = selectedUnit.replace('unit', '');
     this.setData({
       currentWords,
-      selectionLabel: GRADE_LABELS[selectedGrade] + ' · ' + selectedSemester + ' · Unit ' + unitNumber
+      selectionLabel: GRADE_LABELS[selectedGrade] + ' · ' + selectedSemester + ' · ' + (selectedUnit === 'welcome' ? 'Welcome' : 'Unit ' + unitNumber)
     }, typeof afterRefresh === 'function' ? afterRefresh : undefined);
     speech.setScope(selectedGrade, selectedSemester, selectedUnit);
   },
@@ -547,7 +561,14 @@ function createPageConfig() {
   },
 
   refreshErrorEntries() {
-    const errorEntries = Object.keys(this.data.errorBook).map((key) => this.data.errorBook[key]);
+    const errorEntries = Object.keys(this.data.errorBook).map((key) => {
+      const entry = this.data.errorBook[key];
+      const semester = (vocabulary[entry.grade] || {})[entry.semester] || {};
+      const words = semester[entry.unit] || [];
+      const current = enrichWords(words, entry.grade, entry.semester, entry.unit)
+        .find((word) => entry.word && word.english === entry.word.english);
+      return current ? Object.assign({}, entry, { word: current }) : entry;
+    });
     this.setData({ errorEntries, errorCount: errorEntries.length });
   },
 
