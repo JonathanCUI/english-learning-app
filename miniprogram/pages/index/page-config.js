@@ -3,6 +3,7 @@ const { enrichWords } = require('../../data/atlas.js');
 const shopCatalog = require('../../data/shop.js');
 const game = require('../../utils/game.js');
 const speech = require('../../utils/speech.js');
+const records = require('../../utils/perfect-records.js');
 
 const STORAGE = {
   economy: 'starlightEconomyV1',
@@ -105,10 +106,11 @@ function loadEconomy() {
   };
 }
 
-function saveEconomy(coins, purchasedItems) {
+function saveEconomy(coins, purchasedItems, perfectRecords) {
   const economy = {
     coins: normalizedCoins(coins),
-    purchasedItems: normalizedPurchases(purchasedItems)
+    purchasedItems: normalizedPurchases(purchasedItems),
+    perfectRecords: perfectRecords || (wx.getStorageSync(STORAGE.economy) || {}).perfectRecords || {}
   };
   wx.setStorageSync(STORAGE.economy, economy);
   wx.setStorageSync(STORAGE.coins, economy.coins);
@@ -144,6 +146,8 @@ function createPageConfig() {
     errorEntries: [],
     errorCount: 0,
     quizQuestions: [],
+    quizRecordLabel: '全对最快：暂无纪录',
+    spellingRecordLabel: '全对最快：暂无纪录',
     quizIndex: 0,
     quizScore: 0,
     quizPrompt: '',
@@ -210,6 +214,7 @@ function createPageConfig() {
   },
 
   onShow() {
+    this.refreshRecordLabels();
     const economy = loadEconomy();
     const errorBook = wx.getStorageSync(STORAGE.errors) || {};
     this.setData({
@@ -227,6 +232,7 @@ function createPageConfig() {
   },
 
   onUnload() {
+    this._timedRun = null;
     speech.stop();
   },
 
@@ -276,6 +282,7 @@ function createPageConfig() {
     const gradeWords = vocabulary[selectedGrade];
     const semesterWords = gradeWords && gradeWords[selectedSemester];
     const source = semesterWords && semesterWords[selectedUnit];
+    this.refreshRecordLabels();
     if (!selectedGrade || !selectedSemester || !selectedUnit || !Array.isArray(source)) {
       const selection = normalizedSelection(selectedGrade, selectedSemester, selectedUnit);
       this.setData({
@@ -298,6 +305,7 @@ function createPageConfig() {
   },
 
   goHome() {
+    this._timedRun = null;
     speech.stop();
     if (isAudioPage()) {
       wx.navigateBack({ delta: 1 });
@@ -384,7 +392,8 @@ function createPageConfig() {
   },
 
   beginQuiz() {
-    const quizQuestions = game.buildQuiz(this.data.currentWords, 10);
+    const quizQuestions = game.buildQuiz(this.data.currentWords);
+    this.beginTimedRun('quiz', quizQuestions.length);
     this.setData({
       view: 'quiz',
       quizQuestions,
@@ -417,6 +426,8 @@ function createPageConfig() {
 
   async chooseQuizOption(event) {
     if (this.data.answerLocked) return;
+    const run = this._timedRun;
+    if (run && this.data.quizIndex === this.data.quizQuestions.length - 1) run.endedAt = Date.now();
     const selectedText = event.currentTarget.dataset.text;
     const question = this.data.quizQuestions[this.data.quizIndex];
     const answer = question.direction === 'en-zh' ? question.word.chinese : question.word.english;
@@ -435,6 +446,7 @@ function createPageConfig() {
     else this.addError(question.word, '中英文测验');
     await speech.speakPair(question.word);
     await wait(450);
+    if (this._timedRun !== run || this.data.view !== 'quiz') return;
     this.setData({ quizIndex: this.data.quizIndex + 1 }, () => this.renderQuiz());
   },
 
@@ -446,6 +458,7 @@ function createPageConfig() {
   beginSpelling() {
     // Every word in the selected unit should be reviewed, including units with more than ten words.
     const spellingWords = game.shuffle(this.data.currentWords);
+    this.beginTimedRun('spelling', spellingWords.length);
     this.setData({
       view: 'spelling',
       spellingWords,
@@ -473,6 +486,8 @@ function createPageConfig() {
 
   async chooseSpellingOption(event) {
     if (this.data.answerLocked) return;
+    const run = this._timedRun;
+    if (run && this.data.spellingIndex === this.data.spellingWords.length - 1) run.endedAt = Date.now();
     const selectedText = event.currentTarget.dataset.text;
     const word = this.data.currentWord;
     const correct = selectedText === word.english;
@@ -490,6 +505,7 @@ function createPageConfig() {
     else this.addError(word, '拼写练习', selectedText);
     await speech.speakPair(word);
     await wait(450);
+    if (this._timedRun !== run || this.data.view !== 'spelling') return;
     this.setData({ spellingIndex: this.data.spellingIndex + 1 }, () => this.renderSpelling());
   },
 
@@ -510,13 +526,50 @@ function createPageConfig() {
       : this.chooseErrorPracticeOption(event);
   },
 
+  beginTimedRun(mode, total) {
+    const { selectedGrade, selectedSemester, selectedUnit } = this.data;
+    this._timedRun = {
+      key: selectedGrade && selectedSemester && selectedUnit ? records.key(selectedGrade, selectedSemester, selectedUnit, mode) : '',
+      mode, total, startedAt: Date.now(), done: false
+    };
+  },
+
+  refreshRecordLabels() {
+    const { selectedGrade: grade, selectedSemester: semester, selectedUnit: unit } = this.data;
+    const words = ((vocabulary[grade] || {})[semester] || {})[unit] || [];
+    const saved = (wx.getStorageSync(STORAGE.economy) || {}).perfectRecords || {};
+    const label = (mode) => {
+      const record = saved[records.key(grade, semester, unit, mode)];
+      return !words.length ? '选好单元查看纪录' : records.valid(record, words.length) ? '全对最快：' + records.format(record.ms) : '全对最快：暂无纪录';
+    };
+    this.setData({ quizRecordLabel: label('quiz'), spellingRecordLabel: label('spelling') });
+  },
+
   finishActivity(title, score, total) {
+    let recordMessage = '';
+    if (this._timedRun && this._timedRun.mode === this.data.view) {
+      const economy = loadEconomy();
+      const savedRecords = (wx.getStorageSync(STORAGE.economy) || {}).perfectRecords || {};
+      const result = records.settle(savedRecords, this._timedRun, score, total, Date.now());
+      if (result) {
+        recordMessage = result.message;
+        if (result.changed) {
+          try {
+            const saved = saveEconomy(economy.coins + result.reward, economy.purchasedItems, result.records);
+            this.setData({ coins: saved.coins, purchasedItems: saved.purchasedItems });
+            this.refreshRecordLabels();
+          } catch (error) {
+            recordMessage = '纪录保存失败，请检查设备存储空间。';
+          }
+        }
+      }
+    }
     const percentage = total ? Math.round((score / total) * 100) : 0;
     this.setData({
       view: 'complete',
       completionTitle: title,
       completionScore: score + ' / ' + total,
-      completionMessage: percentage >= 80 ? '太棒了，继续保持！' : percentage >= 60 ? '进步很明显，再练一次吧！' : '每一次练习都在积累星光！',
+      completionMessage: recordMessage || (percentage >= 80 ? '太棒了，继续保持！' : percentage >= 60 ? '进步很明显，再练一次吧！' : '每一次练习都在积累星光！'),
       answerLocked: false,
       answerStatus: ''
     });

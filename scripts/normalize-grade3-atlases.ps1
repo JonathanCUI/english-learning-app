@@ -1,10 +1,11 @@
-param([string[]]$Units = @('welcome', 'unit1a', 'unit1b', 'unit2', 'unit3', 'unit4', 'unit5', 'unit6'))
+param([string[]]$Units = @('welcome', 'unit1a', 'unit1b', 'unit2', 'unit3', 'unit4', 'unit5', 'unit6', 'corrections'))
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
 $root = Split-Path -Parent $PSScriptRoot
 # Grid boundaries measured on the generated originals (fractions of image height).
 # Normalizing each cell avoids adjacent illustrations leaking into the card crop.
 $plans = @(
+    @{ Unit = 'corrections'; Name = 'meaning-corrections-v1.png'; Columns = 3; Y = @(0, 0.330, 0.644, 1) },
     @{ Unit = 'welcome'; Columns = 4; Y = @(0, 0.251, 0.500, 0.735, 1) },
     @{ Unit = 'unit1a'; Columns = 3; Y = @(0, 0.33333, 0.66667, 1) },
     @{ Unit = 'unit1b'; Columns = 4; Y = @(0, 0.33333, 0.66667, 1) },
@@ -17,6 +18,7 @@ $plans = @(
 foreach ($plan in $plans) {
     if ($Units -notcontains $plan.Unit) { continue }
     $name = 'g3-s1-' + $plan.Unit + '-extra.png'
+    if ($plan.Name) { $name = $plan.Name }
     $source = Join-Path $root ('assets/grade3/source/' + $name)
     if (-not (Test-Path -LiteralPath $source)) { throw "Missing generated atlas: $source" }
     $image = [System.Drawing.Image]::FromFile($source)

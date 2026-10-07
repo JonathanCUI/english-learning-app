@@ -8,7 +8,21 @@ const atlas = require(path.join(miniRoot, 'data', 'atlas.js'));
 const shop = require(path.join(miniRoot, 'data', 'shop.js'));
 const speechMap = require(path.join(miniRoot, 'data', 'audio.js'));
 const game = require(path.join(miniRoot, 'utils', 'game.js'));
+const imageCorrections = require('../data/image-corrections.js');
+const speechText = require('../data/english-speech-text.js');
+const tts = require('./generate-baidu-tts.js');
+const assertContent = require('assert');
+assertContent.strictEqual(speechText('Ms'), 'miz');
+assertContent.strictEqual(speechText('Good morning, Ms Li!'), 'Good morning, miz Li!');
+assertContent.strictEqual(speechText('Mr. Green and Mrs Brown'), 'mister Green and missus Brown');
+assertContent.strictEqual(speechText('Miss Li, MS, PE, games'), 'Miss Li, MS, PE, games');
+assertContent.strictEqual(tts.synthesisText({ kind: 'word-en', text: 'Ms' }), 'miz.');
+assertContent.strictEqual(tts.synthesisText({ kind: 'meaning-zh', text: '女士' }), '女士');
+const unchangedAudio = { kind: 'meaning-zh', text: '女士', file: 'keep.mp3' };
+const fixedAudio = { kind: 'word-en', text: 'Ms', synthesisText: 'miz.' };
+assertContent.deepStrictEqual(tts.mergeManifest([unchangedAudio, { kind: 'word-en', text: 'Ms' }], [fixedAudio]), [unchangedAudio, fixedAudio]);
 const createPageConfig = require(path.join(miniRoot, 'pages', 'index', 'page-config.js'));
+require('./verify-perfect-records.js')();
 const semesters = ['上学期', '下学期'];
 let wordCount = 0;
 let unitCount = 0;
@@ -33,6 +47,27 @@ Object.keys(vocabulary).forEach((grade) => {
       }
       enriched.forEach((word) => {
         if (!fs.existsSync(path.join(miniRoot, word.visualSrc))) throw new Error('缺少单词图片：' + word.english + ' / ' + word.visualSrc);
+        const correctedIndex = imageCorrections.words.indexOf(word.english);
+        if (correctedIndex >= 0) {
+          assertContent.strictEqual(word.visualSrc, '/assets/vocab/' + imageCorrections.name + '.jpg', '旧图不应覆盖语义修正图');
+          assertContent.ok(!word.visualPlaceholder, '修正图片不能显示为占位符');
+        } else {
+          if ((imageCorrections.reuse || {})[word.english]) {
+            const source = imageCorrections.reuse[word.english];
+            const original = atlas.enrichWords(vocabulary[source.grade][source.semester][source.unit], source.grade, source.semester, source.unit).find(entry => entry.english === source.english);
+            assertContent.strictEqual(word.visualImageStyle, original.visualImageStyle);
+            assertContent.strictEqual(word.visualSrc, original.visualSrc);
+            return;
+          }
+          // A corrected word must not shift the original atlas coordinates of its neighbours.
+          const layout = atlas.layouts.find((entry) => entry[0] === grade && entry[1] === semester && entry[2] === unit);
+          if (layout) {
+            const index = words.findIndex((entry) => entry.english === word.english);
+            const width = Math.round(Math.min(440, 520 * layout[4] / layout[3]) * 100) / 100;
+            const left = Math.round(width * (index % layout[3]) * 100) / 100;
+            assertContent.ok(word.visualImageStyle.includes('left:-' + left + 'rpx'), '邻近单词的图片坐标不应改变');
+          }
+        }
       });
       words.forEach((word) => {
         [['word-en', word.english], ['meaning-zh', word.chinese], ['example-en', word.example]].forEach(([kind, text]) => {
@@ -151,7 +186,7 @@ if (mainPackageBytes > 2 * 1024 * 1024) throw new Error('主包超过 2 MB：' +
 const totalLimitMB = process.env.WX_SERVICE_PROVIDER === '1' ? 20 : 30;
 if (packageBytes > totalLimitMB * 1024 * 1024) throw new Error('小程序总包超过 ' + totalLimitMB + ' MB：' + (packageBytes / 1024 / 1024).toFixed(2) + ' MB');
 console.log('词汇：' + wordCount + ' 个');
-console.log('图集：' + (atlas.layouts.length + require('../data/grade3-images.js').length) + ' 个；商店商品：' + shop.length + ' 件');
+console.log('图集：' + (atlas.layouts.length + require('../data/grade3-images.js').length + 1) + ' 个；商店商品：' + shop.length + ' 件');
 console.log('语音：' + speechEntries + ' 个课本单元映射，' + speechPackages.length + ' 个页面分包');
 if (missingAudioCount) console.warn('开发预览检查：缺少 ' + missingAudioCount + ' 条语音映射，尚不可作为音频完整的发布包。');
 console.log('主包体积：' + (mainPackageBytes / 1024 / 1024).toFixed(2) + ' MB；小程序总目录：' + (packageBytes / 1024 / 1024).toFixed(2) + ' MB');
@@ -216,6 +251,36 @@ function verifyEconomyPersistence() {
     else global.getCurrentPages = previousGetCurrentPages;
   }
 }
+
+function verifyFullUnitQuiz() {
+  const assert = require('assert');
+  const units = Object.values(vocabulary).flatMap((grade) => Object.values(grade).flatMap((semester) => Object.values(semester)));
+  for (const words of [[], units[0].slice(0, 1), units[0].slice(0, 5), ...units]) {
+    const originalOrder = words.slice();
+    const page = mockPage(createPageConfig());
+    page.data.currentWords = words;
+    let finished = null;
+    page.finishActivity = (title, score, total) => { finished = { score, total }; };
+    page.beginQuiz();
+    const questions = page.data.quizQuestions;
+    assert.strictEqual(questions.length, words.length, '中英测验题数必须等于当前单元词数');
+    assert.strictEqual(new Set(questions.map((question) => question.word)).size, words.length, '测验不能遗漏或重复单词');
+    assert.ok(words.every((word) => questions.some((question) => question.word === word)), '测验必须覆盖当前单元全部单词');
+    assert.deepStrictEqual(words, originalOrder, '出题不能修改原词库顺序');
+    questions.forEach((question, index) => {
+      assert.ok(['en-zh', 'zh-en'].includes(question.direction));
+      page.data.quizIndex = index;
+      page.renderQuiz();
+      assert.strictEqual(finished, null, '测验不能提前结束');
+      assert.strictEqual(page.data.currentWord, question.word);
+    });
+    page.data.quizIndex = questions.length;
+    page.renderQuiz();
+    assert.deepStrictEqual(finished, { score: 0, total: words.length }, '测验应在全部单词完成后结算');
+  }
+}
+
+verifyFullUnitQuiz();
 
 function verifyFullUnitSpelling() {
   for (const grade of Object.values(vocabulary)) {

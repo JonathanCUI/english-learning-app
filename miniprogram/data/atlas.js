@@ -49,6 +49,35 @@ function buildVisualStyles(columns, rows, column, row, maxWidth, maxHeight) {
 }
 
 function enrichWords(words, grade, semester, unit) {
+  const corrections = require('./image-corrections.js');
+  if (words.some((word) => corrections.words.includes(word.english) || (corrections.reuse || {})[word.english])) {
+    return words.map((word) => {
+      const reuse = (corrections.reuse || {})[word.english];
+      if (reuse) {
+        const source = require('./vocabulary.js')[reuse.grade][reuse.semester][reuse.unit];
+        const original = enrichOriginalWords(source, reuse.grade, reuse.semester, reuse.unit, 0).find(entry => entry.english === reuse.english);
+        return Object.assign({}, word, {
+          visualSrc: original.visualSrc, visualFrameStyle: original.visualFrameStyle, visualImageStyle: original.visualImageStyle,
+          miniVisualFrameStyle: original.miniVisualFrameStyle, miniVisualImageStyle: original.miniVisualImageStyle
+        });
+      }
+      const index = corrections.words.indexOf(word.english);
+      if (index < 0) return enrichOriginalWords([word], grade, semester, unit, words.indexOf(word))[0];
+      const column = index % corrections.columns;
+      const row = Math.floor(index / corrections.columns);
+      const large = buildVisualStyles(corrections.columns, corrections.rows, column, row, 440, 520);
+      const small = buildVisualStyles(corrections.columns, corrections.rows, column, row, 250, 300);
+      return Object.assign({}, word, {
+        visualSrc: '/assets/vocab/' + corrections.name + '.jpg',
+        visualFrameStyle: large.frame, visualImageStyle: large.image,
+        miniVisualFrameStyle: small.frame, miniVisualImageStyle: small.image
+      });
+    });
+  }
+  return enrichOriginalWords(words, grade, semester, unit, 0);
+}
+
+function enrichOriginalWords(words, grade, semester, unit, indexOffset) {
   const layout = findLayout(grade, semester, unit);
   if (!layout) {
     // 仅复用拼写与首个释义一致的旧词插图，避免 orange 等多义词误配。
@@ -89,6 +118,7 @@ function enrichWords(words, grade, semester, unit) {
   const rows = layout[4];
   const src = layout[5];
   return words.map((word, index) => {
+    index += indexOffset;
     const column = index % columns;
     const row = Math.floor(index / columns);
     const learningVisual = buildVisualStyles(columns, rows, column, row, 440, 520);

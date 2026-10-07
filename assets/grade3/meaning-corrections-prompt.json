@@ -1,0 +1,16 @@
+{
+  "mode": "built-in image_gen",
+  "finalPrompt": "Use case: precise-object-edit. Edit this children's 3x3 educational atlas. REMOVE ALL TEXT AND NUMERALS from ALL nine cells, including Chinese 现在 这里 来自 那里 and both numeral 1 labels. Also remove every clock-face numeral on wristwatch and school clock; keep only clock hands/tick marks. No text, letters, digits, labels, pseudo-writing, logos, or watermarks anywhere in the finished image. Fill deleted labels with matching cream or sky backgrounds. Preserve the exact 3x3 equal grid, cartoon watercolor style, subject positioning, apple count EXACTLY nine in top-left (3 rows of 3), balloon count EXACTLY four bottom-left, star count EXACTLY six bottom-middle. Preserve the single book top-right, single apple center, child indicating nearby book middle-left, distant book bottom-right, outgoing-school direction middle-right, present-moment wristwatch+playing-ball top-middle. Keep visual arrows as non-text indicators of location/direction. Preserve all other illustrations. User explicitly requires picture-only meanings, absolutely no written characters.",
+  "words": [
+    "nine",
+    "now",
+    "a",
+    "here",
+    "an",
+    "from",
+    "four",
+    "six",
+    "there"
+  ],
+  "constraints": "No letters, Chinese characters, numerals or answer labels. Nine apples, four balloons, six stars. All other meanings expressed by scenes."
+}

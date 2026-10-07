@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const englishSpeechText = require('../data/english-speech-text.js');
 
 const root = path.resolve(__dirname, '..');
 const vocabulary = require(path.join(root, 'miniprogram', 'data', 'vocabulary.js'));
@@ -10,6 +11,7 @@ const args = new Set(process.argv.slice(2));
 const listOnly = args.has('--list');
 const sampleOnly = args.has('--sample');
 const force = args.has('--force');
+const pronunciationFixesOnly = args.has('--pronunciation-fixes');
 const voice = process.env.BAIDU_TTS_VOICE || '103';
 const englishVoice = process.env.BAIDU_EN_TTS_VOICE || '4194';
 const speed = process.env.BAIDU_TTS_SPEED || '4';
@@ -60,8 +62,9 @@ function taskPath(task) {
 function synthesisText(task) {
   // A short pause after an isolated English word prevents unvoiced final
   // consonants such as /t/, /k/ and /p/ from being clipped at end-of-file.
-  if (task.kind === 'word-en' && !/[.!?]$/.test(task.text)) return task.text + '.';
-  return task.text;
+  const text = task.kind === 'meaning-zh' ? task.text : englishSpeechText(task.text);
+  if (task.kind === 'word-en' && !/[.!?]$/.test(text)) return text + '.';
+  return text;
 }
 
 async function getAccessToken(apiKey, secretKey) {
@@ -109,9 +112,16 @@ async function synthesize(task, token) {
   return Buffer.from(await response.arrayBuffer());
 }
 
+function mergeManifest(previous, generated) {
+  return Array.from(new Map(previous.concat(generated).map((entry) => [entry.kind + '\0' + entry.text, entry])).values());
+}
+
 async function main() {
   const words = allWords();
-  const tasks = sampleOnly ? sampleTasks(words) : uniqueTasks(words);
+  const candidates = sampleOnly ? sampleTasks(words) : uniqueTasks(words);
+  const tasks = pronunciationFixesOnly ? candidates.filter((task) =>
+    task.kind !== 'meaning-zh' && englishSpeechText(task.text) !== task.text
+  ) : candidates;
   const counts = tasks.reduce((result, task) => {
     result[task.kind] = (result[task.kind] || 0) + 1;
     return result;
@@ -120,7 +130,10 @@ async function main() {
   console.log('词汇条目：' + words.length);
   console.log('待生成语音：' + tasks.length + '，' + JSON.stringify(counts));
   console.log('中文音色 per=' + voice + '，英文音色 per=' + englishVoice + '，语速 spd=' + speed + '，输出：' + outputRoot);
-  if (listOnly) return;
+  if (listOnly) {
+    if (pronunciationFixesOnly) tasks.forEach((task) => console.log(task.text + ' => ' + synthesisText(task)));
+    return;
+  }
 
   const apiKey = process.env.BAIDU_TTS_API_KEY;
   const secretKey = process.env.BAIDU_TTS_SECRET_KEY;
@@ -144,7 +157,9 @@ async function main() {
     const destination = taskPath(task);
     fs.mkdirSync(path.dirname(destination), { recursive: true });
     const existing = previousByKey.get(task.kind + '\0' + task.text);
-    const reuse = !force && fs.existsSync(destination);
+    const aliasChanged = task.kind !== 'meaning-zh' && englishSpeechText(task.text) !== task.text
+      && (!existing || existing.synthesisText !== synthesisText(task));
+    const reuse = !force && !pronunciationFixesOnly && !aliasChanged && fs.existsSync(destination);
     if (reuse) {
       skipped += 1;
     } else {
@@ -163,11 +178,15 @@ async function main() {
     console.log('[' + (index + 1) + '/' + tasks.length + '] ' + task.kind + '：' + task.text);
   }
 
-  fs.writeFileSync(path.join(outputRoot, sampleOnly ? 'sample-manifest.json' : 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
+  const finalManifest = pronunciationFixesOnly ? mergeManifest(previous, manifest) : manifest;
+  fs.writeFileSync(path.join(outputRoot, sampleOnly ? 'sample-manifest.json' : 'manifest.json'), JSON.stringify(finalManifest, null, 2) + '\n');
   console.log('完成：新生成 ' + created + '，跳过已有 ' + skipped + '。');
 }
 
-main().catch((error) => {
-  console.error(error.message);
-  process.exitCode = 1;
-});
+module.exports = { synthesisText, mergeManifest };
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(error.message);
+    process.exitCode = 1;
+  });
+}

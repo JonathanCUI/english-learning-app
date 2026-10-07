@@ -92,8 +92,8 @@ function quizOptions(words, target, direction, count) {
   }));
 }
 
-function buildQuiz(words, maximum) {
-  return shuffle(words).slice(0, Math.min(maximum || 10, words.length)).map((word, index) => ({
+function buildQuiz(words) {
+  return shuffle(words).map((word, index) => ({
     id: index + '-' + word.english,
     word,
     direction: Math.random() > 0.5 ? 'en-zh' : 'zh-en'

@@ -3,8 +3,8 @@ const ci = require('miniprogram-ci');
 
 const appid = process.env.WX_APPID;
 const privateKeyPath = process.env.WX_PRIVATE_KEY_PATH;
-const version = process.env.VERSION || '1.0.0';
-const desc = process.env.DESC || '星光英语小助手首次小程序版本';
+const version = process.env.VERSION || require('../package.json').version;
+const desc = process.env.DESC || '优化单词例句与配图的一致性，简化例句用词，同步更新配套语音，并修正部分拼写及配图错误。';
 const robot = Number(process.env.WX_ROBOT || 1);
 
 if (!appid || !privateKeyPath) {

@@ -92,11 +92,13 @@
         <view class="mode-icon">🎯</view>
         <view class="mode-title">中英测验</view>
         <view class="mode-copy">双向选择小挑战</view>
+        <view class="mode-copy">{{quizRecordLabel}}</view>
       </button>
       <button class="mode-card spell-mode" bindtap="startSpelling">
         <view class="mode-icon">🔤</view>
         <view class="mode-title">拼写选择</view>
         <view class="mode-copy">找出细微拼写差别</view>
+        <view class="mode-copy">{{spellingRecordLabel}}</view>
       </button>
       <button class="mode-card error-mode" bindtap="openErrorBook">
         <view class="mode-icon">📕</view>

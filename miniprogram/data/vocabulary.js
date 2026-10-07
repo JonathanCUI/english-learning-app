@@ -47,24 +47,24 @@ module.exports = {
           "english": "be",
           "chinese": "是",
           "pronunciation": "biː",
-          "example": "Let's be friends.",
-          "exampleChinese": "我们做朋友吧。",
+          "example": "I want to be your friend.",
+          "exampleChinese": "我想成为你的朋友。",
           "emoji": "📖"
         },
         {
           "english": "am",
           "chinese": "是（与 I 连用）",
           "pronunciation": "æm",
-          "example": "I am nine.",
-          "exampleChinese": "我九岁。",
+          "example": "I am happy.",
+          "exampleChinese": "我很高兴。",
           "emoji": "📖"
         },
         {
           "english": "is",
           "chinese": "是（用于第三人称单数）",
           "pronunciation": "ɪz",
-          "example": "She is my friend.",
-          "exampleChinese": "她是我的朋友。",
+          "example": "This is a cat.",
+          "exampleChinese": "这是一只猫。",
           "emoji": "📖"
         },
         {
@@ -111,24 +111,24 @@ module.exports = {
           "english": "my",
           "chinese": "我的",
           "pronunciation": "maɪ",
-          "example": "This is my bag.",
-          "exampleChinese": "这是我的包。",
+          "example": "This is my book.",
+          "exampleChinese": "这是我的书。",
           "emoji": "📖"
         },
         {
           "english": "goodbye",
           "chinese": "再见",
           "pronunciation": "ˌɡʊdˈbaɪ",
-          "example": "Goodbye, Miss Li!",
-          "exampleChinese": "再见，李老师！",
+          "example": "Goodbye, my friend!",
+          "exampleChinese": "再见，我的朋友！",
           "emoji": "📖"
         },
         {
           "english": "have",
           "chinese": "有，拥有",
           "pronunciation": "hæv",
-          "example": "I have a pencil.",
-          "exampleChinese": "我有一支铅笔。",
+          "example": "I have a book.",
+          "exampleChinese": "我有一本书。",
           "emoji": "📖"
         },
         {
@@ -223,8 +223,8 @@ module.exports = {
           "english": "open",
           "chinese": "打开",
           "pronunciation": "ˈoʊpən",
-          "example": "Open your book.",
-          "exampleChinese": "打开你的书。",
+          "example": "Open the door, please.",
+          "exampleChinese": "请打开门。",
           "emoji": "📖"
         },
         {
@@ -247,8 +247,8 @@ module.exports = {
           "english": "point",
           "chinese": "指",
           "pronunciation": "pɔɪnt",
-          "example": "Point to the door.",
-          "exampleChinese": "指一指门。",
+          "example": "Point to the ball.",
+          "exampleChinese": "指一指球。",
           "emoji": "📖"
         },
         {
@@ -297,16 +297,16 @@ module.exports = {
           "english": "let us",
           "chinese": "让我们",
           "pronunciation": "let ʌs",
-          "example": "Let us sing a song.",
-          "exampleChinese": "让我们唱一首歌。",
+          "example": "Let us play together.",
+          "exampleChinese": "让我们一起玩吧。",
           "emoji": "📖"
         },
         {
           "english": "friend",
           "chinese": "朋友",
           "pronunciation": "frend",
-          "example": "She is my friend.",
-          "exampleChinese": "她是我的朋友。",
+          "example": "He is my friend.",
+          "exampleChinese": "他是我的朋友。",
           "emoji": "📖"
         },
         {
@@ -345,16 +345,16 @@ module.exports = {
           "english": "new",
           "chinese": "新的",
           "pronunciation": "nuː",
-          "example": "This is my new bag.",
-          "exampleChinese": "这是我的新包。",
+          "example": "This is my new book.",
+          "exampleChinese": "这是我的新书。",
           "emoji": "📖"
         },
         {
           "english": "do",
           "chinese": "构成疑问句或否定句；做",
           "pronunciation": "duː",
-          "example": "Do you like apples?",
-          "exampleChinese": "你喜欢苹果吗？",
+          "example": "What do you make?",
+          "exampleChinese": "你在做什么？",
           "emoji": "📖"
         },
         {
@@ -377,24 +377,24 @@ module.exports = {
           "english": "nine",
           "chinese": "九",
           "pronunciation": "naɪn",
-          "example": "I am nine.",
-          "exampleChinese": "我九岁。",
+          "example": "I can see nine apples.",
+          "exampleChinese": "我能看见九个苹果。",
           "emoji": "📖"
         },
         {
           "english": "she",
           "chinese": "她",
           "pronunciation": "ʃiː",
-          "example": "She is my sister.",
-          "exampleChinese": "她是我的姐姐。",
+          "example": "She can run.",
+          "exampleChinese": "她会跑步。",
           "emoji": "📖"
         },
         {
           "english": "too",
           "chinese": "也",
           "pronunciation": "tuː",
-          "example": "I am happy too.",
-          "exampleChinese": "我也很高兴。",
+          "example": "I can play too.",
+          "exampleChinese": "我也会玩。",
           "emoji": "📖"
         },
         {
@@ -409,24 +409,24 @@ module.exports = {
           "english": "from",
           "chinese": "从",
           "pronunciation": "frʌm",
-          "example": "I am from China.",
-          "exampleChinese": "我来自中国。",
+          "example": "I walk home from school.",
+          "exampleChinese": "我从学校走回家。",
           "emoji": "📖"
         },
         {
           "english": "the",
           "chinese": "用于特指已提到、已知或独一无二的人或物",
           "pronunciation": "ðə",
-          "example": "Open the door, please.",
-          "exampleChinese": "请打开门。",
+          "example": "Look at the red ball.",
+          "exampleChinese": "看那个红色的球。",
           "emoji": "📖"
         },
         {
           "english": "twin",
           "chinese": "双胞胎中的一个",
           "pronunciation": "twɪn",
-          "example": "I have a twin brother.",
-          "exampleChinese": "我有一个双胞胎兄弟。",
+          "example": "She has a twin sister.",
+          "exampleChinese": "她有一个双胞胎姐妹。",
           "emoji": "📖"
         },
         {
@@ -457,8 +457,8 @@ module.exports = {
           "english": "oh",
           "chinese": "噢",
           "pronunciation": "oʊ",
-          "example": "Oh, a rainbow!",
-          "exampleChinese": "噢，一道彩虹！",
+          "example": "Oh, what is it?",
+          "exampleChinese": "哦，那是什么？",
           "emoji": "📖"
         },
         {
@@ -505,8 +505,8 @@ module.exports = {
           "english": "together",
           "chinese": "一起，一块儿",
           "pronunciation": "təˈɡeðər",
-          "example": "Let's sing together.",
-          "exampleChinese": "我们一起唱歌吧。",
+          "example": "Let's play together.",
+          "exampleChinese": "我们一起玩吧。",
           "emoji": "📖"
         },
         {
@@ -545,8 +545,8 @@ module.exports = {
           "english": "dear",
           "chinese": "亲爱的",
           "pronunciation": "dɪr",
-          "example": "Hello, my dear friend!",
-          "exampleChinese": "你好，我亲爱的朋友！",
+          "example": "I love my dear mum.",
+          "exampleChinese": "我爱我亲爱的妈妈。",
           "emoji": "📖"
         },
         {
@@ -577,8 +577,8 @@ module.exports = {
           "english": "our",
           "chinese": "我们的",
           "pronunciation": "aʊr",
-          "example": "This is our school.",
-          "exampleChinese": "这是我们的学校。",
+          "example": "This is our classroom.",
+          "exampleChinese": "这是我们的教室。",
           "emoji": "📖"
         },
         {
@@ -593,8 +593,8 @@ module.exports = {
           "english": "with",
           "chinese": "和……一起",
           "pronunciation": "wɪð",
-          "example": "Play with me.",
-          "exampleChinese": "和我一起玩。",
+          "example": "I walk with my friend.",
+          "exampleChinese": "我和朋友一起走。",
           "emoji": "📖"
         },
         {
@@ -643,8 +643,8 @@ module.exports = {
           "english": "pencil case",
           "chinese": "笔袋；铅笔盒",
           "pronunciation": "ˈpensəl keɪs",
-          "example": "My pen is in my pencil case.",
-          "exampleChinese": "我的钢笔在我的笔袋里。",
+          "example": "My pencil case is red.",
+          "exampleChinese": "我的笔袋是红色的。",
           "emoji": "📖"
         },
         {
@@ -667,8 +667,8 @@ module.exports = {
           "english": "ruler",
           "chinese": "尺子，直尺",
           "pronunciation": "ˈruːlər",
-          "example": "My ruler is green.",
-          "exampleChinese": "我的尺子是绿色的。",
+          "example": "This is my ruler.",
+          "exampleChinese": "这是我的尺子。",
           "emoji": "📖"
         },
         {
@@ -683,16 +683,16 @@ module.exports = {
           "english": "this",
           "chinese": "这，这个",
           "pronunciation": "ðɪs",
-          "example": "This is my book.",
-          "exampleChinese": "这是我的书。",
+          "example": "This is my school.",
+          "exampleChinese": "这是我的学校。",
           "emoji": "📖"
         },
         {
           "english": "in",
           "chinese": "在……里",
           "pronunciation": "ɪn",
-          "example": "The pen is in the bag.",
-          "exampleChinese": "钢笔在包里。",
+          "example": "The ball is in the box.",
+          "exampleChinese": "球在箱子里。",
           "emoji": "📖"
         },
         {
@@ -715,40 +715,40 @@ module.exports = {
           "english": "not",
           "chinese": "不，不是",
           "pronunciation": "nɑːt",
-          "example": "It is not my bag.",
-          "exampleChinese": "它不是我的包。",
+          "example": "No, I do not want it.",
+          "exampleChinese": "不，我不想要它。",
           "emoji": "📖"
         },
         {
           "english": "that",
           "chinese": "那，那个",
           "pronunciation": "ðæt",
-          "example": "That is my school.",
-          "exampleChinese": "那是我的学校。",
+          "example": "That is my book.",
+          "exampleChinese": "那是我的书。",
           "emoji": "📖"
         },
         {
           "english": "yes",
           "chinese": "是，对",
           "pronunciation": "jes",
-          "example": "Yes, it is my book.",
-          "exampleChinese": "是的，它是我的书。",
+          "example": "Yes, I can do it.",
+          "exampleChinese": "是的，我能做到。",
           "emoji": "📖"
         },
         {
           "english": "guess",
           "chinese": "猜，猜测",
           "pronunciation": "ɡes",
-          "example": "Guess my age.",
-          "exampleChinese": "猜猜我的年龄。",
+          "example": "Guess what is under the cloth.",
+          "exampleChinese": "猜猜布下面是什么。",
           "emoji": "📖"
         },
         {
           "english": "find",
           "chinese": "发现，找到",
           "pronunciation": "faɪnd",
-          "example": "I can find my pen.",
-          "exampleChinese": "我能找到我的钢笔。",
+          "example": "I find my toy bear.",
+          "exampleChinese": "我找到了我的玩具熊。",
           "emoji": "📖"
         },
         {
@@ -787,8 +787,8 @@ module.exports = {
           "english": "there",
           "chinese": "在那里",
           "pronunciation": "ðer",
-          "example": "My bag is there.",
-          "exampleChinese": "我的包在那里。",
+          "example": "My book is there.",
+          "exampleChinese": "我的书在那里。",
           "emoji": "📖"
         },
         {
@@ -819,16 +819,16 @@ module.exports = {
           "english": "look",
           "chinese": "看，瞧，望",
           "pronunciation": "lʊk",
-          "example": "Look! A bird!",
-          "exampleChinese": "看！一只鸟！",
+          "example": "Look at the blackboard.",
+          "exampleChinese": "看黑板。",
           "emoji": "📖"
         },
         {
           "english": "look at",
           "chinese": "看",
           "pronunciation": "lʊk æt",
-          "example": "Look at the picture.",
-          "exampleChinese": "看这幅画。",
+          "example": "Look at the blackboard.",
+          "exampleChinese": "看黑板。",
           "emoji": "📖"
         }
       ],
@@ -837,8 +837,8 @@ module.exports = {
           "english": "colourful",
           "chinese": "颜色鲜艳的，色彩丰富的",
           "pronunciation": "ˈkʌlərfəl",
-          "example": "This is a colourful picture.",
-          "exampleChinese": "这是一幅色彩丰富的画。",
+          "example": "The flowers are colourful.",
+          "exampleChinese": "这些花五颜六色。",
           "emoji": "📖"
         },
         {
@@ -861,16 +861,16 @@ module.exports = {
           "english": "umbrella",
           "chinese": "伞，雨伞",
           "pronunciation": "ʌmˈbrelə",
-          "example": "I have a red umbrella.",
-          "exampleChinese": "我有一把红色的雨伞。",
+          "example": "My umbrella is yellow.",
+          "exampleChinese": "我的雨伞是黄色的。",
           "emoji": "📖"
         },
         {
           "english": "clothes",
           "chinese": "衣服",
           "pronunciation": "kloʊðz",
-          "example": "My clothes are blue.",
-          "exampleChinese": "我的衣服是蓝色的。",
+          "example": "Look at my clothes.",
+          "exampleChinese": "看看我的衣服。",
           "emoji": "📖"
         },
         {
@@ -885,16 +885,16 @@ module.exports = {
           "english": "pink",
           "chinese": "粉红色（的）",
           "pronunciation": "pɪŋk",
-          "example": "My bag is pink.",
-          "exampleChinese": "我的包是粉红色的。",
+          "example": "This crayon is pink.",
+          "exampleChinese": "这支蜡笔是粉红色的。",
           "emoji": "📖"
         },
         {
           "english": "green",
           "chinese": "绿色（的）",
           "pronunciation": "ɡriːn",
-          "example": "The ruler is green.",
-          "exampleChinese": "这把尺子是绿色的。",
+          "example": "The grass is green.",
+          "exampleChinese": "草是绿色的。",
           "emoji": "📖"
         },
         {
@@ -909,24 +909,24 @@ module.exports = {
           "english": "orange",
           "chinese": "橙色（的）",
           "pronunciation": "ˈɔːrɪndʒ",
-          "example": "The balloon is orange.",
-          "exampleChinese": "这个气球是橙色的。",
+          "example": "This crayon is orange.",
+          "exampleChinese": "这支蜡笔是橙色的。",
           "emoji": "📖"
         },
         {
           "english": "blue",
           "chinese": "蓝色（的）",
           "pronunciation": "bluː",
-          "example": "My pen is blue.",
-          "exampleChinese": "我的钢笔是蓝色的。",
+          "example": "The sky is blue.",
+          "exampleChinese": "天空是蓝色的。",
           "emoji": "📖"
         },
         {
           "english": "purple",
           "chinese": "紫色（的）",
           "pronunciation": "ˈpɜːrpəl",
-          "example": "This is a purple umbrella.",
-          "exampleChinese": "这是一把紫色的雨伞。",
+          "example": "This crayon is purple.",
+          "exampleChinese": "这支蜡笔是紫色的。",
           "emoji": "📖"
         },
         {
@@ -941,8 +941,8 @@ module.exports = {
           "english": "want",
           "chinese": "想要",
           "pronunciation": "wɑːnt",
-          "example": "I want a balloon.",
-          "exampleChinese": "我想要一个气球。",
+          "example": "I want a toy bear.",
+          "exampleChinese": "我想要一个玩具熊。",
           "emoji": "📖"
         },
         {
@@ -965,8 +965,8 @@ module.exports = {
           "english": "can",
           "chinese": "能，会",
           "pronunciation": "kæn",
-          "example": "I can sing.",
-          "exampleChinese": "我会唱歌。",
+          "example": "I can swim.",
+          "exampleChinese": "我会游泳。",
           "emoji": "📖"
         },
         {
@@ -989,8 +989,8 @@ module.exports = {
           "english": "first",
           "chinese": "第一的",
           "pronunciation": "fɜːrst",
-          "example": "This is my first book.",
-          "exampleChinese": "这是我的第一本书。",
+          "example": "I am first.",
+          "exampleChinese": "我是第一个。",
           "emoji": "📖"
         },
         {
@@ -1013,24 +1013,24 @@ module.exports = {
           "english": "black",
           "chinese": "黑色（的）",
           "pronunciation": "blæk",
-          "example": "The cat is black.",
-          "exampleChinese": "这只猫是黑色的。",
+          "example": "My hair is black.",
+          "exampleChinese": "我的头发是黑色的。",
           "emoji": "📖"
         },
         {
           "english": "so",
           "chinese": "这么，如此",
           "pronunciation": "soʊ",
-          "example": "The bird is so little.",
-          "exampleChinese": "这只鸟真小。",
+          "example": "So many apples!",
+          "exampleChinese": "这么多苹果！",
           "emoji": "📖"
         },
         {
           "english": "many",
           "chinese": "许多，大量",
           "pronunciation": "ˈmeni",
-          "example": "I have many books.",
-          "exampleChinese": "我有许多书。",
+          "example": "I can see many children.",
+          "exampleChinese": "我能看见许多孩子。",
           "emoji": "📖"
         },
         {
@@ -1053,8 +1053,8 @@ module.exports = {
           "english": "paint",
           "chinese": "画，作画",
           "pronunciation": "peɪnt",
-          "example": "Let's paint a rainbow.",
-          "exampleChinese": "我们画一道彩虹吧。",
+          "example": "Let's paint a flower.",
+          "exampleChinese": "我们画一朵花吧。",
           "emoji": "📖"
         }
       ],
@@ -1071,16 +1071,16 @@ module.exports = {
           "english": "count",
           "chinese": "数数",
           "pronunciation": "kaʊnt",
-          "example": "Let's count the birds.",
-          "exampleChinese": "我们数一数鸟吧。",
+          "example": "Let's count the blocks.",
+          "exampleChinese": "我们数一数积木吧。",
           "emoji": "📖"
         },
         {
           "english": "how",
           "chinese": "多少；怎样，如何",
           "pronunciation": "haʊ",
-          "example": "How old are you?",
-          "exampleChinese": "你多大了？",
+          "example": "How tall is the giraffe?",
+          "exampleChinese": "长颈鹿有多高？",
           "emoji": "📖"
         },
         {
@@ -1095,88 +1095,88 @@ module.exports = {
           "english": "one",
           "chinese": "一",
           "pronunciation": "wʌn",
-          "example": "I have one pen.",
-          "exampleChinese": "我有一支钢笔。",
+          "example": "I can see one apple.",
+          "exampleChinese": "我能看见一个苹果。",
           "emoji": "📖"
         },
         {
           "english": "two",
           "chinese": "二",
           "pronunciation": "tuː",
-          "example": "I have two books.",
-          "exampleChinese": "我有两本书。",
+          "example": "I can see two birds.",
+          "exampleChinese": "我能看见两只鸟。",
           "emoji": "📖"
         },
         {
           "english": "three",
           "chinese": "三",
           "pronunciation": "θriː",
-          "example": "I can see three birds.",
-          "exampleChinese": "我能看见三只鸟。",
+          "example": "I can see three pigs.",
+          "exampleChinese": "我能看见三只小猪。",
           "emoji": "📖"
         },
         {
           "english": "four",
           "chinese": "四",
           "pronunciation": "fɔːr",
-          "example": "I have four pencils.",
-          "exampleChinese": "我有四支铅笔。",
+          "example": "I can see four balloons.",
+          "exampleChinese": "我能看见四个气球。",
           "emoji": "📖"
         },
         {
           "english": "five",
           "chinese": "五",
           "pronunciation": "faɪv",
-          "example": "I can see five apples.",
-          "exampleChinese": "我能看见五个苹果。",
+          "example": "I have five fingers.",
+          "exampleChinese": "我有五根手指。",
           "emoji": "📖"
         },
         {
           "english": "six",
           "chinese": "六",
           "pronunciation": "sɪks",
-          "example": "I have six books.",
-          "exampleChinese": "我有六本书。",
+          "example": "I can see six stars.",
+          "exampleChinese": "我能看见六颗星星。",
           "emoji": "📖"
         },
         {
           "english": "seven",
           "chinese": "七",
           "pronunciation": "ˈsevən",
-          "example": "I can see seven birds.",
-          "exampleChinese": "我能看见七只鸟。",
+          "example": "There are seven days in a week.",
+          "exampleChinese": "一周有七天。",
           "emoji": "📖"
         },
         {
           "english": "eight",
           "chinese": "八",
           "pronunciation": "eɪt",
-          "example": "I have eight pens.",
-          "exampleChinese": "我有八支钢笔。",
+          "example": "I can see eight apples.",
+          "exampleChinese": "我能看见八个苹果。",
           "emoji": "📖"
         },
         {
           "english": "ten",
           "chinese": "十",
           "pronunciation": "ten",
-          "example": "I have ten pencils.",
-          "exampleChinese": "我有十支铅笔。",
+          "example": "I can see ten stars.",
+          "exampleChinese": "我能看见十颗星星。",
           "emoji": "📖"
         },
         {
           "english": "eleven",
           "chinese": "十一",
           "pronunciation": "ɪˈlevən",
-          "example": "I can see eleven birds.",
-          "exampleChinese": "我能看见十一只鸟。",
+          "example": "It is eleven o'clock.",
+          "exampleChinese": "现在是十一点。",
           "emoji": "📖"
         },
         {
           "english": "twelve",
           "chinese": "十二",
           "pronunciation": "twelv",
-          "example": "I have twelve books.",
-          "exampleChinese": "我有十二本书。",
+          "example": "There are twelve months in a year.",
+          "exampleChinese": "一年有十二个月。",
           "emoji": "📖"
         },
         {
@@ -1191,16 +1191,16 @@ module.exports = {
           "english": "who",
           "chinese": "谁，什么人",
           "pronunciation": "huː",
-          "example": "Who is she?",
-          "exampleChinese": "她是谁？",
+          "example": "Who is that?",
+          "exampleChinese": "那是谁？",
           "emoji": "📖"
         },
         {
           "english": "make",
           "chinese": "制作",
           "pronunciation": "meɪk",
-          "example": "Let's make a toy.",
-          "exampleChinese": "我们做一个玩具吧。",
+          "example": "Let's make a cake.",
+          "exampleChinese": "我们做一个蛋糕吧。",
           "emoji": "📖"
         },
         {
@@ -1215,16 +1215,16 @@ module.exports = {
           "english": "beautiful",
           "chinese": "美丽的",
           "pronunciation": "ˈbjuːtɪfəl",
-          "example": "The rainbow is beautiful.",
-          "exampleChinese": "这道彩虹很美丽。",
+          "example": "The flowers are beautiful.",
+          "exampleChinese": "这些花很美丽。",
           "emoji": "📖"
         },
         {
           "english": "only",
           "chinese": "仅仅",
           "pronunciation": "ˈoʊnli",
-          "example": "I have only one pen.",
-          "exampleChinese": "我只有一支钢笔。",
+          "example": "There is only one apple.",
+          "exampleChinese": "只有一个苹果。",
           "emoji": "📖"
         },
         {
@@ -1263,8 +1263,8 @@ module.exports = {
           "english": "hungry",
           "chinese": "饥饿的",
           "pronunciation": "ˈhʌŋɡri",
-          "example": "The cat is hungry.",
-          "exampleChinese": "这只猫饿了。",
+          "example": "I am hungry.",
+          "exampleChinese": "我饿了。",
           "emoji": "📖"
         },
         {
@@ -1279,8 +1279,8 @@ module.exports = {
           "english": "us",
           "chinese": "我们（宾格）",
           "pronunciation": "ʌs",
-          "example": "Come with us.",
-          "exampleChinese": "和我们一起来。",
+          "example": "Come and play with us.",
+          "exampleChinese": "来和我们一起玩吧。",
           "emoji": "📖"
         },
         {
@@ -1295,24 +1295,24 @@ module.exports = {
           "english": "all around",
           "chinese": "处处，到处",
           "pronunciation": "ɔːl əˈraʊnd",
-          "example": "Birds are all around.",
-          "exampleChinese": "到处都是鸟。",
+          "example": "Flowers are all around.",
+          "exampleChinese": "周围到处都是花。",
           "emoji": "📖"
         },
         {
           "english": "big",
           "chinese": "大的",
           "pronunciation": "bɪɡ",
-          "example": "This is a big box.",
-          "exampleChinese": "这是一个大箱子。",
+          "example": "The elephant is big.",
+          "exampleChinese": "大象很大。",
           "emoji": "📖"
         },
         {
           "english": "little",
           "chinese": "小的",
           "pronunciation": "ˈlɪtəl",
-          "example": "This is a little bird.",
-          "exampleChinese": "这是一只小鸟。",
+          "example": "This toy bear is little.",
+          "exampleChinese": "这只玩具熊很小。",
           "emoji": "📖"
         },
         {
@@ -1417,8 +1417,8 @@ module.exports = {
           "english": "but",
           "chinese": "但是，然而",
           "pronunciation": "bʌt",
-          "example": "The box is big but the ball is little.",
-          "exampleChinese": "箱子很大，但是球很小。",
+          "example": "I like apples but not oranges.",
+          "exampleChinese": "我喜欢苹果，但不喜欢橙子。",
           "emoji": "📖"
         },
         {
@@ -1457,8 +1457,8 @@ module.exports = {
           "english": "on",
           "chinese": "在……上面",
           "pronunciation": "ɑːn",
-          "example": "The book is on the table.",
-          "exampleChinese": "书在桌子上。",
+          "example": "The apple is on the table.",
+          "exampleChinese": "苹果在桌子上。",
           "emoji": "📖"
         },
         {
@@ -1505,8 +1505,8 @@ module.exports = {
           "english": "where",
           "chinese": "在哪里",
           "pronunciation": "wer",
-          "example": "Where is my book?",
-          "exampleChinese": "我的书在哪里？",
+          "example": "Where is my toy?",
+          "exampleChinese": "我的玩具在哪里？",
           "emoji": "📖"
         },
         {
@@ -1521,8 +1521,8 @@ module.exports = {
           "english": "box",
           "chinese": "盒，箱",
           "pronunciation": "bɑːks",
-          "example": "The toy is in the box.",
-          "exampleChinese": "玩具在箱子里。",
+          "example": "This is an empty box.",
+          "exampleChinese": "这是一个空箱子。",
           "emoji": "📖"
         }
       ],
@@ -1563,8 +1563,8 @@ module.exports = {
           "english": "living room",
           "chinese": "客厅",
           "pronunciation": "ˈlɪvɪŋ ruːm",
-          "example": "Dad is in the living room.",
-          "exampleChinese": "爸爸在客厅里。",
+          "example": "This is our living room.",
+          "exampleChinese": "这是我们的客厅。",
           "emoji": "📖"
         },
         {
@@ -1587,16 +1587,16 @@ module.exports = {
           "english": "kitchen",
           "chinese": "厨房",
           "pronunciation": "ˈkɪtʃən",
-          "example": "Mum is in the kitchen.",
-          "exampleChinese": "妈妈在厨房里。",
+          "example": "This is our kitchen.",
+          "exampleChinese": "这是我们的厨房。",
           "emoji": "📖"
         },
         {
           "english": "dining room",
           "chinese": "餐厅",
           "pronunciation": "ˈdaɪnɪŋ ruːm",
-          "example": "We eat in the dining room.",
-          "exampleChinese": "我们在餐厅里吃饭。",
+          "example": "This is our dining room.",
+          "exampleChinese": "这是我们的餐厅。",
           "emoji": "📖"
         },
         {
@@ -1619,8 +1619,8 @@ module.exports = {
           "english": "think",
           "chinese": "想，认为",
           "pronunciation": "θɪŋk",
-          "example": "I think it is a cat.",
-          "exampleChinese": "我认为它是一只猫。",
+          "example": "Let me think.",
+          "exampleChinese": "让我想一想。",
           "emoji": "📖"
         },
         {
@@ -1659,8 +1659,8 @@ module.exports = {
           "english": "table",
           "chinese": "桌子",
           "pronunciation": "ˈteɪbəl",
-          "example": "The apple is on the table.",
-          "exampleChinese": "苹果在桌子上。",
+          "example": "The food is on the table.",
+          "exampleChinese": "食物在桌子上。",
           "emoji": "📖"
         },
         {
@@ -1675,16 +1675,16 @@ module.exports = {
           "english": "ball",
           "chinese": "球",
           "pronunciation": "bɔːl",
-          "example": "My ball is red.",
-          "exampleChinese": "我的球是红色的。",
+          "example": "My ball is colourful.",
+          "exampleChinese": "我的球是彩色的。",
           "emoji": "📖"
         },
         {
           "english": "their",
           "chinese": "他们的",
           "pronunciation": "ðer",
-          "example": "This is their home.",
-          "exampleChinese": "这是他们的家。",
+          "example": "These are their toys.",
+          "exampleChinese": "这些是他们的玩具。",
           "emoji": "📖"
         },
         {
@@ -1784,8 +1784,8 @@ module.exports = {
           "emoji": "🤝",
           "imageAtlas": "grade1Unit1",
           "imageIndex": 2,
-          "example": "Let's meet at school.",
-          "exampleChinese": "让我们在学校见面。"
+          "example": "Nice to meet you!",
+          "exampleChinese": "很高兴认识你！"
         },
         {
           "english": "you",
@@ -1814,8 +1814,8 @@ module.exports = {
           "emoji": "🎮",
           "imageAtlas": "grade1Unit1",
           "imageIndex": 5,
-          "example": "I like to play football.",
-          "exampleChinese": "我喜欢踢足球。"
+          "example": "Let's play with a ball.",
+          "exampleChinese": "我们一起玩球吧。"
         },
         {
           "english": "I",
@@ -1892,47 +1892,47 @@ module.exports = {
           "chinese": "二",
           "pronunciation": "tuː",
           "emoji": "2️⃣",
-          "example": "Two birds are flying.",
-          "exampleChinese": "两只鸟在飞。"
+          "example": "I can see two birds.",
+          "exampleChinese": "我能看见两只鸟。"
         },
         {
           "english": "three",
           "chinese": "三",
           "pronunciation": "θriː",
           "emoji": "3️⃣",
-          "example": "Three little pigs.",
-          "exampleChinese": "三只小猪。"
+          "example": "I can see three pigs.",
+          "exampleChinese": "我能看见三只小猪。"
         },
         {
           "english": "four",
           "chinese": "四",
           "pronunciation": "fɔːr",
           "emoji": "4️⃣",
-          "example": "Four seasons in a year.",
-          "exampleChinese": "一年有四个季节。"
+          "example": "I can see four balloons.",
+          "exampleChinese": "我能看见四个气球。"
         },
         {
           "english": "five",
           "chinese": "五",
           "pronunciation": "faɪv",
           "emoji": "5️⃣",
-          "example": "Five fingers on my hand.",
-          "exampleChinese": "我手上有五根手指。"
+          "example": "I have five fingers.",
+          "exampleChinese": "我有五根手指。"
         },
         {
           "english": "six",
           "chinese": "六",
           "pronunciation": "sɪks",
           "emoji": "6️⃣",
-          "example": "Six o'clock is dinner time.",
-          "exampleChinese": "六点是晚餐时间。"
+          "example": "I can see six stars.",
+          "exampleChinese": "我能看见六颗星星。"
         },
         {
           "english": "seven",
           "chinese": "七",
           "pronunciation": "ˈsɛvən",
           "emoji": "7️⃣",
-          "example": "Seven days in a week.",
+          "example": "There are seven days in a week.",
           "exampleChinese": "一周有七天。"
         },
         {
@@ -2022,16 +2022,16 @@ module.exports = {
           "chinese": "姐姐；妹妹",
           "pronunciation": "ˈsɪstər",
           "emoji": "👭",
-          "example": "My sister is tall.",
-          "exampleChinese": "我的姐姐很高。"
+          "example": "This is my sister.",
+          "exampleChinese": "这是我的姐姐。"
         },
         {
           "english": "and",
           "chinese": "和，与",
           "pronunciation": "ænd",
           "emoji": "➕",
-          "example": "My mum and dad are nice.",
-          "exampleChinese": "我的妈妈和爸爸都很好。"
+          "example": "My dad and I are happy.",
+          "exampleChinese": "爸爸和我都很高兴。"
         },
         {
           "english": "brother",
@@ -2176,8 +2176,8 @@ module.exports = {
           "chinese": "一（个）",
           "pronunciation": "ə",
           "emoji": "1️⃣",
-          "example": "I have a dog.",
-          "exampleChinese": "我有一只狗。"
+          "example": "I have a book.",
+          "exampleChinese": "我有一本书。"
         },
         {
           "english": "very",
@@ -2258,8 +2258,8 @@ module.exports = {
           "chinese": "给你",
           "pronunciation": "hɪr juː ɑːr",
           "emoji": "🤝",
-          "example": "Here you are, thank you.",
-          "exampleChinese": "给你，谢谢你。"
+          "example": "Here you are. This is for you.",
+          "exampleChinese": "给你。这是送给你的。"
         },
         {
           "english": "read",
@@ -2546,8 +2546,8 @@ module.exports = {
           "chinese": "自，从，由",
           "pronunciation": "frəm",
           "emoji": "➡️",
-          "example": "I am from China.",
-          "exampleChinese": "我来自中国。"
+          "example": "I walk home from school.",
+          "exampleChinese": "我从学校走回家。"
         }
       ],
       "unit3": [
@@ -2644,8 +2644,8 @@ module.exports = {
           "chinese": "现在",
           "pronunciation": "naʊ",
           "emoji": "🕐",
-          "example": "Now it is time for bed.",
-          "exampleChinese": "现在是睡觉时间。"
+          "example": "Let's play now.",
+          "exampleChinese": "我们现在玩吧。"
         },
         {
           "english": "long",
@@ -2734,24 +2734,24 @@ module.exports = {
           "chinese": "摆动，摇摆",
           "pronunciation": "rɑːk",
           "emoji": "🎸",
-          "example": "The rock band is cool.",
-          "exampleChinese": "摇滚乐队很酷。"
+          "example": "Let's rock to the music!",
+          "exampleChinese": "让我们随着音乐摇摆吧！"
         },
         {
           "english": "move",
           "chinese": "移动",
           "pronunciation": "muːv",
           "emoji": "🚶",
-          "example": "Move to the left.",
-          "exampleChinese": "向左移动。"
+          "example": "I can move my body.",
+          "exampleChinese": "我能活动身体。"
         },
         {
           "english": "head",
           "chinese": "头，头部",
           "pronunciation": "hɛd",
           "emoji": "🙂",
-          "example": "I have a headache.",
-          "exampleChinese": "我头疼。"
+          "example": "This is my head.",
+          "exampleChinese": "这是我的头。"
         },
         {
           "english": "hand",
@@ -2830,16 +2830,16 @@ module.exports = {
           "chinese": "她的",
           "pronunciation": "hɜːr",
           "emoji": "👩",
-          "example": "This is her book.",
-          "exampleChinese": "这是她的书。"
+          "example": "This is her toy bear.",
+          "exampleChinese": "这是她的玩具熊。"
         },
         {
           "english": "part",
           "chinese": "部位",
           "pronunciation": "pɑːrt",
           "emoji": "⚙️",
-          "example": "This is an important part.",
-          "exampleChinese": "这是一个重要的部分。"
+          "example": "My arm is part of my body.",
+          "exampleChinese": "我的手臂是身体的一部分。"
         },
         {
           "english": "toy",
@@ -2910,8 +2910,8 @@ module.exports = {
           "chinese": "健壮的",
           "pronunciation": "strɔːŋ",
           "emoji": "💪",
-          "example": "The man is strong.",
-          "exampleChinese": "这个男人很强壮。"
+          "example": "The boy is strong.",
+          "exampleChinese": "这个男孩很强壮。"
         },
         {
           "english": "basketball",
@@ -3056,8 +3056,8 @@ module.exports = {
           "chinese": "住",
           "pronunciation": "lɪv",
           "emoji": "🏠",
-          "example": "I live in Beijing.",
-          "exampleChinese": "我住在北京。"
+          "example": "I live in this house.",
+          "exampleChinese": "我住在这所房子里。"
         }
       ],
       "unit6": [
@@ -3106,31 +3106,31 @@ module.exports = {
           "chinese": "九",
           "pronunciation": "naɪn",
           "emoji": "9️⃣",
-          "example": "Nine students are here.",
-          "exampleChinese": "九个学生在这里。"
+          "example": "I can see nine apples.",
+          "exampleChinese": "我能看见九个苹果。"
         },
         {
           "english": "ten",
           "chinese": "十",
           "pronunciation": "tɛn",
           "emoji": "🔟",
-          "example": "Ten is my favorite number.",
-          "exampleChinese": "十是我最喜欢的数字。"
+          "example": "I can see ten stars.",
+          "exampleChinese": "我能看见十颗星星。"
         },
         {
           "english": "eleven",
           "chinese": "十一",
           "pronunciation": "ɪˈlɛvən",
           "emoji": "1️⃣1️⃣",
-          "example": "Eleven o'clock is bedtime.",
-          "exampleChinese": "十一点是睡觉时间。"
+          "example": "It is eleven o'clock.",
+          "exampleChinese": "现在是十一点。"
         },
         {
           "english": "twelve",
           "chinese": "十二",
           "pronunciation": "twɛlv",
           "emoji": "1️⃣2️⃣",
-          "example": "Twelve months in a year.",
+          "example": "There are twelve months in a year.",
           "exampleChinese": "一年有十二个月。"
         },
         {
@@ -3146,8 +3146,8 @@ module.exports = {
           "chinese": "午餐",
           "pronunciation": "lʌntʃ",
           "emoji": "🍽️",
-          "example": "Lunch is at 12 o'clock.",
-          "exampleChinese": "午餐在12点。"
+          "example": "This is my lunch.",
+          "exampleChinese": "这是我的午餐。"
         },
         {
           "english": "not",
@@ -3162,8 +3162,8 @@ module.exports = {
           "chinese": "尚，还，仍",
           "pronunciation": "jɛt",
           "emoji": "⏰",
-          "example": "Not yet, I'm still working.",
-          "exampleChinese": "还没有，我还在工作。"
+          "example": "I am not done yet.",
+          "exampleChinese": "我还没做完。"
         },
         {
           "english": "busy",
@@ -3322,8 +3322,8 @@ module.exports = {
           "chinese": "香蕉",
           "pronunciation": "bəˈnɑːnə",
           "emoji": "🍌",
-          "example": "Monkeys like bananas.",
-          "exampleChinese": "猴子喜欢香蕉。"
+          "example": "This banana is yellow.",
+          "exampleChinese": "这根香蕉是黄色的。"
         },
         {
           "english": "rice",
@@ -3338,8 +3338,8 @@ module.exports = {
           "chinese": "面条",
           "pronunciation": "ˈnuːdəl",
           "emoji": "🍜",
-          "example": "Noodles are delicious.",
-          "exampleChinese": "面条很美味。"
+          "example": "I like noodles.",
+          "exampleChinese": "我喜欢面条。"
         },
         {
           "english": "milk",
@@ -3354,8 +3354,8 @@ module.exports = {
           "chinese": "面包",
           "pronunciation": "brɛd",
           "emoji": "🍞",
-          "example": "Bread is my favorite food.",
-          "exampleChinese": "面包是我最喜欢的食物。"
+          "example": "I like bread.",
+          "exampleChinese": "我喜欢面包。"
         },
         {
           "english": "like",
@@ -3386,8 +3386,8 @@ module.exports = {
           "chinese": "我们",
           "pronunciation": "ʌs",
           "emoji": "👥",
-          "example": "Let's help us.",
-          "exampleChinese": "让我们互相帮助。"
+          "example": "Come and play with us.",
+          "exampleChinese": "来和我们一起玩吧。"
         },
         {
           "english": "cake",
@@ -3402,8 +3402,8 @@ module.exports = {
           "chinese": "糖果",
           "pronunciation": "swiːt",
           "emoji": "🍬",
-          "example": "Children like sweets.",
-          "exampleChinese": "孩子们喜欢糖果。"
+          "example": "The sweets are sweet.",
+          "exampleChinese": "这些糖果很甜。"
         },
         {
           "english": "ice cream",
@@ -3432,12 +3432,12 @@ module.exports = {
           "exampleChinese": "今天风很大。"
         },
         {
-          "english": "sonwy",
+          "english": "snowy",
           "chinese": "多雪的，积雪的",
           "pronunciation": "ˈsnoʊi",
           "emoji": "❄️",
-          "example": "It is sonwy in winter.",
-          "exampleChinese": "冬天多雪。"
+          "example": "It is snowy today.",
+          "exampleChinese": "今天下雪了。"
         },
         {
           "english": "rainy",
@@ -3510,8 +3510,8 @@ module.exports = {
           "chinese": "春天，春季",
           "pronunciation": "sprɪŋ",
           "emoji": "🌸",
-          "example": "Spring is warm and flowers bloom.",
-          "exampleChinese": "春天温暖，花儿开放。"
+          "example": "The flowers bloom in spring.",
+          "exampleChinese": "花儿在春天开放。"
         },
         {
           "english": "summer",
@@ -3574,8 +3574,8 @@ module.exports = {
           "chinese": "帽子",
           "pronunciation": "hæt",
           "emoji": "🎩",
-          "example": "I wear a hat in winter.",
-          "exampleChinese": "冬天我戴帽子。"
+          "example": "This is a warm hat.",
+          "exampleChinese": "这是一顶暖和的帽子。"
         }
       ],
       "unit5": [
@@ -3672,8 +3672,8 @@ module.exports = {
           "chinese": "最喜欢的",
           "pronunciation": "ˈfeɪvərɪt",
           "emoji": "⭐",
-          "example": "Blue is my favourite color.",
-          "exampleChinese": "蓝色是我最喜欢的颜色。"
+          "example": "This is my favourite toy.",
+          "exampleChinese": "这是我最喜欢的玩具。"
         }
       ],
       "unit6": [
@@ -3722,8 +3722,8 @@ module.exports = {
           "chinese": "风筝",
           "pronunciation": "kaɪt",
           "emoji": "🪁",
-          "example": "Children fly kites in spring.",
-          "exampleChinese": "孩子们春天放风筝。"
+          "example": "I can fly a kite.",
+          "exampleChinese": "我会放风筝。"
         },
         {
           "english": "card",
@@ -3832,8 +3832,8 @@ module.exports = {
           "chinese": "农民",
           "pronunciation": "ˈfɑːrmər",
           "emoji": "👨‍🌾",
-          "example": "The farmer grows crops.",
-          "exampleChinese": "农民种庄稼。"
+          "example": "The farmer has some carrots.",
+          "exampleChinese": "农民有一些胡萝卜。"
         },
         {
           "english": "worker",
@@ -3848,16 +3848,16 @@ module.exports = {
           "chinese": "医生，大夫",
           "pronunciation": "ˈdɑːktər",
           "emoji": "👨‍⚕️",
-          "example": "The doctor helps sick people.",
-          "exampleChinese": "医生帮助病人。"
+          "example": "The doctor helps the boy.",
+          "exampleChinese": "医生帮助这个男孩。"
         },
         {
           "english": "nurse",
           "chinese": "护士",
           "pronunciation": "ˈnɜːrs",
           "emoji": "👩‍⚕️",
-          "example": "The nurse helps the doctor.",
-          "exampleChinese": "护士帮助医生。"
+          "example": "The nurse helps the girl.",
+          "exampleChinese": "护士帮助这个女孩。"
         },
         {
           "english": "our",
@@ -4094,8 +4094,8 @@ module.exports = {
           "chinese": "唱，歌唱",
           "pronunciation": "sɪŋ",
           "emoji": "🎤",
-          "example": "I sing in the choir.",
-          "exampleChinese": "我在合唱团唱歌。"
+          "example": "I can sing a song.",
+          "exampleChinese": "我会唱一首歌。"
         },
         {
           "english": "dance",
@@ -4168,8 +4168,8 @@ module.exports = {
           "chinese": "星期一",
           "pronunciation": "ˈmʌndeɪ",
           "emoji": "📅",
-          "example": "Monday is the first day of the week.",
-          "exampleChinese": "星期一是一周的第一天。"
+          "example": "I go to school on Monday.",
+          "exampleChinese": "我星期一去上学。"
         },
         {
           "english": "Tuesday",
@@ -4184,24 +4184,24 @@ module.exports = {
           "chinese": "星期三",
           "pronunciation": "ˈwɛnzdeɪ",
           "emoji": "📅",
-          "example": "Wednesday is my favourite day.",
-          "exampleChinese": "星期三是我最喜欢的日子。"
+          "example": "I am happy on Wednesday.",
+          "exampleChinese": "我星期三很高兴。"
         },
         {
           "english": "Thursday",
           "chinese": "星期四",
           "pronunciation": "ˈθɜːrzdeɪ",
           "emoji": "📅",
-          "example": "Thursday comes after Wednesday.",
-          "exampleChinese": "星期四在星期三之后。"
+          "example": "I paint on Thursday.",
+          "exampleChinese": "我星期四画画。"
         },
         {
           "english": "Friday",
           "chinese": "星期五",
           "pronunciation": "ˈfraɪdeɪ",
           "emoji": "📅",
-          "example": "Friday is before the weekend.",
-          "exampleChinese": "星期五在周末之前。"
+          "example": "I play football on Friday.",
+          "exampleChinese": "我星期五踢足球。"
         },
         {
           "english": "every day",
@@ -4224,8 +4224,8 @@ module.exports = {
           "chinese": "星期日，星期天",
           "pronunciation": "ˈsʌndeɪ",
           "emoji": "📅",
-          "example": "Sunday is a holiday.",
-          "exampleChinese": "星期日是假日。"
+          "example": "I am with my family on Sunday.",
+          "exampleChinese": "星期日我和家人在一起。"
         },
         {
           "english": "sorry",

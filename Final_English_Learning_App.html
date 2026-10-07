@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>英语学习小助手 - 最终版本</title>
     <script src="data/grade3-semester1.js"></script>
+    <script src="data/example-revisions.js"></script>
+    <script src="data/example-revisions.js"></script>
     <script src="data/grade3-images.js"></script>
+    <script src="data/image-corrections.js"></script>
+    <script src="data/english-speech-text.js"></script>
+    <script src="miniprogram/utils/perfect-records.js"></script>
     <script>
         // 嵌入式词汇数据 - 最终版本
         const VOCABULARY = {
@@ -377,6 +382,8 @@
             if (!VOCABULARY[grade] || !VOCABULARY[grade][semester]) return [];
             return VOCABULARY[grade][semester][unit] || [];
         }
+        ExampleRevisions.apply(VOCABULARY);
+        ExampleRevisions.apply(VOCABULARY);
 
         // Initialize voice selection - prefer offline/local English voices to avoid GFW blocking
         function initVoices() {
@@ -465,7 +472,7 @@
                     return;
                 }
                 window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
+                const utterance = new SpeechSynthesisUtterance(lang === 'en-US' ? englishSpeechText(text) : text);
                 utterance.lang = lang;
                 utterance.rate = 0.8;
                 utterance.pitch = lang === 'en-US' ? 1.1 : 1.0;
@@ -1251,8 +1258,8 @@
                 <h2>选择学习模式</h2>
                 <div class="button-grid">
                     <button class="btn btn-learn" onclick="startLearning()">📚 学习模式</button>
-                    <button class="btn btn-quiz" onclick="startQuiz()">🎯 测验模式</button>
-                    <button class="btn btn-spelling" onclick="startSpelling()">🔤 拼写练习</button>
+                    <button class="btn btn-quiz" onclick="startQuiz()">🎯 测验模式<br><small id="quiz-record">全对最快：暂无纪录</small></button>
+                    <button class="btn btn-spelling" onclick="startSpelling()">🔤 拼写练习<br><small id="spelling-record">全对最快：暂无纪录</small></button>
                     <button class="btn btn-error-book" onclick="openErrorBook()">📕 错题本</button>
                 </div>
             </div>
@@ -1528,6 +1535,16 @@
         });
 
         function getWordImageStyle(word) {
+            const reuse = word && (WORD_IMAGE_CORRECTIONS.reuse || {})[word.english];
+            if (reuse) word = VOCABULARY[reuse.grade][reuse.semester][reuse.unit].find(entry => entry.english === reuse.english);
+            const correctionIndex = word ? WORD_IMAGE_CORRECTIONS.words.indexOf(word.english) : -1;
+            if (correctionIndex >= 0) {
+                const correction = WORD_IMAGE_CORRECTIONS;
+                WORD_IMAGE_ATLASES[correction.name] = {
+                    src: 'assets/grade3/' + correction.name + '.png', columns: correction.columns, rows: correction.rows
+                };
+                word = { ...word, imageAtlas: correction.name, imageIndex: correctionIndex };
+            }
             if (word && !word.imageAtlas) {
                 const meaning = value => String(value).split(/[，,；;（(]/)[0].trim();
                 for (const [grade, semester, unit] of WORD_ATLAS_UNIT_LAYOUTS) {
@@ -1588,6 +1605,38 @@
             return `<span class="${className} has-word-image" style="--word-image-url:${imageStyle.imageUrl};--word-image-size:${imageStyle.imageSize};--word-image-position-x:${imageStyle.positionX};--word-image-position-y:${imageStyle.positionY};--word-image-aspect:${imageStyle.aspectRatio}"></span>`;
         }
 
+        let timedPractice = null;
+        function readPerfectRecords() {
+            try { return JSON.parse(localStorage.getItem('perfectRecordsV1') || '{}') || {}; }
+            catch (_) { return {}; }
+        }
+        function refreshPerfectRecordLabels() {
+            const saved = readPerfectRecords();
+            ['quiz', 'spelling'].forEach(mode => {
+                const record = saved[PerfectRecords.key(currentGrade, currentSemester, currentUnit, mode)];
+                const total = currentWords.length * (mode === 'quiz' ? 2 : 1);
+                document.getElementById(mode + '-record').textContent = !total ? '选好单元查看纪录'
+                    : PerfectRecords.valid(record, total) ? '全对最快：' + PerfectRecords.format(record.ms) : '全对最快：暂无纪录';
+            });
+        }
+        function beginPerfectRecord(mode, total) {
+            timedPractice = { key: PerfectRecords.key(currentGrade, currentSemester, currentUnit, mode), mode, total, startedAt: Date.now() };
+        }
+        function finishPerfectRecord(mode, score, total) {
+            if (!timedPractice || timedPractice.mode !== mode) return '';
+            const result = PerfectRecords.settle(readPerfectRecords(), timedPractice, score, total, Date.now());
+            if (!result) return '';
+            if (result.changed) {
+                try {
+                    localStorage.setItem('perfectRecordsV1', JSON.stringify(result.records));
+                    totalCoins += result.reward;
+                    updateCoinDisplay();
+                    refreshPerfectRecordLabels();
+                } catch (_) { return '\n纪录保存失败，请检查浏览器存储空间。'; }
+            }
+            return '\n' + result.message;
+        }
+
         function selectGrade(grade) {
             currentGrade = grade;
             currentSemester = '';
@@ -1604,6 +1653,7 @@
             event.target.classList.add('selected');
             enableSemesterButtons();
             console.log('Selected grade:', grade);
+            refreshPerfectRecordLabels();
         }
 
         function selectSemester(semester) {
@@ -1617,6 +1667,7 @@
             event.target.classList.add('selected');
             enableUnitButtons();
             console.log('Selected semester:', semester);
+            refreshPerfectRecordLabels();
         }
 
         function selectUnit(unit) {
@@ -1627,6 +1678,7 @@
             event.target.classList.add('selected');
             currentWords = getCurrentWords(currentGrade, currentSemester, currentUnit);
             console.log('Selected unit:', unit, 'Word count:', currentWords.length);
+            refreshPerfectRecordLabels();
         }
 
         function enableSemesterButtons() {
@@ -1851,7 +1903,7 @@
                 'like': '莱克', 'but': '巴特', 'good': '古德', 'us': '阿斯',
                 'cake': '剋克', 'sweet': '斯威特', 'ice cream': '艾斯 克林',
                 // Grade 2 上学期 Unit 3
-                'weather': '外泽', 'windy': '温迪', 'sonwy': '斯诺伊', 'rainy': '瑞尼',
+                'weather': '外泽', 'windy': '温迪', 'snowy': '斯诺伊', 'rainy': '瑞尼',
                 'sunny': '桑尼', 'worry': '瓦瑞', 'wait': '威特', 'later': '雷特',
                 'egg': '埃格', 'other': '阿泽',
                 // Grade 2 上学期 Unit 4
@@ -1980,6 +2032,7 @@
             }
 
             quizQuestions = generateComprehensiveQuiz(currentWords);
+            beginPerfectRecord('quiz', quizQuestions.length);
             currentQuizIndex = 0;
             quizScore = 0;
             quizAnswerLocked = false;
@@ -2007,6 +2060,7 @@
 
             // Use all words from current unit to match learning mode exactly
             spellingWords = [...currentWords].sort(() => Math.random() - 0.5);
+            beginPerfectRecord('spelling', spellingWords.length);
             currentSpellingIndex = 0;
             spellingScore = 0;
             spellingAnswerLocked = false;
@@ -2139,6 +2193,7 @@
         function checkSpellingAnswer(selectedAnswer, selectedButton) {
             if (spellingAnswerLocked) return;
             spellingAnswerLocked = true;
+            if (timedPractice && currentSpellingIndex === spellingWords.length - 1) timedPractice.endedAt = Date.now();
 
             const word = spellingWords[currentSpellingIndex];
             const correctAnswer = word.english.toLowerCase();
@@ -2214,6 +2269,7 @@
         function finishSpelling() {
             const percentage = Math.round((spellingScore / spellingWords.length) * 100);
             let message = `拼写练习完成！你答对了 ${spellingScore} / ${spellingWords.length} 题 (${percentage}%)`;
+            message += finishPerfectRecord('spelling', spellingScore, spellingWords.length);
 
             if (percentage >= 90) {
                 message += '\n太棒了！你是拼写小达人！🎉';
@@ -2332,6 +2388,7 @@
         function checkAnswer(selectedOption, buttonElement, question) {
             if (quizAnswerLocked) return;
             quizAnswerLocked = true;
+            if (timedPractice && currentQuizIndex === quizQuestions.length - 1) timedPractice.endedAt = Date.now();
 
             document.querySelectorAll('.quiz-option').forEach(btn => {
                 btn.disabled = true;
@@ -2404,6 +2461,7 @@
         function finishQuiz() {
             const percentage = Math.round((quizScore / quizQuestions.length) * 100);
             let message = `测验完成！你答对了 ${quizScore} / ${quizQuestions.length} 题 (${percentage}%)`;
+            message += finishPerfectRecord('quiz', quizScore, quizQuestions.length);
 
             if (percentage >= 90) {
                 message += '\n太棒了！你是英语小达人！🎉';
@@ -2904,6 +2962,8 @@
         // ============ End Error Book Functions ============
 
         function backToSelection() {
+            timedPractice = null;
+            refreshPerfectRecordLabels();
             clearTimeout(spellingAdvanceTimer);
             clearTimeout(quizAdvanceTimer);
             clearTimeout(errorPracticeAdvanceTimer);

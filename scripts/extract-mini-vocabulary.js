@@ -12,6 +12,7 @@ if (!match) {
 }
 
 const vocabulary = Function('GRADE3_VOCABULARY', '"use strict"; return (' + match[1] + ');')(require('../data/grade3-semester1.js'));
+const exampleChanges = require('../data/example-revisions.js').apply(vocabulary);
 const semesters = ['上学期', '下学期'];
 let wordCount = 0;
 
@@ -36,4 +37,6 @@ const output = [
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(outputPath, output, 'utf8');
 fs.copyFileSync(path.join(root, 'data', 'grade3-images.js'), path.join(root, 'miniprogram', 'data', 'grade3-images.js'));
+fs.copyFileSync(path.join(root, 'data', 'image-corrections.js'), path.join(root, 'miniprogram', 'data', 'image-corrections.js'));
 console.log('已生成小程序词库：' + wordCount + ' 个单词');
+console.log('图文一致性修订：' + exampleChanges.length + ' 个词条');

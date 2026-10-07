@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const englishSpeechText = require('../data/english-speech-text.js');
 
 const root = path.resolve(__dirname, '..');
 const vocabulary = require(path.join(root, 'miniprogram', 'data', 'vocabulary.js'));
@@ -50,8 +51,9 @@ function fileName(sample, includeKind) {
 }
 
 function synthesisText(sample) {
-  if (sample.kind === 'word-en') return sample.text + '.';
-  return sample.text;
+  const text = englishSpeechText(sample.text);
+  if (sample.kind === 'word-en' && !/[.!?]$/.test(text)) return text + '.';
+  return text;
 }
 
 async function getAccessToken(apiKey, secretKey) {
